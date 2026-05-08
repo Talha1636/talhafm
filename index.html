@@ -17,22 +17,25 @@ body {
   margin: 30px auto;
   border: 1px solid #00ff00;
   padding: 10px;
+  box-shadow: 0 0 10px #00ff00;
 }
 
 .header {
   border-bottom: 1px solid #00ff00;
   padding-bottom: 5px;
   margin-bottom: 10px;
+  text-align: center;
 }
 
 #chat {
   height: 400px;
   overflow-y: auto;
   margin-bottom: 10px;
+  padding-right: 5px;
 }
 
 .msg {
-  margin: 2px 0;
+  margin: 3px 0;
 }
 
 .user {
@@ -49,7 +52,8 @@ input {
   background: black;
   color: #00ff00;
   border: 1px solid #00ff00;
-  padding: 5px;
+  padding: 6px;
+  outline: none;
 }
 
 button {
@@ -57,6 +61,11 @@ button {
   border: none;
   cursor: pointer;
   color: black;
+  padding: 6px 10px;
+}
+
+button:hover {
+  background: #00cc00;
 }
 </style>
 </head>
@@ -70,7 +79,7 @@ button {
 
   <div class="input">
     <input id="user" placeholder="nick">
-    <input id="text" placeholder="mesaj yaz...">
+    <input id="text" placeholder="mesaj yaz... (/clear)">
     <button onclick="send()">Gönder</button>
   </div>
 </div>
@@ -98,6 +107,17 @@ async function send() {
   const text = document.getElementById("text").value;
 
   if (!user || !text) return;
+
+  // 🧨 /clear komutu
+  if (text === "/clear") {
+    await fetch("/api/messages", {
+      method: "DELETE"
+    });
+
+    document.getElementById("text").value = "";
+    load();
+    return;
+  }
 
   await fetch("/api/messages", {
     method: "POST",
