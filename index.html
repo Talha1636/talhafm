@@ -3,309 +3,246 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NetTalk Stable Pro</title>
-
+<title>NetTalk Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <style>
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  font-family:system-ui;
-  background:#0b0f14;
-  color:#fff;
-  display:flex;
-  height:100vh;
-}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#08090d;--sidebar:#0c0e16;--card:#12141f;--border:#1c2033;--accent:#00e68a;--accent2:#00b36b;--danger:#ff4757;--muted:#5a6080;--text:#e0e4f0;--radius:12px}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:9px}
 
 /* SIDEBAR */
-.sidebar{
-  width:260px;
-  background:#0f172a;
-  border-right:1px solid #1f2937;
-  display:flex;
-  flex-direction:column;
-}
-
-.sidebar h3{
-  margin:0;
-  padding:12px;
-  border-bottom:1px solid #1f2937;
-}
-
-.users{
-  flex:1;
-  overflow:auto;
-  padding:10px;
-}
-
-.user{
-  padding:8px;
-  background:#111827;
-  margin-bottom:6px;
-  border-radius:8px;
-  font-size:13px;
-}
+.sidebar{width:280px;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;position:relative;z-index:2}
+.sidebar-head{padding:20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.logo{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#08090d}
+.brand{font-size:18px;font-weight:700;letter-spacing:-.5px}
+.brand span{color:var(--accent)}
+.room-info{padding:14px 20px;border-bottom:1px solid var(--border);font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.room-info i{color:var(--accent)}
+.online-badge{background:var(--accent);color:#08090d;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:auto}
+.users{flex:1;overflow:auto;padding:12px}
+.users-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);padding:8px 8px 12px;font-weight:600}
+.user{padding:10px 12px;border-radius:10px;font-size:13px;display:flex;align-items:center;gap:10px;margin-bottom:4px;transition:background .2s;cursor:default}
+.user:hover{background:var(--card)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);flex-shrink:0}
+.user-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-you{font-size:10px;color:var(--accent);font-weight:600}
 
 /* MAIN */
-.main{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-}
-
-.top{
-  padding:12px;
-  background:#0f172a;
-  border-bottom:1px solid #1f2937;
-  font-weight:600;
-}
+.main{flex:1;display:flex;flex-direction:column;position:relative}
+.top{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;font-weight:600;font-size:15px;background:var(--sidebar)}
+.top i{color:var(--accent)}
 
 /* MESSAGES */
-.messages{
-  flex:1;
-  overflow:auto;
-  padding:12px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
+.messages{flex:1;overflow:auto;padding:20px 24px;display:flex;flex-direction:column;gap:6px}
+.msg{max-width:70%;padding:12px 16px;border-radius:var(--radius);display:flex;flex-direction:column;gap:4px;animation:fadeUp .25s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg.self{align-self:flex-end;background:linear-gradient(135deg,#00e68a22,#00b36b22);border:1px solid #00e68a33;border-bottom-right-radius:4px}
+.msg.other{align-self:flex-start;background:var(--card);border:1px solid var(--border);border-bottom-left-radius:4px}
+.msg-head{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
+.msg-head b{color:var(--accent);font-weight:600}
+.msg-time{margin-left:auto}
+.msg-text{font-size:14px;line-height:1.5;word-break:break-word}
+.msg.system{align-self:center;background:transparent;border:none;padding:6px;font-size:12px;color:var(--muted);text-align:center;max-width:100%}
 
-.msg{
-  background:#111827;
-  padding:10px;
-  border-radius:10px;
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-}
-
-.msg-header{
-  display:flex;
-  justify-content:space-between;
-  font-size:12px;
-  color:#9ca3af;
-}
-
-.msg-text{
-  font-size:14px;
-  word-break:break-word;
-}
+/* TYPING */
+.typing-bar{font-size:12px;color:var(--muted);padding:4px 24px;min-height:24px;display:flex;align-items:center;gap:6px}
+.typing-dots span{display:inline-block;width:4px;height:4px;background:var(--accent);border-radius:50%;animation:bounce .6s infinite}
+.typing-dots span:nth-child(2){animation-delay:.15s}
+.typing-dots span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 
 /* INPUT */
-.input{
-  display:flex;
-  padding:10px;
-  background:#0f172a;
-  border-top:1px solid #1f2937;
-}
+.input-bar{display:flex;align-items:center;padding:12px 16px;gap:8px;border-top:1px solid var(--border);background:var(--sidebar)}
+.input-bar input{flex:1;padding:14px 18px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);color:var(--text);font-family:inherit;font-size:14px;outline:none;transition:border .2s}
+.input-bar input:focus{border-color:var(--accent)}
+.emoji-btn,.send-btn{width:44px;height:44px;border:none;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:transform .15s,background .2s}
+.emoji-btn{background:var(--card);color:var(--muted);border:1px solid var(--border)}
+.emoji-btn:hover{color:var(--accent);border-color:var(--accent)}
+.send-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#08090d;font-weight:700}
+.send-btn:hover{transform:scale(1.05)}
+.send-btn:active{transform:scale(.95)}
 
-input{
-  flex:1;
-  padding:12px;
-  border:none;
-  border-radius:8px;
-  background:#111827;
-  color:#fff;
-  outline:none;
-}
+/* EMOJI PICKER */
+.emoji-picker{position:absolute;bottom:80px;left:16px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;display:none;flex-wrap:wrap;gap:4px;width:280px;z-index:10;box-shadow:0 8px 32px #0008}
+.emoji-picker.open{display:flex}
+.emoji-picker button{width:36px;height:36px;border:none;background:transparent;border-radius:8px;font-size:20px;cursor:pointer;transition:background .15s}
+.emoji-picker button:hover{background:var(--border)}
 
-button{
-  margin-left:8px;
-  padding:12px 16px;
-  border:none;
-  border-radius:8px;
-  background:#22c55e;
-  font-weight:bold;
-  cursor:pointer;
-}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:#000a;z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.modal{background:var(--sidebar);border:1px solid var(--border);border-radius:16px;padding:40px;width:380px;max-width:90vw;text-align:center}
+.modal h2{font-size:24px;font-weight:700;margin-bottom:6px}
+.modal h2 span{color:var(--accent)}
+.modal p{color:var(--muted);font-size:13px;margin-bottom:24px}
+.modal input{width:100%;padding:14px 18px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);color:var(--text);font-family:inherit;font-size:15px;outline:none;margin-bottom:16px;text-align:center;transition:border .2s}
+.modal input:focus{border-color:var(--accent)}
+.modal button{width:100%;padding:14px;border:none;border-radius:var(--radius);background:linear-gradient(135deg,var(--accent),var(--accent2));color:#08090d;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;transition:transform .15s}
+.modal button:hover{transform:scale(1.02)}
+.modal button:active{transform:scale(.98)}
+.modal .error{color:var(--danger);font-size:12px;margin-bottom:12px;min-height:16px}
 
-/* typing */
-.typing{
-  font-size:12px;
-  color:#9ca3af;
-  padding:6px 12px;
-  min-height:20px;
-}
+/* TOAST */
+.toast{position:fixed;top:20px;right:20px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;font-size:13px;z-index:200;animation:slideIn .3s ease;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px #0008}
+.toast i{color:var(--accent)}
+@keyframes slideIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+
+/* MOBILE */
+@media(max-width:700px){.sidebar{display:none}.msg{max-width:88%}}
 </style>
 </head>
-
 <body>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-  <h3>🟢 Online</h3>
-  <div class="users" id="users"></div>
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="logo" style="margin:0 auto 16px;width:52px;height:52px;font-size:22px"><i class="fas fa-bolt"></i></div>
+    <h2>Net<span>Talk</span> Pro</h2>
+    <p>Gerçek zamanlı sohbet deneyimi</p>
+    <div class="error" id="modalErr"></div>
+    <input id="nickInput" placeholder="Nick girin..." maxlength="20" autofocus />
+    <button onclick="handleJoin()">Sohbete Baglan</button>
+  </div>
 </div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-head">
+    <div class="logo"><i class="fas fa-bolt"></i></div>
+    <div class="brand">Net<span>Talk</span></div>
+  </div>
+  <div class="room-info">
+    <i class="fas fa-hashtag"></i> genel
+    <span class="online-badge" id="onlineCount">0</span>
+  </div>
+  <div class="users" id="users">
+    <div class="users-title">Cevrimici</div>
+  </div>
+</aside>
 
 <!-- MAIN -->
-<div class="main">
-
-  <div class="top">NetTalk Stable Chat</div>
-
+<main class="main">
+  <div class="top"><i class="fas fa-hashtag"></i> genel odasi</div>
   <div class="messages" id="messages"></div>
-
-  <div class="typing" id="typing"></div>
-
-  <div class="input">
-    <input id="msg" placeholder="Mesaj yaz..." />
-    <button onclick="send()">Gönder</button>
+  <div class="typing-bar" id="typingBar"></div>
+  <div class="emoji-picker" id="emojiPicker"></div>
+  <div class="input-bar">
+    <button class="emoji-btn" onclick="toggleEmoji()"><i class="far fa-smile"></i></button>
+    <input id="msg" placeholder="Mesaj yaz..." maxlength="500" />
+    <button class="send-btn" onclick="send()"><i class="fas fa-paper-plane"></i></button>
   </div>
-
-</div>
+</main>
 
 <script>
+const API="/api/messages";
+let userId=null,nick="",typingUsers={};
+const EMOJIS=["😀","😂","😍","🔥","👍","❤️","😎","🎉","💯","🙄","😢","🤔","👀","✨","🚀","👋","😅","🥳","💀","🙏"];
 
-const API = "/api/messages";
+/* EMOJI PICKER */
+const ep=document.getElementById("emojiPicker");
+EMOJIS.forEach(e=>{const b=document.createElement("button");b.textContent=e;b.onclick=()=>{document.getElementById("msg").value+=e;toggleEmoji()};ep.appendChild(b)});
+function toggleEmoji(){ep.classList.toggle("open")}
 
-let userId = null;
-let nick = prompt("Nick gir:") || "Anon";
+/* MODAL */
+function handleJoin(){
+  const v=document.getElementById("nickInput").value.trim();
+  if(!v){document.getElementById("modalErr").textContent="Nick bos birakilamaz!";return}
+  if(v.length<2){document.getElementById("modalErr").textContent="En az 2 karakter!";return}
+  nick=v;
+  document.getElementById("modalOverlay").style.display="none";
+  initChat();
+}
+document.getElementById("nickInput").addEventListener("keydown",e=>{if(e.key==="Enter")handleJoin()});
 
-/* ================= JOIN ================= */
-async function join(){
-  const res = await fetch(API,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      type:"join",
-      name:nick,
-      roomId:"genel"
-    })
-  });
-
-  const data = await res.json();
-  userId = data.userId;
+/* INIT */
+async function initChat(){
+  try{
+    const res=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"join",name:nick,roomId:"genel"})});
+    const data=await res.json();
+    userId=data.userId;
+    toast("Sohbete baglandiniz!");
+    load();
+    setInterval(load,2000);
+    setInterval(heartbeat,5000);
+  }catch(err){toast("Baglanti hatasi!")}
 }
 
-/* ================= LOAD ================= */
+/* LOAD */
 async function load(){
-  const res = await fetch(API+"?roomId=genel");
-  const data = await res.json();
-
-  renderMessages(data.messages || []);
-  renderUsers(data.users || []);
+  try{
+    const res=await fetch(API+"?roomId=genel");
+    const data=await res.json();
+    renderMsgs(data.messages||[]);
+    renderUsers(data.users||[]);
+  }catch(e){}
 }
 
-/* ================= MESSAGES ================= */
-function renderMessages(msgs){
-  const box = document.getElementById("messages");
-  box.innerHTML = "";
-
+/* RENDER MESSAGES */
+function renderMsgs(msgs){
+  const box=document.getElementById("messages");
+  const wasBottom=box.scrollHeight-box.scrollTop-box.clientHeight<60;
+  box.innerHTML="";
   msgs.forEach(m=>{
-    const div = document.createElement("div");
-    div.className = "msg";
-
-    const time = m.createdAt
-      ? new Date(m.createdAt).toLocaleTimeString()
-      : "";
-
-    div.innerHTML = `
-      <div class="msg-header">
-        <b>${m.userName || "?"}</b>
-        <span>${time}</span>
-      </div>
-      <div class="msg-text">${escapeHtml(m.text)}</div>
-    `;
-
+    const div=document.createElement("div");
+    if(m.type==="system"){div.className="msg system";div.textContent=m.text;box.appendChild(div);return}
+    const self=m.userId===userId;
+    div.className="msg "+(self?"self":"other");
+    const t=m.createdAt?new Date(m.createdAt).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"}):"";
+    div.innerHTML=`<div class="msg-head"><b>${esc(m.userName||"?")}</b>${self?'<span class="user-you">sen</span>':''}<span class="msg-time">${t}</span></div><div class="msg-text">${esc(m.text)}</div>`;
     box.appendChild(div);
   });
-
-  box.scrollTop = box.scrollHeight;
+  if(wasBottom)box.scrollTop=box.scrollHeight;
 }
 
-/* XSS güvenliği */
-function escapeHtml(text){
-  return text
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;");
-}
+function esc(t){return t?t.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;"):""}
 
-/* ================= USERS ================= */
+/* RENDER USERS */
 function renderUsers(users){
-  const box = document.getElementById("users");
-  box.innerHTML = "";
-
-  const now = Date.now();
-  const ACTIVE = 20000;
-
-  users
-    .filter(u => now - (u.lastSeen || 0) < ACTIVE)
-    .forEach(u=>{
-      const div = document.createElement("div");
-      div.className="user";
-      div.textContent = "🟢 " + u.name;
-      box.appendChild(div);
-    });
+  const box=document.getElementById("users");
+  const now=Date.now(),ACT=20000;
+  const active=users.filter(u=>now-(u.lastSeen||0)<ACT);
+  document.getElementById("onlineCount").textContent=active.length;
+  box.innerHTML='<div class="users-title">Cevrimici</div>';
+  active.forEach(u=>{
+    const d=document.createElement("div");d.className="user";
+    d.innerHTML=`<span class="dot"></span><span class="user-name">${esc(u.name)}</span>${u.userId===userId?'<span class="user-you">SEN</span>':''}`;
+    box.appendChild(d);
+  });
 }
 
-/* ================= SEND ================= */
+/* SEND */
 async function send(){
-  const input = document.getElementById("msg");
-  const text = input.value.trim();
-  if(!text) return;
-
-  input.value = "";
-
-  await fetch(API,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      type:"message",
-      userId,
-      text,
-      roomId:"genel"
-    })
-  });
-
+  const inp=document.getElementById("msg");
+  const text=inp.value.trim();if(!text)return;
+  inp.value="";
+  ep.classList.remove("open");
+  await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"message",userId,text,roomId:"genel"})});
   load();
 }
+document.getElementById("msg").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send()}});
 
-/* ================= HEARTBEAT ================= */
-setInterval(()=>{
-  if(!userId) return;
+/* HEARTBEAT */
+function heartbeat(){
+  if(!userId)return;
+  fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"heartbeat",userId})});
+}
 
-  fetch(API,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      type:"heartbeat",
-      userId
-    })
-  });
-},5000);
-
-/* ================= TYPING ================= */
-let typingTimeout;
-
+/* TYPING */
+let tTO;
 document.getElementById("msg").addEventListener("input",()=>{
-  if(!userId) return;
-
-  fetch(API,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      type:"typing",
-      userId,
-      roomId:"genel"
-    })
-  });
-
-  clearTimeout(typingTimeout);
-  typingTimeout = setTimeout(()=>{
-    document.getElementById("typing").textContent = "";
-  },1000);
+  if(!userId)return;
+  fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"typing",userId,roomId:"genel"})});
+  clearTimeout(tTO);tTO=setTimeout(()=>{document.getElementById("typingBar").innerHTML=""},1500);
 });
 
-/* ================= AUTO REFRESH ================= */
-setInterval(load,2000);
-
-/* ================= INIT ================= */
-(async function(){
-  await join();
-  load();
-})();
-
+/* TOAST */
+function toast(msg){
+  const t=document.createElement("div");t.className="toast";
+  t.innerHTML=`<i class="fas fa-check-circle"></i>${esc(msg)}`;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
 </script>
-
 </body>
 </html>
