@@ -13,11 +13,10 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:9px}
 
 /* SIDEBAR */
-.sidebar{width:280px;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;position:relative;z-index:2}
+.sidebar{width:280px;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:2}
 .sidebar-head{padding:20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
-.logo{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#08090d}
-.brand{font-size:18px;font-weight:700;letter-spacing:-.5px}
-.brand span{color:var(--accent)}
+.logo{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#08090d}
+.brand{font-size:18px;font-weight:700;letter-spacing:-.5px}.brand span{color:var(--accent)}
 .room-info{padding:14px 20px;border-bottom:1px solid var(--border);font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
 .room-info i{color:var(--accent)}
 .online-badge{background:var(--accent);color:#08090d;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:auto}
@@ -25,15 +24,19 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .users-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);padding:8px 8px 12px;font-weight:600}
 .user{padding:10px 12px;border-radius:10px;font-size:13px;display:flex;align-items:center;gap:10px;margin-bottom:4px;transition:background .2s;cursor:default}
 .user:hover{background:var(--card)}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);flex-shrink:0}
-.dot.off{background:var(--muted);box-shadow:none}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot.on{background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.dot.off{background:var(--muted)}
 .user-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.user-you{font-size:10px;color:var(--accent);font-weight:600}
+.user-you{font-size:10px;color:var(--accent);font-weight:600;background:#00e68a15;padding:2px 6px;border-radius:4px}
+.user-muted{font-size:10px;color:var(--danger);font-weight:600;background:#ff475715;padding:2px 6px;border-radius:4px}
 
 /* MAIN */
 .main{flex:1;display:flex;flex-direction:column;position:relative}
 .top{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;font-weight:600;font-size:15px;background:var(--sidebar)}
 .top i{color:var(--accent)}
+.muted-warn{margin-left:auto;font-size:12px;color:var(--danger);background:#ff475715;padding:4px 12px;border-radius:6px;display:none;align-items:center;gap:6px}
+.muted-warn.show{display:flex}
 
 /* CONN BAR */
 .conn-bar{padding:10px 24px;font-size:13px;display:none;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
@@ -42,19 +45,36 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .conn-bar.reconnecting{background:#ffa50215;color:var(--warn);border-color:#ffa50233}
 .conn-bar i{font-size:14px}
 .conn-bar .retry-btn{margin-left:auto;padding:4px 12px;border:1px solid currentColor;border-radius:6px;background:transparent;color:inherit;font-family:inherit;font-size:12px;cursor:pointer;font-weight:600}
-.conn-bar .retry-btn:hover{opacity:.8}
 
 /* MESSAGES */
 .messages{flex:1;overflow:auto;padding:20px 24px;display:flex;flex-direction:column;gap:6px}
-.msg{max-width:70%;padding:12px 16px;border-radius:var(--radius);display:flex;flex-direction:column;gap:4px;animation:fadeUp .25s ease}
+.msg{max-width:70%;padding:12px 16px;border-radius:var(--radius);display:flex;flex-direction:column;gap:4px;animation:fadeUp .25s ease;position:relative}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.msg.self{align-self:flex-end;background:linear-gradient(135deg,#00e68a22,#00b36b22);border:1px solid #00e68a33;border-bottom-right-radius:4px}
+.msg.self{align-self:flex-end;background:linear-gradient(135deg,#00e68a18,#00b36b18);border:1px solid #00e68a28;border-bottom-right-radius:4px}
 .msg.other{align-self:flex-start;background:var(--card);border:1px solid var(--border);border-bottom-left-radius:4px}
+.msg.bot{align-self:flex-start;background:#1a1c30;border:1px solid #2a2d4a;border-bottom-left-radius:4px}
+.msg.system{align-self:center;background:transparent;border:none;padding:6px;font-size:12px;color:var(--muted);text-align:center;max-width:100%}
 .msg-head{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
 .msg-head b{color:var(--accent);font-weight:600}
+.msg-head .bot-tag{color:#8b5cf6;font-weight:600;font-size:10px;background:#8b5cf620;padding:1px 5px;border-radius:4px}
 .msg-time{margin-left:auto}
-.msg-text{font-size:14px;line-height:1.5;word-break:break-word}
-.msg.system{align-self:center;background:transparent;border:none;padding:6px;font-size:12px;color:var(--muted);text-align:center;max-width:100%}
+.msg-edited{font-size:10px;color:var(--muted);font-style:italic}
+.msg-text{font-size:14px;line-height:1.6;word-break:break-word;white-space:pre-wrap}
+
+/* REACTIONS */
+.msg-reactions{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.reaction-btn{padding:2px 8px;border-radius:12px;border:1px solid var(--border);background:var(--sidebar);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px;transition:background .15s}
+.reaction-btn:hover{background:var(--border)}
+.reaction-btn.active{border-color:var(--accent);background:#00e68a15}
+.reaction-btn .count{font-size:11px;color:var(--muted)}
+
+/* MSG ACTIONS */
+.msg-actions{position:absolute;top:-12px;right:8px;display:none;gap:2px;background:var(--sidebar);border:1px solid var(--border);border-radius:8px;padding:2px;z-index:5}
+.msg.self .msg-actions{right:auto;left:8px}
+.msg:hover .msg-actions{display:flex}
+.msg-actions button{width:28px;height:28px;border:none;background:transparent;color:var(--muted);border-radius:6px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center}
+.msg-actions button:hover{background:var(--card);color:var(--text)}
+.msg-actions button.del:hover{color:var(--danger)}
 
 /* TYPING */
 .typing-bar{font-size:12px;color:var(--muted);padding:4px 24px;min-height:24px;display:flex;align-items:center;gap:6px}
@@ -68,13 +88,16 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .input-bar input{flex:1;padding:14px 18px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);color:var(--text);font-family:inherit;font-size:14px;outline:none;transition:border .2s}
 .input-bar input:focus{border-color:var(--accent)}
 .input-bar input:disabled{opacity:.4;cursor:not-allowed}
-.emoji-btn,.send-btn{width:44px;height:44px;border:none;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:transform .15s,background .2s}
-.emoji-btn{background:var(--card);color:var(--muted);border:1px solid var(--border)}
+.emoji-btn,.send-btn,.cancel-btn{height:44px;border:none;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:transform .15s,background .2s}
+.emoji-btn{width:44px;background:var(--card);color:var(--muted);border:1px solid var(--border)}
 .emoji-btn:hover{color:var(--accent);border-color:var(--accent)}
-.send-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#08090d;font-weight:700}
-.send-btn:hover{transform:scale(1.05)}
-.send-btn:active{transform:scale(.95)}
+.send-btn{padding:0 20px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#08090d;font-weight:700;font-family:inherit;gap:8px}
+.send-btn:hover{transform:scale(1.03)}
+.send-btn:active{transform:scale(.97)}
 .send-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.cancel-btn{width:44px;background:var(--card);color:var(--danger);border:1px solid var(--border)}
+.cancel-btn:hover{background:#ff475720}
+.editing-label{font-size:12px;color:var(--warn);white-space:nowrap}
 
 /* EMOJI PICKER */
 .emoji-picker{position:absolute;bottom:80px;left:16px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;display:none;flex-wrap:wrap;gap:4px;width:280px;z-index:10;box-shadow:0 8px 32px #0008}
@@ -84,23 +107,20 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:#000a;z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
-.modal{background:var(--sidebar);border:1px solid var(--border);border-radius:16px;padding:40px;width:380px;max-width:90vw;text-align:center}
-.modal h2{font-size:24px;font-weight:700;margin-bottom:6px}
-.modal h2 span{color:var(--accent)}
+.modal{background:var(--sidebar);border:1px solid var(--border);border-radius:16px;padding:40px;width:400px;max-width:90vw;text-align:center}
+.modal h2{font-size:24px;font-weight:700;margin-bottom:6px}.modal h2 span{color:var(--accent)}
 .modal p{color:var(--muted);font-size:13px;margin-bottom:24px}
-.modal input{width:100%;padding:14px 18px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);color:var(--text);font-family:inherit;font-size:15px;outline:none;margin-bottom:16px;text-align:center;transition:border .2s}
+.modal input{width:100%;padding:14px 18px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);color:var(--text);font-family:inherit;font-size:15px;outline:none;margin-bottom:8px;text-align:center;transition:border .2s}
 .modal input:focus{border-color:var(--accent)}
-.modal button{width:100%;padding:14px;border:none;border-radius:var(--radius);background:linear-gradient(135deg,var(--accent),var(--accent2));color:#08090d;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;transition:transform .15s}
-.modal button:hover{transform:scale(1.02)}
-.modal button:active{transform:scale(.98)}
-.modal .error{color:var(--danger);font-size:12px;margin-bottom:12px;min-height:16px}
+.modal button{width:100%;padding:14px;border:none;border-radius:var(--radius);background:linear-gradient(135deg,var(--accent),var(--accent2));color:#08090d;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;transition:transform .15s;margin-top:8px}
+.modal button:hover{transform:scale(1.02)}.modal button:active{transform:scale(.98)}
+.modal .error{color:var(--danger);font-size:12px;margin-bottom:8px;min-height:16px}
+.modal .hint{color:var(--muted);font-size:11px;margin-top:12px;line-height:1.5}
 
 /* TOAST */
-.toast-wrap{position:fixed;top:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px}
-.toast{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;font-size:13px;animation:slideIn .3s ease;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px #0008}
-.toast.err{border-color:#ff475744;color:var(--danger)}
-.toast.ok{border-color:#00e68a44;color:var(--accent)}
-.toast i{font-size:16px}
+.toast-wrap{position:fixed;top:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;font-size:13px;animation:slideIn .3s ease;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px #0008;pointer-events:auto;max-width:320px}
+.toast.err{border-color:#ff475744;color:var(--danger)}.toast.ok{border-color:#00e68a44;color:var(--accent)}.toast.warn{border-color:#ffa50244;color:var(--warn)}
 @keyframes slideIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
 
 @media(max-width:700px){.sidebar{display:none}.msg{max-width:88%}}
@@ -113,14 +133,18 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
   <div class="modal">
     <div class="logo" style="margin:0 auto 16px;width:52px;height:52px;font-size:22px"><i class="fas fa-bolt"></i></div>
     <h2>Net<span>Talk</span> Pro</h2>
-    <p>Gercek zamanli sohbet deneyimi</p>
+    <p>Gercek zamanli profesyonel sohbet</p>
     <div class="error" id="modalErr"></div>
     <input id="nickInput" placeholder="Nick girin..." maxlength="20" autofocus />
     <button onclick="handleJoin()">Sohbete Baglan</button>
+    <div class="hint">
+      Komutlar: /help /users /stats /nick /clear /mute /unmute<br>
+      Mesajlara reaksiyon ekle, duzenle veya sil
+    </div>
   </div>
 </div>
 
-<!-- TOAST CONTAINER -->
+<!-- TOAST -->
 <div class="toast-wrap" id="toastWrap"></div>
 
 <!-- SIDEBAR -->
@@ -133,133 +157,117 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
     <i class="fas fa-hashtag"></i> genel
     <span class="online-badge" id="onlineCount">0</span>
   </div>
-  <div class="users" id="users">
-    <div class="users-title">Cevrimici</div>
-  </div>
+  <div class="users" id="users"><div class="users-title">Cevrimici</div></div>
 </aside>
 
 <!-- MAIN -->
 <main class="main">
-  <div class="top"><i class="fas fa-hashtag"></i> genel odasi</div>
+  <div class="top">
+    <i class="fas fa-hashtag"></i> genel odasi
+    <div class="muted-warn" id="mutedWarn"><i class="fas fa-volume-mute"></i> Susturulmussunuz</div>
+  </div>
 
-  <!-- BAGLANTI DURUMU -->
   <div class="conn-bar" id="connBar">
     <i id="connIcon"></i>
     <span id="connText"></span>
-    <button class="retry-btn" id="connRetry" onclick="manualReconnect()">Yeniden Dene</button>
+    <button class="retry-btn" onclick="manualReconnect()">Yeniden Dene</button>
   </div>
 
   <div class="messages" id="messages"></div>
   <div class="typing-bar" id="typingBar"></div>
   <div class="emoji-picker" id="emojiPicker"></div>
+
   <div class="input-bar">
     <button class="emoji-btn" onclick="toggleEmoji()"><i class="far fa-smile"></i></button>
-    <input id="msg" placeholder="Mesaj yaz..." maxlength="500" />
-    <button class="send-btn" id="sendBtn" onclick="send()"><i class="fas fa-paper-plane"></i></button>
+    <span class="editing-label" id="editLabel" style="display:none">Duzenleniyor</span>
+    <button class="cancel-btn" id="cancelEdit" style="display:none" onclick="cancelEdit()"><i class="fas fa-times"></i></button>
+    <input id="msg" placeholder="Mesaj yaz... veya /help" maxlength="500" />
+    <button class="send-btn" id="sendBtn" onclick="send()">
+      <i class="fas fa-paper-plane"></i>
+      <span id="sendText">Gonder</span>
+    </button>
   </div>
 </main>
 
 <script>
 const API = "/api/messages";
-let userId = null, nick = "";
-let failCount = 0;          // arka arkaya basarisiz istek sayisi
-let connected = true;       // baglanti durumu
-let reconnectTimer = null;  // yeniden baglanma zamlayici
-let loadInterval = null;    // polling interval
-let heartbeatInterval = null;
-const MAX_FAIL = 3;         // bu sayiya ulasinca kopuk say
-const POLL_MS = 2000;
-const HEARTBEAT_MS = 5000;
-const RECONNECT_MS = 4000;  // otomatik yeniden baglanma suresi
+const ROOM_ID = "genel";
+const REACT_EMOJIS = ["👍","❤️","😂","🔥","😮"];
 
-/* ========== CACHE ========== */
-let cachedMessages = [];
-let cachedUsers = [];
-// API basarisiz olursa eski veriyi koru, UI'i bosaltma
+let userId = null, nick = "", isMuted = false;
+let editingId = null;
+let failCount = 0, connected = true;
+let reconnectTimer = null, loadInterval = null, heartbeatInterval = null;
+const MAX_FAIL = 3, POLL_MS = 2000, HEARTBEAT_MS = 5000, RECONNECT_MS = 4000;
 
-/* ========== EMOJI ========== */
-const EMOJIS = ["😀","😂","😍","🔥","👍","❤️","😎","🎉","💯","🙄","😢","🤔","👀","✨","🚀","👋","😅","🥳","💀","🙏"];
+let cachedMessages = [], cachedUsers = [];
+
+/* ========== EMOJI PICKER ========== */
+const EMOJIS = ["😀","😂","😍","🔥","👍","❤️","😎","🎉","💯","🙄","😢","🤔","👀","✨","🚀","👋","😅","🥳","💀","🙏","🤝","💪","🫡","🥰"];
 const ep = document.getElementById("emojiPicker");
 EMOJIS.forEach(e => {
-  const b = document.createElement("button");
-  b.textContent = e;
+  const b = document.createElement("button"); b.textContent = e;
   b.onclick = () => { document.getElementById("msg").value += e; toggleEmoji(); };
   ep.appendChild(b);
 });
 function toggleEmoji() { ep.classList.toggle("open"); }
 
 /* ========== MODAL ========== */
-function handleJoin() {
+async function handleJoin() {
   const v = document.getElementById("nickInput").value.trim();
-  if (!v) { document.getElementById("modalErr").textContent = "Nick bos birakilamaz!"; return; }
-  if (v.length < 2) { document.getElementById("modalErr").textContent = "En az 2 karakter!"; return; }
-  nick = v;
-  document.getElementById("modalOverlay").style.display = "none";
-  initChat();
+  const errEl = document.getElementById("modalErr");
+  if (!v || v.length < 2) { errEl.textContent = "En az 2 karakter!"; return; }
+
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "join", name: v, roomId: ROOM_ID })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      errEl.textContent = data.error || "Katilma basarisiz";
+      return;
+    }
+
+    userId = data.userId;
+    nick = data.userName;
+    document.getElementById("modalOverlay").style.display = "none";
+    initChat();
+  } catch (e) {
+    errEl.textContent = "Sunucuya baglanilamiyor!";
+  }
 }
 document.getElementById("nickInput").addEventListener("keydown", e => { if (e.key === "Enter") handleJoin(); });
 
 /* ========== INIT ========== */
-async function initChat() {
-  const ok = await joinRoom();
-  if (!ok) {
-    setConn("offline", "Sunucuya baglanilamiyor");
-    scheduleReconnect();
-    return;
-  }
+function initChat() {
   setConn("online");
   toast("Sohbete baglandiniz!", "ok");
   startPolling();
   startHeartbeat();
 }
 
-/* ========== JOIN ========== */
-async function joinRoom() {
-  try {
-    const res = await fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "join", name: nick, roomId: "genel" })
-    });
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    userId = data.userId;
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
 /* ========== POLLING ========== */
-function startPolling() {
-  clearInterval(loadInterval);
-  loadInterval = setInterval(load, POLL_MS);
-  load(); // hemen bir kere cek
-}
-function stopPolling() {
-  clearInterval(loadInterval);
-  loadInterval = null;
-}
+function startPolling() { clearInterval(loadInterval); loadInterval = setInterval(load, POLL_MS); load(); }
+function stopPolling() { clearInterval(loadInterval); loadInterval = null; }
 
-/* ========== LOAD (ANA VERI CEKME) ========== */
+/* ========== LOAD ========== */
 async function load() {
   try {
-    const res = await fetch(API + "?roomId=genel");
+    const res = await fetch(API + "?roomId=" + ROOM_ID);
     if (!res.ok) throw new Error("HTTP " + res.status);
     const data = await res.json();
 
-    // basarili — cache'i guncelle
     if (data.messages && data.messages.length > 0) cachedMessages = data.messages;
     if (data.users && data.users.length > 0) cachedUsers = data.users;
 
     renderMsgs(cachedMessages);
     renderUsers(cachedUsers);
+    renderTyping(data.typing || []);
 
-    // baglantiyi kurtar
-    if (!connected) {
-      setConn("online");
-      toast("Baglanti yeniden kuruldu", "ok");
-    }
+    if (!connected) { setConn("online"); toast("Baglanti yeniden kuruldu", "ok"); }
     failCount = 0;
   } catch (e) {
     failCount++;
@@ -269,9 +277,8 @@ async function load() {
       stopPolling();
       scheduleReconnect();
     } else if (failCount === 1) {
-      setConn("reconnecting", "Baglanti sorunlu, yeniden deneniyor...");
+      setConn("reconnecting", "Baglanti sorunlu...");
     }
-    // basarisiz ama hala cache'ten goster
     renderMsgs(cachedMessages);
     renderUsers(cachedUsers);
   }
@@ -283,145 +290,151 @@ function startHeartbeat() {
   heartbeatInterval = setInterval(async () => {
     if (!userId) return;
     try {
-      await fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "heartbeat", userId })
-      });
-    } catch (e) { /* sessiz — load zaten handle eder */ }
+      await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "heartbeat", userId }) });
+    } catch (e) {}
   }, HEARTBEAT_MS);
 }
 
 /* ========== RECONNECT ========== */
-function scheduleReconnect() {
-  clearTimeout(reconnectTimer);
-  reconnectTimer = setTimeout(() => reconnect(), RECONNECT_MS);
-}
+function scheduleReconnect() { clearTimeout(reconnectTimer); reconnectTimer = setTimeout(reconnect, RECONNECT_MS); }
 
 async function reconnect() {
   setConn("reconnecting", "Yeniden baglaniyor...");
-  // userId hala varsa tekrar join atmadan once heartbeat dene
-  if (userId) {
-    try {
-      const res = await fetch(API + "?roomId=genel");
-      if (res.ok) {
-        connected = true;
-        failCount = 0;
-        setConn("online");
-        startPolling();
-        startHeartbeat();
-        toast("Baglanti yeniden kuruldu", "ok");
-        return;
-      }
-    } catch (e) {}
-  }
-  // userId yoksa veya istek basarisizsa tekrar join
-  const ok = await joinRoom();
-  if (ok) {
-    connected = true;
-    failCount = 0;
-    setConn("online");
-    startPolling();
-    startHeartbeat();
-    toast("Sohbete tekrar baglandiniz", "ok");
-  } else {
-    scheduleReconnect(); // tekrar dene
-  }
+  try {
+    const res = await fetch(API + "?roomId=" + ROOM_ID);
+    if (res.ok) {
+      connected = true; failCount = 0; setConn("online");
+      startPolling(); startHeartbeat();
+      toast("Baglanti yeniden kuruldu", "ok");
+      return;
+    }
+  } catch (e) {}
+  /* userId hala gecerli mi dene */
+  try {
+    const res = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "heartbeat", userId }) });
+    if (res.ok) { connected = true; failCount = 0; setConn("online"); startPolling(); startHeartbeat(); return; }
+  } catch (e) {}
+  scheduleReconnect();
 }
+function manualReconnect() { clearTimeout(reconnectTimer); reconnect(); }
 
-function manualReconnect() {
-  clearTimeout(reconnectTimer);
-  reconnect();
-}
-
-/* ========== BAGLANTI DURUMU UI ========== */
+/* ========== CONN STATUS ========== */
 function setConn(state, text) {
-  const bar = document.getElementById("connBar");
-  const icon = document.getElementById("connIcon");
-  const txt = document.getElementById("connText");
-  const inp = document.getElementById("msg");
-  const btn = document.getElementById("sendBtn");
-
+  const bar = document.getElementById("connBar"), icon = document.getElementById("connIcon"), txt = document.getElementById("connText");
+  const inp = document.getElementById("msg"), btn = document.getElementById("sendBtn");
   bar.className = "conn-bar";
-
-  if (state === "online") {
-    connected = true;
-    bar.classList.remove("show");
-    inp.disabled = false;
-    btn.disabled = false;
-  } else if (state === "reconnecting") {
-    connected = false;
-    bar.classList.add("show", "reconnecting");
-    icon.className = "fas fa-spinner fa-spin";
-    txt.textContent = text || "Yeniden baglaniyor...";
-    inp.disabled = true;
-    btn.disabled = true;
-  } else if (state === "offline") {
-    connected = false;
-    bar.classList.add("show", "offline");
-    icon.className = "fas fa-exclamation-triangle";
-    txt.textContent = text || "Baglanti koptu";
-    inp.disabled = true;
-    btn.disabled = true;
-  }
+  if (state === "online") { connected = true; bar.classList.remove("show"); inp.disabled = isMuted; btn.disabled = isMuted; }
+  else if (state === "reconnecting") { connected = false; bar.classList.add("show","reconnecting"); icon.className = "fas fa-spinner fa-spin"; txt.textContent = text; inp.disabled = true; btn.disabled = true; }
+  else if (state === "offline") { connected = false; bar.classList.add("show","offline"); icon.className = "fas fa-exclamation-triangle"; txt.textContent = text; inp.disabled = true; btn.disabled = true; }
 }
 
 /* ========== RENDER MESAJLAR ========== */
 function renderMsgs(msgs) {
   const box = document.getElementById("messages");
-  const wasBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60;
+  const wasBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
   box.innerHTML = "";
 
-  if (msgs.length === 0) {
-    box.innerHTML = '<div class="msg system">Henuz mesaj yok. Ilk mesaji sen yaz!</div>';
-    return;
-  }
+  if (msgs.length === 0) { box.innerHTML = '<div class="msg system">Henuz mesaj yok. Ilk mesaji sen yaz!</div>'; return; }
 
   msgs.forEach(m => {
     const div = document.createElement("div");
+
+    /* Sistem mesaji */
     if (m.type === "system") {
-      div.className = "msg system";
-      div.textContent = m.text;
-      box.appendChild(div);
-      return;
+      div.className = "msg system"; div.textContent = m.text; box.appendChild(div); return;
     }
+
+    /* Bot mesaji */
+    if (m.userId === "__bot__") {
+      div.className = "msg bot";
+      div.innerHTML = `
+        <div class="msg-head"><span class="bot-tag">BOT</span><b>${esc(m.userName)}</b><span class="msg-time">${fmtTime(m.createdAt)}</span></div>
+        <div class="msg-text">${esc(m.text)}</div>`;
+      box.appendChild(div); return;
+    }
+
     const self = m.userId === userId;
     div.className = "msg " + (self ? "self" : "other");
-    const t = m.createdAt ? new Date(m.createdAt).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) : "";
+
+    /* Aksiyon butonlari (sadece kendi mesajlarin) */
+    let actionsHtml = "";
+    if (self) {
+      actionsHtml = `<div class="msg-actions">
+        ${REACT_EMOJIS.map(e => `<button onclick="react('${m.id}','${e}')" title="${e}">${e}</button>`).join("")}
+        <button onclick="startEdit('${m.id}',\`${escAttr(m.text)}\`)" title="Duzenle"><i class="fas fa-pen"></i></button>
+        <button class="del" onclick="deleteMsg('${m.id}')" title="Sil"><i class="fas fa-trash"></i></button>
+      </div>`;
+    } else {
+      actionsHtml = `<div class="msg-actions">
+        ${REACT_EMOJIS.map(e => `<button onclick="react('${m.id}','${e}')" title="${e}">${e}</button>`).join("")}
+      </div>`;
+    }
+
+    /* Reaksiyonlar */
+    let reactionsHtml = "";
+    if (m.reactions && Object.keys(m.reactions).length > 0) {
+      reactionsHtml = '<div class="msg-reactions">';
+      for (const [emoji, uids] of Object.entries(m.reactions)) {
+        const active = uids.includes(userId) ? "active" : "";
+        reactionsHtml += `<button class="reaction-btn ${active}" onclick="react('${m.id}','${emoji}')">${emoji}<span class="count">${uids.length}</span></button>`;
+      }
+      reactionsHtml += '</div>';
+    }
+
+    const editedTag = m.editedAt ? '<span class="msg-edited">(duzenlendi)</span>' : "";
+
     div.innerHTML = `
+      ${actionsHtml}
       <div class="msg-head">
         <b>${esc(m.userName || "?")}</b>
         ${self ? '<span class="user-you">sen</span>' : ''}
-        <span class="msg-time">${t}</span>
+        <span class="msg-time">${fmtTime(m.createdAt)}</span>
+        ${editedTag}
       </div>
-      <div class="msg-text">${esc(m.text)}</div>`;
+      <div class="msg-text">${esc(m.text)}</div>
+      ${reactionsHtml}`;
+
     box.appendChild(div);
   });
 
   if (wasBottom) box.scrollTop = box.scrollHeight;
 }
 
+function fmtTime(ts) { return ts ? new Date(ts).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) : ""; }
 function esc(t) { return t ? t.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;") : ""; }
+function escAttr(t) { return t ? t.replaceAll("\\","\\\\").replaceAll("`","\\`").replaceAll("$","\\$") : ""; }
 
 /* ========== RENDER KULLANICILAR ========== */
 function renderUsers(users) {
   const box = document.getElementById("users");
-  const now = Date.now(), ACT = 20000;
+  const now = Date.now(), ACT = 15000;
   const active = users.filter(u => now - (u.lastSeen || 0) < ACT);
   document.getElementById("onlineCount").textContent = active.length;
   box.innerHTML = '<div class="users-title">Cevrimici</div>';
-
-  if (active.length === 0) {
-    box.innerHTML += '<div style="font-size:12px;color:var(--muted);padding:8px">Henuz kimse yok</div>';
-    return;
-  }
-
+  if (active.length === 0) { box.innerHTML += '<div style="font-size:12px;color:var(--muted);padding:8px">Henuz kimse yok</div>'; return; }
   active.forEach(u => {
-    const d = document.createElement("div");
-    d.className = "user";
-    d.innerHTML = `<span class="dot"></span><span class="user-name">${esc(u.name)}</span>${u.userId === userId ? '<span class="user-you">SEN</span>' : ''}`;
+    const d = document.createElement("div"); d.className = "user";
+    const mutedTag = isUserMuted(u.id) ? '<span class="user-muted">MUTE</span>' : '';
+    d.innerHTML = `<span class="dot on"></span><span class="user-name">${esc(u.name)}</span>${u.id===userId?'<span class="user-you">SEN</span>':''}${mutedTag}`;
     box.appendChild(d);
   });
+}
+
+/* ========== RENDER TYPING ========== */
+function renderTyping(names) {
+  const bar = document.getElementById("typingBar");
+  const filtered = names.filter(n => n !== nick);
+  if (filtered.length === 0) { bar.innerHTML = ""; return; }
+  let text = "";
+  if (filtered.length === 1) text = filtered[0] + " yaziyor...";
+  else if (filtered.length === 2) text = filtered.join(" ve ") + " yaziyor...";
+  else text = filtered.length + " kisi yaziyor...";
+  bar.innerHTML = `<span class="typing-dots"><span></span><span></span><span></span></span> ${esc(text)}`;
+}
+
+function isUserMuted(uid) {
+  /* Backend'de muted listesi gelmiyor ama statik kontrol icin */
+  return false;
 }
 
 /* ========== SEND ========== */
@@ -430,66 +443,110 @@ async function send() {
   const inp = document.getElementById("msg");
   const text = inp.value.trim();
   if (!text) return;
+
+  /* Duzenleme modu */
+  if (editingId) {
+    try {
+      const res = await fetch(API, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editingId, text, userId })
+      });
+      if (!res.ok) { const d = await res.json(); toast(d.error || "Duzenleme basarisiz", "err"); return; }
+      cancelEdit();
+      load();
+    } catch (e) { toast("Baglanti hatasi", "err"); }
+    return;
+  }
+
   inp.value = "";
   ep.classList.remove("open");
 
   try {
-    await fetch(API, {
+    const res = await fetch(API, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "message", userId, text, roomId: "genel" })
+      body: JSON.stringify({ type: "message", userId, text, roomId: ROOM_ID })
     });
-    load(); // hemen guncelle
+    const data = await res.json();
+
+    if (res.status === 403 && data.error?.includes("Susturuldunuz")) {
+      isMuted = true;
+      document.getElementById("mutedWarn").classList.add("show");
+      document.getElementById("msg").disabled = true;
+      document.getElementById("sendBtn").disabled = true;
+      toast("Susturuldunuz, mesaj gonderemezsiniz", "err");
+      return;
+    }
+    if (res.status === 429) { toast("Cok hizli yaziyorsunuz, yavaslayin", "warn"); return; }
+    if (!res.ok) { toast(data.error || "Mesaj gonderilemedi", "err"); return; }
+
+    load();
   } catch (e) {
-    // mesaj gonderilemedi — input'a geri koy
     inp.value = text;
-    toast("Mesaj gonderilemedi, tekrar deneyin", "err");
+    toast("Mesaj gonderilemedi", "err");
   }
 }
-document.getElementById("msg").addEventListener("keydown", e => {
-  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
-});
+document.getElementById("msg").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } });
+
+/* ========== EDIT ========== */
+function startEdit(id, text) {
+  editingId = id;
+  const inp = document.getElementById("msg");
+  inp.value = text.replace(/\\`/g, "`").replace(/\\\$/g, "$").replace(/\\\\/g, "\\");
+  inp.focus();
+  document.getElementById("editLabel").style.display = "inline";
+  document.getElementById("cancelEdit").style.display = "flex";
+  document.getElementById("sendText").textContent = "Kaydet";
+}
+function cancelEdit() {
+  editingId = null;
+  document.getElementById("msg").value = "";
+  document.getElementById("editLabel").style.display = "none";
+  document.getElementById("cancelEdit").style.display = "none";
+  document.getElementById("sendText").textContent = "Gonder";
+}
+
+/* ========== DELETE ========== */
+async function deleteMsg(id) {
+  try {
+    await fetch(API, { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, userId }) });
+    load();
+  } catch (e) { toast("Silinemedi", "err"); }
+}
+
+/* ========== REACTION ========== */
+async function react(messageId, emoji) {
+  try {
+    await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "reaction", userId, messageId, emoji }) });
+    load();
+  } catch (e) {}
+}
 
 /* ========== TYPING ========== */
 let tTO;
 document.getElementById("msg").addEventListener("input", () => {
   if (!userId || !connected) return;
-  try {
-    fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "typing", userId, roomId: "genel" })
-    });
-  } catch (e) {}
+  try { fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "typing", userId, roomId: ROOM_ID }) }); } catch (e) {}
   clearTimeout(tTO);
-  tTO = setTimeout(() => { document.getElementById("typingBar").innerHTML = ""; }, 1500);
 });
 
 /* ========== TOAST ========== */
 function toast(msg, type) {
   const wrap = document.getElementById("toastWrap");
-  const t = document.createElement("div");
-  t.className = "toast " + (type || "");
-  const iconCls = type === "err" ? "fas fa-times-circle" : type === "ok" ? "fas fa-check-circle" : "fas fa-info-circle";
-  t.innerHTML = `<i class="${iconCls}"></i>${esc(msg)}`;
+  const t = document.createElement("div"); t.className = "toast " + (type || "");
+  const icons = { err: "fas fa-times-circle", ok: "fas fa-check-circle", warn: "fas fa-exclamation-circle" };
+  t.innerHTML = `<i class="${icons[type] || "fas fa-info-circle"}"></i><span>${esc(msg)}</span>`;
   wrap.appendChild(t);
-  setTimeout(() => { t.style.opacity = "0"; t.style.transition = "opacity .3s"; setTimeout(() => t.remove(), 300); }, 3000);
+  setTimeout(() => { t.style.opacity = "0"; t.style.transition = "opacity .3s"; setTimeout(() => t.remove(), 300); }, 3500);
 }
 
-/* ========== SAYFA GORUNURLUK ========== */
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden && connected && !loadInterval) {
-    // sekmeye geri donduk ve polling durduysa yeniden baslat
-    startPolling();
-    load();
-  }
-});
+/* ========== SAYFA Visibility ========== */
+document.addEventListener("visibilitychange", () => { if (!document.hidden && connected && !loadInterval) { startPolling(); } });
 
-/* ========== BEFOREUNLOAD ========== */
+/* ========== LEAVE ========== */
 window.addEventListener("beforeunload", () => {
-  if (userId) {
-    navigator.sendBeacon(API, JSON.stringify({ type: "leave", userId, roomId: "genel" }));
-  }
+  if (userId) navigator.sendBeacon(API, JSON.stringify({ type: "leave", userId, roomId: ROOM_ID }));
 });
 </script>
 </body>
