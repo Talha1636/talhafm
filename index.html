@@ -3,179 +3,67 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NetTalk Ultra Pro</title>
+<title>NetTalk Stable Pro</title>
 
 <style>
-:root{
-  --bg:#0b0f14;
-  --panel:#111827;
-  --panel2:#0f172a;
-  --text:#e5e7eb;
-  --muted:#9ca3af;
-  --accent:#22c55e;
-  --danger:#ef4444;
-  --border:#1f2937;
-}
+body{margin:0;font-family:system-ui;background:#0b0f14;color:#fff;display:flex;height:100vh}
 
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:system-ui;
-  background:var(--bg);
-  color:var(--text);
-  height:100vh;
-  display:flex;
-}
-
-/* ================= SIDEBAR ================= */
+/* SIDEBAR */
 .sidebar{
-  width:280px;
-  background:var(--panel);
-  border-right:1px solid var(--border);
-  display:flex;
-  flex-direction:column;
+  width:260px;background:#111827;border-right:1px solid #222;
+  display:flex;flex-direction:column;
 }
+.sidebar h3{padding:10px;margin:0;border-bottom:1px solid #222}
+.users{flex:1;overflow:auto;padding:10px}
+.user{padding:6px;background:#0f172a;margin-bottom:4px;border-radius:6px;font-size:13px}
 
-.sidebar-header{
-  padding:14px;
-  border-bottom:1px solid var(--border);
-  font-weight:bold;
-}
-
-.user-list{
-  flex:1;
-  overflow:auto;
-  padding:10px;
-}
-
-.user{
-  padding:8px;
-  margin-bottom:4px;
-  background:#0f172a;
-  border-radius:6px;
-  cursor:pointer;
-  font-size:13px;
-  display:flex;
-  justify-content:space-between;
-}
-
-.user:hover{background:#1f2937}
-
-/* ================= MAIN ================= */
-.main{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-}
-
-.topbar{
-  padding:12px;
-  background:var(--panel2);
-  border-bottom:1px solid var(--border);
-  display:flex;
-  justify-content:space-between;
-}
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column}
+.top{padding:10px;background:#0f172a;border-bottom:1px solid #222}
 
 .messages{
-  flex:1;
-  overflow:auto;
-  padding:12px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
+  flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:6px;
 }
 
 .msg{
-  background:#111827;
-  padding:8px;
-  border-radius:8px;
-  font-size:14px;
-  display:flex;
-  justify-content:space-between;
+  background:#111827;padding:8px;border-radius:6px;font-size:14px;
+  display:flex;justify-content:space-between;
 }
 
-.msg span{color:var(--muted);font-size:11px}
+.msg small{color:#888;font-size:11px}
 
-/* INPUT */
 .input{
-  display:flex;
-  padding:10px;
-  background:var(--panel2);
-  border-top:1px solid var(--border);
+  display:flex;padding:10px;background:#0f172a;border-top:1px solid #222;
 }
 
 input{
-  flex:1;
-  padding:10px;
-  background:#111827;
-  border:none;
-  color:white;
-  border-radius:6px;
+  flex:1;padding:10px;background:#111827;border:none;color:#fff;border-radius:6px;
 }
 
 button{
-  margin-left:8px;
-  padding:10px 14px;
-  background:var(--accent);
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  font-weight:bold;
+  margin-left:8px;padding:10px 14px;background:#22c55e;border:none;
+  border-radius:6px;font-weight:bold;cursor:pointer;
 }
 
-/* ================= TYPING ================= */
 .typing{
-  font-size:12px;
-  color:var(--muted);
-  padding:4px 10px;
-}
-
-/* ================= MODAL ================= */
-.modal-bg{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.6);
-  display:none;
-  align-items:center;
-  justify-content:center;
-}
-
-.modal{
-  width:320px;
-  background:var(--panel);
-  padding:16px;
-  border-radius:10px;
-  border:1px solid var(--border);
-}
-
-.modal h3{margin-bottom:10px}
-.modal p{color:var(--muted);font-size:13px}
-
-.modal button{
-  width:100%;
-  margin-top:10px;
-}
-
-/* ================= MOBILE ================= */
-@media(max-width:768px){
-  .sidebar{width:200px}
+  font-size:12px;color:#888;padding:4px 10px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
+<!-- USERS -->
 <div class="sidebar">
-  <div class="sidebar-header">🟢 Online Users</div>
-  <div class="user-list" id="users"></div>
+  <h3>🟢 Online</h3>
+  <div class="users" id="users"></div>
 </div>
 
-<!-- MAIN -->
+<!-- CHAT -->
 <div class="main">
 
-  <div class="topbar">
-    <b>NetTalk Ultra</b>
-    <span id="onlineCount">0 online</span>
+  <div class="top">
+    NetTalk Stable Chat
   </div>
 
   <div class="messages" id="messages"></div>
@@ -189,22 +77,13 @@ button{
 
 </div>
 
-<!-- MODAL -->
-<div class="modal-bg" id="modal">
-  <div class="modal">
-    <h3 id="mName">User</h3>
-    <p id="mInfo">Info</p>
-    <button onclick="closeModal()">Kapat</button>
-  </div>
-</div>
-
 <script>
 
 const API = "/api/messages";
 
 let userId = null;
-let nick = prompt("Nick:");
-let selectedUser = null;
+let nick = prompt("Nick gir:");
+const MESSAGE_LIFETIME = 5 * 60 * 1000; // 5 dakika
 
 /* ================= JOIN ================= */
 async function join(){
@@ -229,13 +108,14 @@ async function load(){
 
   renderMessages(data.messages);
   renderUsers(data.users);
-  renderTyping(data.typing || []);
 }
 
-/* ================= CLEAN OLD ================= */
-function cleanMessages(msgs){
-  // sadece son 50 mesaj
-  return msgs.slice(-50);
+/* ================= FILTER (5 DK) ================= */
+function filterMessages(msgs){
+  const now = Date.now();
+  return msgs.filter(m=>{
+    return now - (m.createdAt || now) < MESSAGE_LIFETIME;
+  });
 }
 
 /* ================= MESSAGES ================= */
@@ -243,7 +123,7 @@ function renderMessages(msgs){
   const box = document.getElementById("messages");
   box.innerHTML = "";
 
-  msgs = cleanMessages(msgs);
+  msgs = filterMessages(msgs);
 
   msgs.forEach(m=>{
     const div = document.createElement("div");
@@ -251,7 +131,8 @@ function renderMessages(msgs){
 
     div.innerHTML = `
       <b>${m.userName || "?"}</b>
-      <span>${new Date(m.createdAt||Date.now()).toLocaleTimeString()}</span>
+      <span>${m.text}</span>
+      <small>${new Date(m.createdAt).toLocaleTimeString()}</small>
     `;
 
     box.appendChild(div);
@@ -265,29 +146,20 @@ function renderUsers(users){
   const box = document.getElementById("users");
   box.innerHTML = "";
 
-  users = users.slice(-20); // auto clean list
+  const now = Date.now();
+  const ACTIVE_TIME = 15000; // 15 sn
 
-  document.getElementById("onlineCount").textContent = users.length + " online";
+  // ❗ SADECE AKTİF KULLANICILAR
+  const active = users.filter(u=>{
+    return now - (u.lastSeen || 0) < ACTIVE_TIME;
+  });
 
-  users.forEach(u=>{
+  active.forEach(u=>{
     const div = document.createElement("div");
     div.className="user";
-
-    div.innerHTML = `
-      <span>${u.name}</span>
-      <small>i</small>
-    `;
-
-    div.onclick = ()=>openModal(u);
-
+    div.textContent = u.name + " 🟢";
     box.appendChild(div);
   });
-}
-
-/* ================= TYPING ================= */
-function renderTyping(list){
-  document.getElementById("typing").textContent =
-    list.length ? list.join(", ") + " yazıyor..." : "";
 }
 
 /* ================= SEND ================= */
@@ -341,25 +213,8 @@ document.getElementById("msg").addEventListener("input",()=>{
   });
 });
 
-/* ================= MODAL ================= */
-function openModal(u){
-  selectedUser = u;
-
-  document.getElementById("mName").textContent = u.name;
-  document.getElementById("mInfo").textContent =
-    "Status: " + (u.status || "online");
-
-  document.getElementById("modal").style.display="flex";
-}
-
-function closeModal(){
-  document.getElementById("modal").style.display="none";
-}
-
-/* ================= AUTO CLEAN UI ================= */
-setInterval(()=>{
-  load();
-},2000);
+/* ================= AUTO REFRESH ================= */
+setInterval(load,2000);
 
 /* ================= INIT ================= */
 (async function(){
