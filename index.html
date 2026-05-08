@@ -1,71 +1,100 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>IRC Chat</title>
 
 <style>
 body {
-  background: #000;
-  color: #00ff00;
-  font-family: monospace;
   margin: 0;
+  background: #0d1117;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono";
+  color: #e6edf3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
+/* container */
 .container {
-  width: 600px;
-  margin: 30px auto;
-  border: 1px solid #00ff00;
-  padding: 10px;
-  box-shadow: 0 0 10px #00ff00;
+  width: 90%;
+  max-width: 720px;
+  height: 85vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  background: #161b22;
+  box-shadow: 0 0 30px rgba(0,255,120,0.15);
+  overflow: hidden;
 }
 
+/* header */
 .header {
-  border-bottom: 1px solid #00ff00;
-  padding-bottom: 5px;
-  margin-bottom: 10px;
+  padding: 14px;
   text-align: center;
+  font-weight: bold;
+  background: #0d1117;
+  border-bottom: 1px solid #30363d;
+  color: #00ff9d;
 }
 
+/* chat area */
 #chat {
-  height: 400px;
+  flex: 1;
   overflow-y: auto;
-  margin-bottom: 10px;
-  padding-right: 5px;
+  padding: 12px;
 }
 
 .msg {
-  margin: 3px 0;
+  margin: 6px 0;
+  padding: 8px 10px;
+  background: #0d1117;
+  border-radius: 8px;
+  border: 1px solid #30363d;
 }
 
 .user {
-  color: #00ffff;
+  color: #58a6ff;
+  font-weight: bold;
 }
 
+/* input area */
 .input {
   display: flex;
-  gap: 5px;
+  padding: 10px;
+  gap: 8px;
+  border-top: 1px solid #30363d;
+  background: #0d1117;
 }
 
 input {
   flex: 1;
-  background: black;
-  color: #00ff00;
-  border: 1px solid #00ff00;
-  padding: 6px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #30363d;
+  background: #161b22;
+  color: #e6edf3;
   outline: none;
 }
 
+input:focus {
+  border-color: #00ff9d;
+}
+
 button {
-  background: #00ff00;
+  padding: 10px 16px;
   border: none;
+  border-radius: 8px;
+  background: #00ff9d;
+  color: #0d1117;
+  font-weight: bold;
   cursor: pointer;
-  color: black;
-  padding: 6px 10px;
 }
 
 button:hover {
-  background: #00cc00;
+  background: #00d17d;
 }
 </style>
 </head>
@@ -73,45 +102,60 @@ button:hover {
 <body>
 
 <div class="container">
-  <div class="header">IRC Terminal Chat</div>
+  <div class="header">IRC Terminal Chat (Modern UI)</div>
 
   <div id="chat"></div>
 
   <div class="input">
-    <input id="user" placeholder="nick">
-    <input id="text" placeholder="mesaj yaz... (/clear)">
+    <input id="user" placeholder="nick" />
+    <input id="text" placeholder="mesaj yaz... (/clear)" />
     <button onclick="send()">Gönder</button>
   </div>
 </div>
 
 <script>
 async function load() {
-  const res = await fetch("/api/messages");
-  const data = await res.json();
+  try {
+    const res = await fetch("/api/messages");
+    const data = await res.json();
 
-  const chat = document.getElementById("chat");
-  chat.innerHTML = "";
+    const chat = document.getElementById("chat");
+    chat.innerHTML = "";
 
-  data.forEach(m => {
-    const div = document.createElement("div");
-    div.className = "msg";
-    div.innerHTML = `<span class="user">${m.user}:</span> ${m.text}`;
-    chat.appendChild(div);
-  });
+    data.forEach(m => {
+      const div = document.createElement("div");
+      div.className = "msg";
+      div.innerHTML = `<span class="user">${escapeHtml(m.user)}:</span> ${escapeHtml(m.text)}`;
+      chat.appendChild(div);
+    });
 
-  chat.scrollTop = chat.scrollHeight;
+    chat.scrollTop = chat.scrollHeight;
+  } catch (err) {
+    console.error("Load error:", err);
+  }
+}
+
+/* XSS koruması */
+function escapeHtml(str) {
+  return str
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
 }
 
 async function send() {
-  const user = document.getElementById("user").value;
-  const text = document.getElementById("text").value;
+  const user = document.getElementById("user").value.trim();
+  const text = document.getElementById("text").value.trim();
 
   if (!user || !text) return;
 
-  // 🧨 /clear komutu
+  // /clear komutu
   if (text === "/clear") {
-    await fetch("/api/messages", {
-      method: "DELETE"
+    const ok = confirm("Tüm mesajlar silinsin mi?");
+    if (!ok) return;
+
+    await fetch("/api/messages/clear", {
+      method: "POST"
     });
 
     document.getElementById("text").value = "";
@@ -121,7 +165,7 @@ async function send() {
 
   await fetch("/api/messages", {
     method: "POST",
-    headers: {"Content-Type": "application/json"},
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ user, text })
   });
 
@@ -129,8 +173,8 @@ async function send() {
   load();
 }
 
-setInterval(load, 2000);
 load();
+setInterval(load, 2000);
 </script>
 
 </body>
