@@ -6,65 +6,141 @@
 <title>NetTalk Stable Pro</title>
 
 <style>
-body{margin:0;font-family:system-ui;background:#0b0f14;color:#fff;display:flex;height:100vh}
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui;
+  background:#0b0f14;
+  color:#fff;
+  display:flex;
+  height:100vh;
+}
 
 /* SIDEBAR */
 .sidebar{
-  width:260px;background:#111827;border-right:1px solid #222;
-  display:flex;flex-direction:column;
+  width:260px;
+  background:#0f172a;
+  border-right:1px solid #1f2937;
+  display:flex;
+  flex-direction:column;
 }
-.sidebar h3{padding:10px;margin:0;border-bottom:1px solid #222}
-.users{flex:1;overflow:auto;padding:10px}
-.user{padding:6px;background:#0f172a;margin-bottom:4px;border-radius:6px;font-size:13px}
+
+.sidebar h3{
+  margin:0;
+  padding:12px;
+  border-bottom:1px solid #1f2937;
+}
+
+.users{
+  flex:1;
+  overflow:auto;
+  padding:10px;
+}
+
+.user{
+  padding:8px;
+  background:#111827;
+  margin-bottom:6px;
+  border-radius:8px;
+  font-size:13px;
+}
 
 /* MAIN */
-.main{flex:1;display:flex;flex-direction:column}
-.top{padding:10px;background:#0f172a;border-bottom:1px solid #222}
+.main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
 
+.top{
+  padding:12px;
+  background:#0f172a;
+  border-bottom:1px solid #1f2937;
+  font-weight:600;
+}
+
+/* MESSAGES */
 .messages{
-  flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:6px;
+  flex:1;
+  overflow:auto;
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
 }
 
 .msg{
-  background:#111827;padding:8px;border-radius:6px;font-size:14px;
-  display:flex;justify-content:space-between;
+  background:#111827;
+  padding:10px;
+  border-radius:10px;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
 }
 
-.msg small{color:#888;font-size:11px}
+.msg-header{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  color:#9ca3af;
+}
 
+.msg-text{
+  font-size:14px;
+  word-break:break-word;
+}
+
+/* INPUT */
 .input{
-  display:flex;padding:10px;background:#0f172a;border-top:1px solid #222;
+  display:flex;
+  padding:10px;
+  background:#0f172a;
+  border-top:1px solid #1f2937;
 }
 
 input{
-  flex:1;padding:10px;background:#111827;border:none;color:#fff;border-radius:6px;
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background:#111827;
+  color:#fff;
+  outline:none;
 }
 
 button{
-  margin-left:8px;padding:10px 14px;background:#22c55e;border:none;
-  border-radius:6px;font-weight:bold;cursor:pointer;
+  margin-left:8px;
+  padding:12px 16px;
+  border:none;
+  border-radius:8px;
+  background:#22c55e;
+  font-weight:bold;
+  cursor:pointer;
 }
 
+/* typing */
 .typing{
-  font-size:12px;color:#888;padding:4px 10px;
+  font-size:12px;
+  color:#9ca3af;
+  padding:6px 12px;
+  min-height:20px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- USERS -->
+<!-- SIDEBAR -->
 <div class="sidebar">
   <h3>🟢 Online</h3>
   <div class="users" id="users"></div>
 </div>
 
-<!-- CHAT -->
+<!-- MAIN -->
 <div class="main">
 
-  <div class="top">
-    NetTalk Stable Chat
-  </div>
+  <div class="top">NetTalk Stable Chat</div>
 
   <div class="messages" id="messages"></div>
 
@@ -82,8 +158,7 @@ button{
 const API = "/api/messages";
 
 let userId = null;
-let nick = prompt("Nick gir:");
-const MESSAGE_LIFETIME = 5 * 60 * 1000; // 5 dakika
+let nick = prompt("Nick gir:") || "Anon";
 
 /* ================= JOIN ================= */
 async function join(){
@@ -106,16 +181,8 @@ async function load(){
   const res = await fetch(API+"?roomId=genel");
   const data = await res.json();
 
-  renderMessages(data.messages);
-  renderUsers(data.users);
-}
-
-/* ================= FILTER (5 DK) ================= */
-function filterMessages(msgs){
-  const now = Date.now();
-  return msgs.filter(m=>{
-    return now - (m.createdAt || now) < MESSAGE_LIFETIME;
-  });
+  renderMessages(data.messages || []);
+  renderUsers(data.users || []);
 }
 
 /* ================= MESSAGES ================= */
@@ -123,16 +190,20 @@ function renderMessages(msgs){
   const box = document.getElementById("messages");
   box.innerHTML = "";
 
-  msgs = filterMessages(msgs);
-
   msgs.forEach(m=>{
     const div = document.createElement("div");
     div.className = "msg";
 
+    const time = m.createdAt
+      ? new Date(m.createdAt).toLocaleTimeString()
+      : "";
+
     div.innerHTML = `
-      <b>${m.userName || "?"}</b>
-      <span>${m.text}</span>
-      <small>${new Date(m.createdAt).toLocaleTimeString()}</small>
+      <div class="msg-header">
+        <b>${m.userName || "?"}</b>
+        <span>${time}</span>
+      </div>
+      <div class="msg-text">${escapeHtml(m.text)}</div>
     `;
 
     box.appendChild(div);
@@ -141,25 +212,30 @@ function renderMessages(msgs){
   box.scrollTop = box.scrollHeight;
 }
 
+/* XSS güvenliği */
+function escapeHtml(text){
+  return text
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;");
+}
+
 /* ================= USERS ================= */
 function renderUsers(users){
   const box = document.getElementById("users");
   box.innerHTML = "";
 
   const now = Date.now();
-  const ACTIVE_TIME = 15000; // 15 sn
+  const ACTIVE = 20000;
 
-  // ❗ SADECE AKTİF KULLANICILAR
-  const active = users.filter(u=>{
-    return now - (u.lastSeen || 0) < ACTIVE_TIME;
-  });
-
-  active.forEach(u=>{
-    const div = document.createElement("div");
-    div.className="user";
-    div.textContent = u.name + " 🟢";
-    box.appendChild(div);
-  });
+  users
+    .filter(u => now - (u.lastSeen || 0) < ACTIVE)
+    .forEach(u=>{
+      const div = document.createElement("div");
+      div.className="user";
+      div.textContent = "🟢 " + u.name;
+      box.appendChild(div);
+    });
 }
 
 /* ================= SEND ================= */
@@ -168,7 +244,7 @@ async function send(){
   const text = input.value.trim();
   if(!text) return;
 
-  input.value="";
+  input.value = "";
 
   await fetch(API,{
     method:"POST",
@@ -199,6 +275,8 @@ setInterval(()=>{
 },5000);
 
 /* ================= TYPING ================= */
+let typingTimeout;
+
 document.getElementById("msg").addEventListener("input",()=>{
   if(!userId) return;
 
@@ -211,6 +289,11 @@ document.getElementById("msg").addEventListener("input",()=>{
       roomId:"genel"
     })
   });
+
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(()=>{
+    document.getElementById("typing").textContent = "";
+  },1000);
 });
 
 /* ================= AUTO REFRESH ================= */
