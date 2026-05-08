@@ -3,42 +3,124 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NetTalk Pro</title>
+<title>NetTalk Pro Chat</title>
 
 <style>
-body{margin:0;font-family:system-ui;background:#0b0f14;color:#fff;display:flex;height:100vh}
-.sidebar{width:240px;background:#111827;padding:10px;overflow:auto}
-.main{flex:1;display:flex;flex-direction:column}
-.top{padding:10px;background:#0f172a;border-bottom:1px solid #222}
-.messages{flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:6px}
-.msg{padding:6px 10px;background:#111827;border-radius:6px}
-.msg b{color:#4ade80}
-.input{display:flex;padding:10px;background:#0f172a}
-input{flex:1;padding:10px;background:#111827;border:none;color:#fff;border-radius:6px}
-button{margin-left:8px;padding:10px 14px;background:#22c55e;border:none;color:#000;font-weight:bold;border-radius:6px;cursor:pointer}
-.user{font-size:13px;padding:4px 0;color:#aaa}
-.typing{font-size:12px;color:#888;padding:4px 10px}
-.room{cursor:pointer;padding:6px;border-radius:6px}
-.room:hover{background:#1f2937}
-.active{background:#22c55e;color:#000}
+body{
+  margin:0;
+  font-family:system-ui;
+  background:#0b0f14;
+  color:#fff;
+  height:100vh;
+  display:flex;
+}
+
+/* SIDEBAR */
+.sidebar{
+  width:260px;
+  background:#111827;
+  display:flex;
+  flex-direction:column;
+  border-right:1px solid #222;
+}
+
+.sidebar h3{
+  padding:10px;
+  margin:0;
+  border-bottom:1px solid #222;
+}
+
+.users{
+  padding:10px;
+  overflow:auto;
+  flex:1;
+  font-size:13px;
+  color:#aaa;
+}
+
+/* MAIN */
+.main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+
+.topbar{
+  padding:12px;
+  background:#0f172a;
+  border-bottom:1px solid #222;
+  font-weight:bold;
+}
+
+.messages{
+  flex:1;
+  overflow:auto;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.msg{
+  background:#111827;
+  padding:8px 10px;
+  border-radius:8px;
+  font-size:14px;
+}
+
+.msg b{
+  color:#22c55e;
+}
+
+/* INPUT */
+.input{
+  display:flex;
+  padding:10px;
+  background:#0f172a;
+  border-top:1px solid #222;
+}
+
+input{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:6px;
+  background:#111827;
+  color:white;
+}
+
+button{
+  margin-left:8px;
+  padding:10px 14px;
+  background:#22c55e;
+  border:none;
+  border-radius:6px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* TYPING */
+.typing{
+  font-size:12px;
+  color:#888;
+  padding:4px 10px;
+}
 </style>
 </head>
 
 <body>
 
+<!-- SIDEBAR -->
 <div class="sidebar">
-  <h3>Rooms</h3>
-  <div id="rooms"></div>
-
-  <hr>
-
-  <h3>Users</h3>
-  <div id="users"></div>
+  <h3>🟢 Online Users</h3>
+  <div class="users" id="users"></div>
 </div>
 
+<!-- MAIN -->
 <div class="main">
-  <div class="top">
-    <b>NetTalk Pro</b> — <span id="roomName">genel</span>
+
+  <div class="topbar">
+    NetTalk Pro Chat
   </div>
 
   <div class="messages" id="messages"></div>
@@ -49,37 +131,27 @@ button{margin-left:8px;padding:10px 14px;background:#22c55e;border:none;color:#0
     <input id="msg" placeholder="Mesaj yaz..." />
     <button onclick="send()">Gönder</button>
   </div>
+
 </div>
 
 <script>
-const API = "/api/chat";
+/* ================= CONFIG ================= */
+const API = "/api/messages";
 
 let userId = null;
-let room = "genel";
-let nick = prompt("Nick?");
-let typingTimeout = null;
-
-/* ================= ROOMS ================= */
-const rooms = ["genel","teknoloji","oyun"];
-
-function renderRooms(){
-  const r = document.getElementById("rooms");
-  r.innerHTML = "";
-  rooms.forEach(x=>{
-    const d = document.createElement("div");
-    d.textContent = x;
-    d.className = "room " + (x===room?"active":"");
-    d.onclick = ()=>switchRoom(x);
-    r.appendChild(d);
-  });
-}
+let nick = prompt("Nick gir:");
+let typingTimer = null;
 
 /* ================= JOIN ================= */
 async function join(){
   const res = await fetch(API,{
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({type:"join",name:nick,roomId:room})
+    body:JSON.stringify({
+      type:"join",
+      name:nick,
+      roomId:"genel"
+    })
   });
 
   const data = await res.json();
@@ -88,12 +160,12 @@ async function join(){
 
 /* ================= LOAD ================= */
 async function load(){
-  const res = await fetch(API+"?roomId="+room);
+  const res = await fetch(API + "?roomId=genel");
   const data = await res.json();
 
   renderMessages(data.messages);
   renderUsers(data.users);
-  renderTyping(data.typing);
+  renderTyping(data.typing || []);
 }
 
 /* ================= MESSAGES ================= */
@@ -102,10 +174,11 @@ function renderMessages(msgs){
   box.innerHTML = "";
 
   msgs.forEach(m=>{
-    const d = document.createElement("div");
-    d.className = "msg";
-    d.innerHTML = `<b>${m.userName}:</b> ${m.text}`;
-    box.appendChild(d);
+    const div = document.createElement("div");
+    div.className = "msg";
+
+    div.innerHTML = `<b>${m.userName || "?"}:</b> ${m.text}`;
+    box.appendChild(div);
   });
 
   box.scrollTop = box.scrollHeight;
@@ -117,24 +190,19 @@ function renderUsers(users){
   box.innerHTML = "";
 
   users.forEach(u=>{
-    const d = document.createElement("div");
-    d.className="user";
-    d.textContent = u.name + (u.status==="online"?" 🟢":" ⚫");
-    box.appendChild(d);
+    const div = document.createElement("div");
+    div.textContent = u.name + (u.status==="online"?" 🟢":" ⚫");
+    box.appendChild(div);
   });
 }
 
 /* ================= TYPING ================= */
 function renderTyping(list){
-  const box = document.getElementById("typing");
-  if(!list || list.length===0){
-    box.textContent="";
-    return;
-  }
-  box.textContent = list.join(", ") + " yazıyor...";
+  document.getElementById("typing").textContent =
+    list.length ? list.join(", ") + " yazıyor..." : "";
 }
 
-/* ================= SEND ================= */
+/* ================= SEND MESSAGE ================= */
 async function send(){
   const input = document.getElementById("msg");
   const text = input.value.trim();
@@ -149,48 +217,47 @@ async function send(){
       type:"message",
       userId,
       text,
-      roomId:room
+      roomId:"genel"
     })
   });
 
   load();
 }
 
-/* ================= ROOM ================= */
-function switchRoom(r){
-  room = r;
-  document.getElementById("roomName").textContent = r;
-  renderRooms();
-  load();
-}
-
 /* ================= HEARTBEAT ================= */
 setInterval(()=>{
   if(!userId) return;
+
   fetch(API,{
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({type:"heartbeat",userId})
+    body:JSON.stringify({
+      type:"heartbeat",
+      userId
+    })
   });
 },5000);
 
-/* ================= TYPING ================= */
-document.getElementById("msg").addEventListener("input",(e)=>{
+/* ================= TYPING EVENT ================= */
+document.getElementById("msg").addEventListener("input",()=>{
   if(!userId) return;
 
   fetch(API,{
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({type:"typing",userId,roomId:room})
+    body:JSON.stringify({
+      type:"typing",
+      userId,
+      roomId:"genel"
+    })
   });
 
-  clearTimeout(typingTimeout);
-  typingTimeout = setTimeout(()=>{},1500);
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(()=>{},1000);
 });
 
 /* ================= INIT ================= */
 (async function(){
-  renderRooms();
   await join();
   load();
   setInterval(load,2000);
