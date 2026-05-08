@@ -8,7 +8,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#08090d;--sidebar:#0c0e16;--card:#12141f;--border:#1c2033;--accent:#00e68a;--accent2:#00b36b;--danger:#ff4757;--muted:#5a6080;--text:#e0e4f0;--radius:12px}
+:root{--bg:#08090d;--sidebar:#0c0e16;--card:#12141f;--border:#1c2033;--accent:#00e68a;--accent2:#00b36b;--danger:#ff4757;--warn:#ffa502;--muted:#5a6080;--text:#e0e4f0;--radius:12px}
 body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:9px}
 
@@ -26,6 +26,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .user{padding:10px 12px;border-radius:10px;font-size:13px;display:flex;align-items:center;gap:10px;margin-bottom:4px;transition:background .2s;cursor:default}
 .user:hover{background:var(--card)}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);flex-shrink:0}
+.dot.off{background:var(--muted);box-shadow:none}
 .user-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .user-you{font-size:10px;color:var(--accent);font-weight:600}
 
@@ -33,6 +34,15 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .main{flex:1;display:flex;flex-direction:column;position:relative}
 .top{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;font-weight:600;font-size:15px;background:var(--sidebar)}
 .top i{color:var(--accent)}
+
+/* CONN BAR */
+.conn-bar{padding:10px 24px;font-size:13px;display:none;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.conn-bar.show{display:flex}
+.conn-bar.offline{background:#ff475715;color:var(--danger);border-color:#ff475733}
+.conn-bar.reconnecting{background:#ffa50215;color:var(--warn);border-color:#ffa50233}
+.conn-bar i{font-size:14px}
+.conn-bar .retry-btn{margin-left:auto;padding:4px 12px;border:1px solid currentColor;border-radius:6px;background:transparent;color:inherit;font-family:inherit;font-size:12px;cursor:pointer;font-weight:600}
+.conn-bar .retry-btn:hover{opacity:.8}
 
 /* MESSAGES */
 .messages{flex:1;overflow:auto;padding:20px 24px;display:flex;flex-direction:column;gap:6px}
@@ -57,12 +67,14 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .input-bar{display:flex;align-items:center;padding:12px 16px;gap:8px;border-top:1px solid var(--border);background:var(--sidebar)}
 .input-bar input{flex:1;padding:14px 18px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);color:var(--text);font-family:inherit;font-size:14px;outline:none;transition:border .2s}
 .input-bar input:focus{border-color:var(--accent)}
+.input-bar input:disabled{opacity:.4;cursor:not-allowed}
 .emoji-btn,.send-btn{width:44px;height:44px;border:none;border-radius:var(--radius);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:transform .15s,background .2s}
 .emoji-btn{background:var(--card);color:var(--muted);border:1px solid var(--border)}
 .emoji-btn:hover{color:var(--accent);border-color:var(--accent)}
 .send-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#08090d;font-weight:700}
 .send-btn:hover{transform:scale(1.05)}
 .send-btn:active{transform:scale(.95)}
+.send-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
 /* EMOJI PICKER */
 .emoji-picker{position:absolute;bottom:80px;left:16px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;display:none;flex-wrap:wrap;gap:4px;width:280px;z-index:10;box-shadow:0 8px 32px #0008}
@@ -84,11 +96,13 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .modal .error{color:var(--danger);font-size:12px;margin-bottom:12px;min-height:16px}
 
 /* TOAST */
-.toast{position:fixed;top:20px;right:20px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;font-size:13px;z-index:200;animation:slideIn .3s ease;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px #0008}
-.toast i{color:var(--accent)}
+.toast-wrap{position:fixed;top:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;font-size:13px;animation:slideIn .3s ease;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px #0008}
+.toast.err{border-color:#ff475744;color:var(--danger)}
+.toast.ok{border-color:#00e68a44;color:var(--accent)}
+.toast i{font-size:16px}
 @keyframes slideIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
 
-/* MOBILE */
 @media(max-width:700px){.sidebar{display:none}.msg{max-width:88%}}
 </style>
 </head>
@@ -99,12 +113,15 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
   <div class="modal">
     <div class="logo" style="margin:0 auto 16px;width:52px;height:52px;font-size:22px"><i class="fas fa-bolt"></i></div>
     <h2>Net<span>Talk</span> Pro</h2>
-    <p>Gerçek zamanlı sohbet deneyimi</p>
+    <p>Gercek zamanli sohbet deneyimi</p>
     <div class="error" id="modalErr"></div>
     <input id="nickInput" placeholder="Nick girin..." maxlength="20" autofocus />
     <button onclick="handleJoin()">Sohbete Baglan</button>
   </div>
 </div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-wrap" id="toastWrap"></div>
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
@@ -124,125 +141,356 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 <!-- MAIN -->
 <main class="main">
   <div class="top"><i class="fas fa-hashtag"></i> genel odasi</div>
+
+  <!-- BAGLANTI DURUMU -->
+  <div class="conn-bar" id="connBar">
+    <i id="connIcon"></i>
+    <span id="connText"></span>
+    <button class="retry-btn" id="connRetry" onclick="manualReconnect()">Yeniden Dene</button>
+  </div>
+
   <div class="messages" id="messages"></div>
   <div class="typing-bar" id="typingBar"></div>
   <div class="emoji-picker" id="emojiPicker"></div>
   <div class="input-bar">
     <button class="emoji-btn" onclick="toggleEmoji()"><i class="far fa-smile"></i></button>
     <input id="msg" placeholder="Mesaj yaz..." maxlength="500" />
-    <button class="send-btn" onclick="send()"><i class="fas fa-paper-plane"></i></button>
+    <button class="send-btn" id="sendBtn" onclick="send()"><i class="fas fa-paper-plane"></i></button>
   </div>
 </main>
 
 <script>
-const API="/api/messages";
-let userId=null,nick="",typingUsers={};
-const EMOJIS=["😀","😂","😍","🔥","👍","❤️","😎","🎉","💯","🙄","😢","🤔","👀","✨","🚀","👋","😅","🥳","💀","🙏"];
+const API = "/api/messages";
+let userId = null, nick = "";
+let failCount = 0;          // arka arkaya basarisiz istek sayisi
+let connected = true;       // baglanti durumu
+let reconnectTimer = null;  // yeniden baglanma zamlayici
+let loadInterval = null;    // polling interval
+let heartbeatInterval = null;
+const MAX_FAIL = 3;         // bu sayiya ulasinca kopuk say
+const POLL_MS = 2000;
+const HEARTBEAT_MS = 5000;
+const RECONNECT_MS = 4000;  // otomatik yeniden baglanma suresi
 
-/* EMOJI PICKER */
-const ep=document.getElementById("emojiPicker");
-EMOJIS.forEach(e=>{const b=document.createElement("button");b.textContent=e;b.onclick=()=>{document.getElementById("msg").value+=e;toggleEmoji()};ep.appendChild(b)});
-function toggleEmoji(){ep.classList.toggle("open")}
+/* ========== CACHE ========== */
+let cachedMessages = [];
+let cachedUsers = [];
+// API basarisiz olursa eski veriyi koru, UI'i bosaltma
 
-/* MODAL */
-function handleJoin(){
-  const v=document.getElementById("nickInput").value.trim();
-  if(!v){document.getElementById("modalErr").textContent="Nick bos birakilamaz!";return}
-  if(v.length<2){document.getElementById("modalErr").textContent="En az 2 karakter!";return}
-  nick=v;
-  document.getElementById("modalOverlay").style.display="none";
+/* ========== EMOJI ========== */
+const EMOJIS = ["😀","😂","😍","🔥","👍","❤️","😎","🎉","💯","🙄","😢","🤔","👀","✨","🚀","👋","😅","🥳","💀","🙏"];
+const ep = document.getElementById("emojiPicker");
+EMOJIS.forEach(e => {
+  const b = document.createElement("button");
+  b.textContent = e;
+  b.onclick = () => { document.getElementById("msg").value += e; toggleEmoji(); };
+  ep.appendChild(b);
+});
+function toggleEmoji() { ep.classList.toggle("open"); }
+
+/* ========== MODAL ========== */
+function handleJoin() {
+  const v = document.getElementById("nickInput").value.trim();
+  if (!v) { document.getElementById("modalErr").textContent = "Nick bos birakilamaz!"; return; }
+  if (v.length < 2) { document.getElementById("modalErr").textContent = "En az 2 karakter!"; return; }
+  nick = v;
+  document.getElementById("modalOverlay").style.display = "none";
   initChat();
 }
-document.getElementById("nickInput").addEventListener("keydown",e=>{if(e.key==="Enter")handleJoin()});
+document.getElementById("nickInput").addEventListener("keydown", e => { if (e.key === "Enter") handleJoin(); });
 
-/* INIT */
-async function initChat(){
-  try{
-    const res=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"join",name:nick,roomId:"genel"})});
-    const data=await res.json();
-    userId=data.userId;
-    toast("Sohbete baglandiniz!");
-    load();
-    setInterval(load,2000);
-    setInterval(heartbeat,5000);
-  }catch(err){toast("Baglanti hatasi!")}
+/* ========== INIT ========== */
+async function initChat() {
+  const ok = await joinRoom();
+  if (!ok) {
+    setConn("offline", "Sunucuya baglanilamiyor");
+    scheduleReconnect();
+    return;
+  }
+  setConn("online");
+  toast("Sohbete baglandiniz!", "ok");
+  startPolling();
+  startHeartbeat();
 }
 
-/* LOAD */
-async function load(){
-  try{
-    const res=await fetch(API+"?roomId=genel");
-    const data=await res.json();
-    renderMsgs(data.messages||[]);
-    renderUsers(data.users||[]);
-  }catch(e){}
+/* ========== JOIN ========== */
+async function joinRoom() {
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "join", name: nick, roomId: "genel" })
+    });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    userId = data.userId;
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
-/* RENDER MESSAGES */
-function renderMsgs(msgs){
-  const box=document.getElementById("messages");
-  const wasBottom=box.scrollHeight-box.scrollTop-box.clientHeight<60;
-  box.innerHTML="";
-  msgs.forEach(m=>{
-    const div=document.createElement("div");
-    if(m.type==="system"){div.className="msg system";div.textContent=m.text;box.appendChild(div);return}
-    const self=m.userId===userId;
-    div.className="msg "+(self?"self":"other");
-    const t=m.createdAt?new Date(m.createdAt).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"}):"";
-    div.innerHTML=`<div class="msg-head"><b>${esc(m.userName||"?")}</b>${self?'<span class="user-you">sen</span>':''}<span class="msg-time">${t}</span></div><div class="msg-text">${esc(m.text)}</div>`;
+/* ========== POLLING ========== */
+function startPolling() {
+  clearInterval(loadInterval);
+  loadInterval = setInterval(load, POLL_MS);
+  load(); // hemen bir kere cek
+}
+function stopPolling() {
+  clearInterval(loadInterval);
+  loadInterval = null;
+}
+
+/* ========== LOAD (ANA VERI CEKME) ========== */
+async function load() {
+  try {
+    const res = await fetch(API + "?roomId=genel");
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+
+    // basarili — cache'i guncelle
+    if (data.messages && data.messages.length > 0) cachedMessages = data.messages;
+    if (data.users && data.users.length > 0) cachedUsers = data.users;
+
+    renderMsgs(cachedMessages);
+    renderUsers(cachedUsers);
+
+    // baglantiyi kurtar
+    if (!connected) {
+      setConn("online");
+      toast("Baglanti yeniden kuruldu", "ok");
+    }
+    failCount = 0;
+  } catch (e) {
+    failCount++;
+    if (failCount >= MAX_FAIL && connected) {
+      connected = false;
+      setConn("offline", "Baglanti koptu");
+      stopPolling();
+      scheduleReconnect();
+    } else if (failCount === 1) {
+      setConn("reconnecting", "Baglanti sorunlu, yeniden deneniyor...");
+    }
+    // basarisiz ama hala cache'ten goster
+    renderMsgs(cachedMessages);
+    renderUsers(cachedUsers);
+  }
+}
+
+/* ========== HEARTBEAT ========== */
+function startHeartbeat() {
+  clearInterval(heartbeatInterval);
+  heartbeatInterval = setInterval(async () => {
+    if (!userId) return;
+    try {
+      await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "heartbeat", userId })
+      });
+    } catch (e) { /* sessiz — load zaten handle eder */ }
+  }, HEARTBEAT_MS);
+}
+
+/* ========== RECONNECT ========== */
+function scheduleReconnect() {
+  clearTimeout(reconnectTimer);
+  reconnectTimer = setTimeout(() => reconnect(), RECONNECT_MS);
+}
+
+async function reconnect() {
+  setConn("reconnecting", "Yeniden baglaniyor...");
+  // userId hala varsa tekrar join atmadan once heartbeat dene
+  if (userId) {
+    try {
+      const res = await fetch(API + "?roomId=genel");
+      if (res.ok) {
+        connected = true;
+        failCount = 0;
+        setConn("online");
+        startPolling();
+        startHeartbeat();
+        toast("Baglanti yeniden kuruldu", "ok");
+        return;
+      }
+    } catch (e) {}
+  }
+  // userId yoksa veya istek basarisizsa tekrar join
+  const ok = await joinRoom();
+  if (ok) {
+    connected = true;
+    failCount = 0;
+    setConn("online");
+    startPolling();
+    startHeartbeat();
+    toast("Sohbete tekrar baglandiniz", "ok");
+  } else {
+    scheduleReconnect(); // tekrar dene
+  }
+}
+
+function manualReconnect() {
+  clearTimeout(reconnectTimer);
+  reconnect();
+}
+
+/* ========== BAGLANTI DURUMU UI ========== */
+function setConn(state, text) {
+  const bar = document.getElementById("connBar");
+  const icon = document.getElementById("connIcon");
+  const txt = document.getElementById("connText");
+  const inp = document.getElementById("msg");
+  const btn = document.getElementById("sendBtn");
+
+  bar.className = "conn-bar";
+
+  if (state === "online") {
+    connected = true;
+    bar.classList.remove("show");
+    inp.disabled = false;
+    btn.disabled = false;
+  } else if (state === "reconnecting") {
+    connected = false;
+    bar.classList.add("show", "reconnecting");
+    icon.className = "fas fa-spinner fa-spin";
+    txt.textContent = text || "Yeniden baglaniyor...";
+    inp.disabled = true;
+    btn.disabled = true;
+  } else if (state === "offline") {
+    connected = false;
+    bar.classList.add("show", "offline");
+    icon.className = "fas fa-exclamation-triangle";
+    txt.textContent = text || "Baglanti koptu";
+    inp.disabled = true;
+    btn.disabled = true;
+  }
+}
+
+/* ========== RENDER MESAJLAR ========== */
+function renderMsgs(msgs) {
+  const box = document.getElementById("messages");
+  const wasBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60;
+  box.innerHTML = "";
+
+  if (msgs.length === 0) {
+    box.innerHTML = '<div class="msg system">Henuz mesaj yok. Ilk mesaji sen yaz!</div>';
+    return;
+  }
+
+  msgs.forEach(m => {
+    const div = document.createElement("div");
+    if (m.type === "system") {
+      div.className = "msg system";
+      div.textContent = m.text;
+      box.appendChild(div);
+      return;
+    }
+    const self = m.userId === userId;
+    div.className = "msg " + (self ? "self" : "other");
+    const t = m.createdAt ? new Date(m.createdAt).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) : "";
+    div.innerHTML = `
+      <div class="msg-head">
+        <b>${esc(m.userName || "?")}</b>
+        ${self ? '<span class="user-you">sen</span>' : ''}
+        <span class="msg-time">${t}</span>
+      </div>
+      <div class="msg-text">${esc(m.text)}</div>`;
     box.appendChild(div);
   });
-  if(wasBottom)box.scrollTop=box.scrollHeight;
+
+  if (wasBottom) box.scrollTop = box.scrollHeight;
 }
 
-function esc(t){return t?t.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;"):""}
+function esc(t) { return t ? t.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;") : ""; }
 
-/* RENDER USERS */
-function renderUsers(users){
-  const box=document.getElementById("users");
-  const now=Date.now(),ACT=20000;
-  const active=users.filter(u=>now-(u.lastSeen||0)<ACT);
-  document.getElementById("onlineCount").textContent=active.length;
-  box.innerHTML='<div class="users-title">Cevrimici</div>';
-  active.forEach(u=>{
-    const d=document.createElement("div");d.className="user";
-    d.innerHTML=`<span class="dot"></span><span class="user-name">${esc(u.name)}</span>${u.userId===userId?'<span class="user-you">SEN</span>':''}`;
+/* ========== RENDER KULLANICILAR ========== */
+function renderUsers(users) {
+  const box = document.getElementById("users");
+  const now = Date.now(), ACT = 20000;
+  const active = users.filter(u => now - (u.lastSeen || 0) < ACT);
+  document.getElementById("onlineCount").textContent = active.length;
+  box.innerHTML = '<div class="users-title">Cevrimici</div>';
+
+  if (active.length === 0) {
+    box.innerHTML += '<div style="font-size:12px;color:var(--muted);padding:8px">Henuz kimse yok</div>';
+    return;
+  }
+
+  active.forEach(u => {
+    const d = document.createElement("div");
+    d.className = "user";
+    d.innerHTML = `<span class="dot"></span><span class="user-name">${esc(u.name)}</span>${u.userId === userId ? '<span class="user-you">SEN</span>' : ''}`;
     box.appendChild(d);
   });
 }
 
-/* SEND */
-async function send(){
-  const inp=document.getElementById("msg");
-  const text=inp.value.trim();if(!text)return;
-  inp.value="";
+/* ========== SEND ========== */
+async function send() {
+  if (!connected) return;
+  const inp = document.getElementById("msg");
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = "";
   ep.classList.remove("open");
-  await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"message",userId,text,roomId:"genel"})});
-  load();
-}
-document.getElementById("msg").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send()}});
 
-/* HEARTBEAT */
-function heartbeat(){
-  if(!userId)return;
-  fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"heartbeat",userId})});
+  try {
+    await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "message", userId, text, roomId: "genel" })
+    });
+    load(); // hemen guncelle
+  } catch (e) {
+    // mesaj gonderilemedi — input'a geri koy
+    inp.value = text;
+    toast("Mesaj gonderilemedi, tekrar deneyin", "err");
+  }
 }
-
-/* TYPING */
-let tTO;
-document.getElementById("msg").addEventListener("input",()=>{
-  if(!userId)return;
-  fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({type:"typing",userId,roomId:"genel"})});
-  clearTimeout(tTO);tTO=setTimeout(()=>{document.getElementById("typingBar").innerHTML=""},1500);
+document.getElementById("msg").addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
 });
 
-/* TOAST */
-function toast(msg){
-  const t=document.createElement("div");t.className="toast";
-  t.innerHTML=`<i class="fas fa-check-circle"></i>${esc(msg)}`;
-  document.body.appendChild(t);
-  setTimeout(()=>t.remove(),3000);
+/* ========== TYPING ========== */
+let tTO;
+document.getElementById("msg").addEventListener("input", () => {
+  if (!userId || !connected) return;
+  try {
+    fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "typing", userId, roomId: "genel" })
+    });
+  } catch (e) {}
+  clearTimeout(tTO);
+  tTO = setTimeout(() => { document.getElementById("typingBar").innerHTML = ""; }, 1500);
+});
+
+/* ========== TOAST ========== */
+function toast(msg, type) {
+  const wrap = document.getElementById("toastWrap");
+  const t = document.createElement("div");
+  t.className = "toast " + (type || "");
+  const iconCls = type === "err" ? "fas fa-times-circle" : type === "ok" ? "fas fa-check-circle" : "fas fa-info-circle";
+  t.innerHTML = `<i class="${iconCls}"></i>${esc(msg)}`;
+  wrap.appendChild(t);
+  setTimeout(() => { t.style.opacity = "0"; t.style.transition = "opacity .3s"; setTimeout(() => t.remove(), 300); }, 3000);
 }
+
+/* ========== SAYFA GORUNURLUK ========== */
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && connected && !loadInterval) {
+    // sekmeye geri donduk ve polling durduysa yeniden baslat
+    startPolling();
+    load();
+  }
+});
+
+/* ========== BEFOREUNLOAD ========== */
+window.addEventListener("beforeunload", () => {
+  if (userId) {
+    navigator.sendBeacon(API, JSON.stringify({ type: "leave", userId, roomId: "genel" }));
+  }
+});
 </script>
 </body>
 </html>
