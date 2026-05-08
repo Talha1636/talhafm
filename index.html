@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>IRC Chat</title>
+
+<style>
+body {
+  background: #000;
+  color: #00ff00;
+  font-family: monospace;
+  margin: 0;
+}
+
+.container {
+  width: 600px;
+  margin: 30px auto;
+  border: 1px solid #00ff00;
+  padding: 10px;
+}
+
+.header {
+  border-bottom: 1px solid #00ff00;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+
+#chat {
+  height: 400px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+.msg {
+  margin: 2px 0;
+}
+
+.user {
+  color: #00ffff;
+}
+
+.input {
+  display: flex;
+  gap: 5px;
+}
+
+input {
+  flex: 1;
+  background: black;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  padding: 5px;
+}
+
+button {
+  background: #00ff00;
+  border: none;
+  cursor: pointer;
+  color: black;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="header">IRC Terminal Chat</div>
+
+  <div id="chat"></div>
+
+  <div class="input">
+    <input id="user" placeholder="nick">
+    <input id="text" placeholder="mesaj yaz...">
+    <button onclick="send()">Gönder</button>
+  </div>
+</div>
+
+<script>
+async function load() {
+  const res = await fetch("/api/messages");
+  const data = await res.json();
+
+  const chat = document.getElementById("chat");
+  chat.innerHTML = "";
+
+  data.forEach(m => {
+    const div = document.createElement("div");
+    div.className = "msg";
+    div.innerHTML = `<span class="user">${m.user}:</span> ${m.text}`;
+    chat.appendChild(div);
+  });
+
+  chat.scrollTop = chat.scrollHeight;
+}
+
+async function send() {
+  const user = document.getElementById("user").value;
+  const text = document.getElementById("text").value;
+
+  if (!user || !text) return;
+
+  await fetch("/api/messages", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ user, text })
+  });
+
+  document.getElementById("text").value = "";
+  load();
+}
+
+setInterval(load, 2000);
+load();
+</script>
+
+</body>
+</html>
