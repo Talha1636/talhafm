@@ -1,8 +1,8 @@
 // /api/messages.js
-// NetTalk Pro - Professional Chat API v2.0
-// Persistent Welcome Bot & Enhanced Architecture
+// NetTalk Pro v3.0 - Professional Chat API
+// Fixed: Online list, Persistent Bot, No Flicker
 
-const GLOBAL_KEY = "__NETTALK_PRO_V2__";
+const GLOBAL_KEY = "__NETTALK_PRO_V3__";
 
 if (!globalThis[GLOBAL_KEY]) {
   globalThis[GLOBAL_KEY] = {
@@ -13,8 +13,7 @@ if (!globalThis[GLOBAL_KEY]) {
     botState: {
       initialized: false,
       lastGreeting: {},
-      lastAutoResponse: 0,
-      funFactsGiven: {}
+      initTime: Date.now()
     }
   };
 }
@@ -22,7 +21,7 @@ if (!globalThis[GLOBAL_KEY]) {
 const db = globalThis[GLOBAL_KEY];
 
 // ======================================================
-// CONFIGURATION
+// CONFIG
 // ======================================================
 
 const CONFIG = {
@@ -33,6 +32,8 @@ const CONFIG = {
   RATE_LIMIT_MS: 1200,
   TYPING_TIMEOUT: 3000,
   USER_TIMEOUT: 1000 * 60 * 60 * 24,
+  ONLINE_TIMEOUT: 1000 * 60 * 2,
+  AWAY_TIMEOUT: 1000 * 60 * 10,
   ALLOW_CLEAR: true,
   BOT_TYPING_DELAY: 800,
   BOT_NAME: "NetTalk Bot",
@@ -45,23 +46,30 @@ const CONFIG = {
 };
 
 // ======================================================
-// BOT RESPONSE DEFINITIONS
+// BOT RESPONSE DATA
 // ======================================================
 
 const BOT_GREETINGS = [
-  "Hoş geldin {user}! 👋 Sohbete katılmana sevindim.",
-  "Selam {user}! 🎉 Burada olmana bayıldım!",
-  "Merhaba {user}! ✨ Seni görmek güzel.",
-  "Hey {user}! 🌟 Hoş geldin, keyifli sohbetler dilerim!",
+  "Hos geldin {user}! 👋 Sohbete katilmana sevindim.",
+  "Selam {user}! 🎉 Burada olmana bayildim!",
+  "Merhaba {user}! ✨ Seni gormek guzel.",
+  "Hey {user}! 🌟 Hos geldin, keyifli sohbetler dilerim!",
   "{user} geldi! 🎊 Herkese merhaba deyin!",
   "Ah, {user} sonunda geldi! 💫 Hosgeldin!",
   "{user} katildi! 🙌 Merhaba, nasilsin?",
   "Welcome {user}! 🏠 Burasi senin evin."
 ];
 
+const BOT_COMEBACK = [
+  "{user} geri dondu! 👋",
+  "Tekrar hosgeldin {user}! 🤗",
+  "{user} tekrar aramizda! 🎉",
+  "Hey {user}, seni ozlemistik! 💫"
+];
+
 const BOT_FUN_FACTS = [
   "💡 Bilgi: Dünyada her saniye 2.5 milyon e-posta gonderiliyor!",
-  "💡 Bilgi: Bir gunte ortalama 16.000 kelime konusuyoruz.",
+  "💡 Bilgi: Bir gunde ortalama 16.000 kelime konusuyoruz.",
   "💡 Bilgi: Internetin %90'i 1991'den sonra olusturuldu.",
   "💡 Bilgi: Ilk emoji 1999'da Japonya'da yaratildi.",
   "💡 Bilgi: Dünyada 5 milyardan fazla internet kullanicisi var.",
@@ -90,116 +98,72 @@ const BOT_IDLE_MESSAGES = [
 ];
 
 const BOT_KEYWORD_RESPONSES = {
-  "merhaba": [
-    "Merhaba! 👋 Nasilsin?",
-    "Selam! 😊 Bugun nasil gidiyor?",
-    "Hey merhaba! Hosgeldin!"
-  ],
-  "nasılsın": [
-    "Iyiyim, tesekkurler! Sen nasilsin? 😊",
-    "Superim! Botlar her zaman iyidir 😄",
-    "Cok iyiyim! Sen sohbet edince daha da iyiyim!"
-  ],
-  "nasılsın": [
-    "Iyiyim, tesekkurler! Sen nasilsin? 😊",
-    "Superim! Botlar her zaman iyidir 😄"
-  ],
-  "nasilsin": [
-    "Iyiyim! Sen nasilsin? 😊",
-    "Superim! Botlar her zaman iyidir 😄"
-  ],
-  "bot": [
-    "Evet, ben bir botum! 🤖 Ama kalbim sicak!",
-    "Bot mu dedin? 🤖 Guzel botlar evreninde yasiyorum!",
-    "🤖 Ben NetTalk Bot! Senin icin buradayim!"
-  ],
-  "yardım": [
-    "Yardima mi ihtiyacin var? /help yazabilirsin! 📋",
-    "Tabii ki! Komutlari gormek icin /help yaz.",
-    "Sana yardimci olmaktan mutluluk duyarim! 🤝"
-  ],
-  "yardim": [
-    "Yardima mi ihtiyacin var? /help yazabilirsin! 📋",
-    "Tabii ki! Komutlari gormek icin /help yaz."
-  ],
-  "selam": [
-    "Selam! 👋 Aleykum selam!",
-    "Selamun aleykum! 😊",
-    "A.s! Hosgeldin! 🤗"
-  ],
-  "güle güle": [
-    "Gule gule! 👋 Tekrar bekleriz!",
-    "Gorusuruz! 👋 Kendine iyi bak!",
-    "Hoscakal! 👋 Yarin gorusuruz!"
-  ],
-  "teşekkür": [
-    "Rica ederim! 😊",
-    "Ne demek, her zaman! 🤗",
-    "Bisey degil! Memnun oldum! 💛"
-  ],
-  "tesekkur": [
-    "Rica ederim! 😊",
-    "Ne demek, her zaman! 🤗"
-  ],
-  "komik": [
-    "Haha! 😄 Ben de guluyorum!",
-    "😂 Komikligine bayildim!",
-    "🤣 Dur gulmeyecem!"
-  ],
-  "muzik": [
-    "🎵 Muzik her derde devadir!",
-    "🎶 Hangi tur muzik seversin?",
-    "🎵 Muzik ruhun gidasidir!"
-  ],
-  "oyun": [
-    "🎮 Oyun oynamayi sever misin?",
-    "🎮 E-spor mu, klasik mi?",
-    "🎮 Hangi oyunlari oynuyorsun?"
-  ]
+  "merhaba": ["Merhaba! 👋 Nasilsin?", "Selam! 😊 Bugun nasil gidiyor?", "Hey merhaba! Hosgeldin!"],
+  "nasilsin": ["Iyiyim, tesekkurler! Sen nasilsin? 😊", "Superim! Botlar her zaman iyidir 😄", "Cok iyiyim! Sen sohbet edince daha da iyiyim!"],
+  "bot": ["Evet, ben bir botum! 🤖 Ama kalbim sicak!", "Bot mu dedin? 🤖 Guzel botlar evreninde yasiyorum!", "🤖 Ben NetTalk Bot! Senin icin buradayim!"],
+  "yardim": ["Yardima mi ihtiyacin var? /help yazabilirsin! 📋", "Tabii ki! Komutlari gormek icin /help yaz.", "Sana yardimci olmaktan mutluluk duyarim! 🤝"],
+  "selam": ["Selam! 👋 Aleykum selam!", "Selamun aleykum! 😊", "A.s! Hosgeldin! 🤗"],
+  "gule gule": ["Gule gule! 👋 Tekrar bekleriz!", "Gorusuruz! 👋 Kendine iyi bak!", "Hoscakal! 👋 Yarin gorusuruz!"],
+  "tesekkur": ["Rica ederim! 😊", "Ne demek, her zaman! 🤗", "Bisey degil! Memnun oldum! 💛"],
+  "komik": ["Haha! 😄 Ben de guluyorum!", "😂 Komikligine bayildim!", "🤣 Dur gulmeyecem!"],
+  "muzik": ["🎵 Muzik her derde devadir!", "🎶 Hangi tur muzik seversin?", "🎵 Muzik ruhun gidasidir!"],
+  "oyun": ["🎮 Oyun oynamayi sever misin?", "🎮 E-spor mu, klasik mi?", "🎮 Hangi oyunlari oynuyorsun?"]
 };
 
 // ======================================================
-// UTILITY FUNCTIONS
+// UTILITY
 // ======================================================
 
-function now() {
-  return Date.now();
-}
+function now() { return Date.now(); }
 
 function uid() {
-  return (
-    Math.random().toString(36).slice(2) +
-    now().toString(36) +
-    Math.random().toString(36).slice(2, 6)
-  );
+  return Math.random().toString(36).slice(2) + now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
 
-function send(res, code, data) {
-  return res.status(code).json(data);
-}
+function send(res, code, data) { return res.status(code).json(data); }
 
-function sanitize(text = "") {
-  return String(text).trim().slice(0, CONFIG.MESSAGE_MAX);
-}
+function sanitize(text = "") { return String(text).trim().slice(0, CONFIG.MESSAGE_MAX); }
 
-function randomFrom(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
+function randomFrom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 function getTimeOfDay() {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour < 12) return "morning";
-  if (hour >= 12 && hour < 18) return "afternoon";
-  if (hour >= 18 && hour < 23) return "evening";
+  const h = new Date().getHours();
+  if (h >= 5 && h < 12) return "morning";
+  if (h >= 12 && h < 18) return "afternoon";
+  if (h >= 18 && h < 23) return "evening";
   return "night";
 }
 
-function escapeRegex(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function normalizeTr(str) {
+  return str
+    .replace(/ş/g, "s").replace(/ç/g, "c")
+    .replace(/ü/g, "u").replace(/ö/g, "o")
+    .replace(/ğ/g, "g").replace(/ı/g, "i")
+    .replace(/İ/g, "I")
+    .toLowerCase();
 }
 
 // ======================================================
-// CLEANUP OPERATIONS
+// USER STATUS
+// ======================================================
+
+function getUserStatus(user) {
+  if (user.id === CONFIG.BOT_ID) return "online";
+  const elapsed = now() - user.lastSeen;
+  if (elapsed < CONFIG.ONLINE_TIMEOUT) return "online";
+  if (elapsed < CONFIG.AWAY_TIMEOUT) return "away";
+  return "offline";
+}
+
+function getOnlineUsers() {
+  return db.users.filter(u => {
+    if (u.id === CONFIG.BOT_ID) return true;
+    return getUserStatus(u) !== "offline";
+  });
+}
+
+// ======================================================
+// CLEANUP
 // ======================================================
 
 function cleanUsers() {
@@ -225,22 +189,10 @@ function cleanMessages() {
   }
 }
 
-function cleanup() {
-  cleanUsers();
-  cleanTyping();
-  cleanMessages();
-  ensureBotExists();
-}
-
-// ======================================================
-// BOT CORE
-// ======================================================
-
 function ensureBotExists() {
   let bot = db.users.find(u => u.id === CONFIG.BOT_ID);
-
   if (!bot) {
-    bot = {
+    db.users.push({
       id: CONFIG.BOT_ID,
       name: CONFIG.BOT_NAME,
       muted: false,
@@ -249,9 +201,8 @@ function ensureBotExists() {
       status: "online",
       roomId: "genel",
       lastSeen: now(),
-      joinedAt: now()
-    };
-    db.users.push(bot);
+      joinedAt: db.botState.initTime || now()
+    });
   } else {
     bot.lastSeen = now();
     bot.status = "online";
@@ -259,6 +210,23 @@ function ensureBotExists() {
     bot.avatar = CONFIG.BOT_AVATAR;
   }
 }
+
+function cleanupReadonly() {
+  cleanTyping();
+  cleanMessages();
+  ensureBotExists();
+}
+
+function cleanupWrite() {
+  cleanUsers();
+  cleanTyping();
+  cleanMessages();
+  ensureBotExists();
+}
+
+// ======================================================
+// MESSAGE CREATORS
+// ======================================================
 
 function createBotMessage(text, extra = {}) {
   db.messages.push({
@@ -288,36 +256,42 @@ function createSystemMessage(text, extra = {}) {
   cleanMessages();
 }
 
-function botGreetUser(userName) {
+// ======================================================
+// BOT BEHAVIOR
+// ======================================================
+
+function botWelcomeSequence() {
+  if (db.botState.initialized) return;
+  db.botState.initialized = true;
+
+  createBotMessage("🤖 Merhaba! Ben NetTalk Bot! Sohbetinize renk katmak icin buradayim.");
+  setTimeout(() => {
+    createBotMessage("Komutlari gormek icin /help yazabilirsiniz. Hos sohbetler! 💬");
+  }, 1200);
+}
+
+function botGreetUser(userName, isReturning = false) {
   if (!CONFIG.GREETINGS_ENABLED) return;
 
   const t = now();
   const lastGreet = db.botState.lastGreeting[userName] || 0;
-
   if (t - lastGreet < CONFIG.COOLDOWN_GREET) return;
-
   db.botState.lastGreeting[userName] = t;
 
-  const greeting = randomFrom(BOT_GREETINGS).replace(
-    "{user}",
-    userName
-  );
-
-  const timeOfDay = getTimeOfDay();
-  let timeGreeting = "";
-
-  if (timeOfDay === "morning") {
-    timeGreeting = randomFrom(BOT_MORNING);
-  } else if (timeOfDay === "night") {
-    timeGreeting = randomFrom(BOT_NIGHT);
+  if (isReturning) {
+    const msg = randomFrom(BOT_COMEBACK).replace("{user}", userName);
+    createBotMessage(msg);
+    return;
   }
 
+  const greeting = randomFrom(BOT_GREETINGS).replace("{user}", userName);
   createBotMessage(greeting);
 
-  if (timeGreeting && Math.random() > 0.5) {
-    setTimeout(() => {
-      createBotMessage(timeGreeting);
-    }, CONFIG.BOT_TYPING_DELAY);
+  const tod = getTimeOfDay();
+  if (tod === "morning" && Math.random() > 0.5) {
+    setTimeout(() => createBotMessage(randomFrom(BOT_MORNING)), CONFIG.BOT_TYPING_DELAY);
+  } else if (tod === "night" && Math.random() > 0.5) {
+    setTimeout(() => createBotMessage(randomFrom(BOT_NIGHT)), CONFIG.BOT_TYPING_DELAY);
   }
 }
 
@@ -326,92 +300,49 @@ function botCheckKeywords(text, user) {
   if (user.id === CONFIG.BOT_ID) return;
   if (text.startsWith("/")) return;
 
-  const lower = text.toLowerCase().replace(/[ıİ]/g, m => m === "ı" ? "i" : "I").toLowerCase();
-  const normalizedLower = lower
-    .replace(/ş/g, "s")
-    .replace(/ç/g, "c")
-    .replace(/ü/g, "u")
-    .replace(/ö/g, "o")
-    .replace(/ğ/g, "g");
+  const normalized = normalizeTr(text);
 
   for (const [keyword, responses] of Object.entries(BOT_KEYWORD_RESPONSES)) {
-    const normalizedKeyword = keyword
-      .replace(/ş/g, "s")
-      .replace(/ç/g, "c")
-      .replace(/ü/g, "u")
-      .replace(/ö/g, "o")
-      .replace(/ğ/g, "g");
-
-    if (
-      normalizedLower.includes(normalizedKeyword) ||
-      lower.includes(keyword)
-    ) {
+    const nk = normalizeTr(keyword);
+    if (normalized.includes(nk)) {
       if (Math.random() > 0.3) {
-        const response = randomFrom(responses);
-        setTimeout(() => {
-          createBotMessage(response);
-        }, CONFIG.BOT_TYPING_DELAY + Math.random() * 500);
+        setTimeout(() => createBotMessage(randomFrom(responses)), CONFIG.BOT_TYPING_DELAY + Math.random() * 500);
       }
       return;
     }
   }
 
-  // Fun facts on rare occasions
-  if (Math.random() > 0.92) {
-    setTimeout(() => {
-      createBotMessage(randomFrom(BOT_FUN_FACTS));
-    }, CONFIG.BOT_TYPING_DELAY + 1000);
+  if (Math.random() > 0.93) {
+    setTimeout(() => createBotMessage(randomFrom(BOT_FUN_FACTS)), CONFIG.BOT_TYPING_DELAY + 1000);
   }
 }
 
 function botIdleCheck() {
-  const recentMessages = db.messages.filter(
-    m => now() - m.createdAt < 5 * 60 * 1000 && m.type === "message"
+  const recentHuman = db.messages.filter(
+    m => m.type === "message" && now() - m.createdAt < 5 * 60 * 1000
   );
+  if (recentHuman.length > 0) return;
 
-  if (recentMessages.length === 0 && db.users.filter(u => u.id !== CONFIG.BOT_ID).length > 0) {
-    const lastBotMsg = db.messages
-      .filter(m => m.type === "bot")
-      .sort((a, b) => b.createdAt - a.createdAt)[0];
+  const onlineHumans = db.users.filter(u => u.id !== CONFIG.BOT_ID && getUserStatus(u) === "online");
+  if (onlineHumans.length === 0) return;
 
-    if (lastBotMsg && now() - lastBotMsg.createdAt > 5 * 60 * 1000) {
-      createBotMessage(randomFrom(BOT_IDLE_MESSAGES));
-    }
-  }
-}
+  const lastBot = db.messages.filter(m => m.type === "bot").sort((a, b) => b.createdAt - a.createdAt)[0];
+  if (lastBot && now() - lastBot.createdAt < 5 * 60 * 1000) return;
 
-function botWelcomeSequence() {
-  if (db.botState.initialized) return;
-  db.botState.initialized = true;
-
-  createBotMessage(
-    "🤖 Merhaba! Ben NetTalk Bot! Sohbetinize renk katmak icin buradayim."
-  );
-
-  setTimeout(() => {
-    createBotMessage(
-      "Komutlari gormek icin /help yazabilirsiniz. Hos sohbetler! 💬"
-    );
-  }, 1200);
+  createBotMessage(randomFrom(BOT_IDLE_MESSAGES));
 }
 
 // ======================================================
 // USER MANAGEMENT
 // ======================================================
 
-function getUser(id) {
-  return db.users.find(u => u.id === id);
-}
+function getUser(id) { return db.users.find(u => u.id === id); }
 
 function userExists(name) {
-  return db.users.find(
-    u => u.name.toLowerCase() === name.toLowerCase()
-  );
+  return db.users.find(u => u.name.toLowerCase() === name.toLowerCase());
 }
 
-function updateUserActivity(user) {
-  user.lastSeen = now();
-}
+function updateUserActivity(user) { user.lastSeen = now(); }
 
 function validateUser(user) {
   if (!user) return false;
@@ -421,16 +352,8 @@ function validateUser(user) {
 
 function rateLimited(userId) {
   const last = db.rateLimits[userId];
-
-  if (!last) {
-    db.rateLimits[userId] = now();
-    return false;
-  }
-
-  if (now() - last < CONFIG.RATE_LIMIT_MS) {
-    return true;
-  }
-
+  if (!last) { db.rateLimits[userId] = now(); return false; }
+  if (now() - last < CONFIG.RATE_LIMIT_MS) return true;
   db.rateLimits[userId] = now();
   return false;
 }
@@ -443,74 +366,69 @@ async function executeCommand(text, user, req, res) {
   const args = text.split(" ");
   const cmd = args[0].toLowerCase();
 
-  // /help
   if (cmd === "/help") {
-    createBotMessage(
-      [
-        "📋 Mevcut Komutlar:",
-        "━━━━━━━━━━━━━━━━━━━",
-        "/help - Bu mesaji gosterir",
-        "/users - Aktif kullanicilari listeler",
-        "/stats - Istatistikleri gosterir",
-        "/nick <isim> - Isim degistir",
-        "/clear - Sohbeti temizle",
-        "/mute <isim> - Kullaniciyi sustur",
-        "/unmute <isim> - Susturmayi kaldir",
-        "/bot - Bot hakkinda bilgi",
-        "/ping - Bot'u test et",
-        "/info - Sunucu bilgisi"
-      ].join("\n")
-    );
+    createBotMessage([
+      "📋 Mevcut Komutlar:",
+      "━━━━━━━━━━━━━━━━━━━",
+      "/help - Bu mesaji gosterir",
+      "/users - Aktif kullanicilari listeler",
+      "/stats - Istatistikleri gosterir",
+      "/nick <isim> - Isim degistir",
+      "/clear - Sohbeti temizle",
+      "/mute <isim> - Kullaniciyi sustur",
+      "/unmute <isim> - Susturmayi kaldir",
+      "/bot - Bot hakkinda bilgi",
+      "/ping - Bot'u test et",
+      "/info - Sunucu bilgisi"
+    ].join("\n"));
     return send(res, 200, { ok: true });
   }
 
-  // /users
   if (cmd === "/users") {
     const humans = db.users.filter(u => u.id !== CONFIG.BOT_ID);
-    const bot = db.users.find(u => u.id === CONFIG.BOT_ID);
-    const list = humans.map(u => {
-      let badge = "";
-      if (u.muted) badge += " 🔇";
-      return `${u.name}${badge}`;
-    }).join(", ");
+    const online = humans.filter(u => getUserStatus(u) === "online");
+    const away = humans.filter(u => getUserStatus(u) === "away");
 
-    createBotMessage(
-      `👥 Aktif Kullanicilar (${humans.length}): ${list || "Yok"}${bot ? `\n🤖 ${bot.name} (Her zaman aktif)` : ""}`
-    );
+    const onlineList = online.map(u => `🟢 ${u.name}${u.muted ? " 🔇" : ""}`).join(", ") || "Yok";
+    const awayList = away.map(u => `🟡 ${u.name}${u.muted ? " 🔇" : ""}`).join(", ") || "Yok";
+
+    createBotMessage([
+      "👥 Aktif Kullanicilar",
+      "━━━━━━━━━━━━━━━━━━━",
+      `🟢 Cevrimici (${online.length}): ${onlineList}`,
+      `🟡 Uzakta (${away.length}): ${awayList}`,
+      `🤖 ${CONFIG.BOT_NAME} (Her zaman aktif)`
+    ].join("\n"));
     return send(res, 200, { ok: true });
   }
 
-  // /stats
   if (cmd === "/stats") {
     const humans = db.users.filter(u => u.id !== CONFIG.BOT_ID);
     const botMsgs = db.messages.filter(m => m.type === "bot").length;
     const userMsgs = db.messages.filter(m => m.type === "message").length;
     const sysMsgs = db.messages.filter(m => m.type === "system").length;
 
-    createBotMessage(
-      [
-        "📊 Sunucu Istatistikleri",
-        "━━━━━━━━━━━━━━━━━━━",
-        `👥 Kullanici: ${humans.length}`,
-        `💬 Mesaj: ${userMsgs}`,
-        `🤖 Bot Mesaji: ${botMsgs}`,
-        `🔔 Sistem: ${sysMsgs}`,
-        `📝 Toplam: ${db.messages.length}`
-      ].join("\n")
-    );
+    createBotMessage([
+      "📊 Sunucu Istatistikleri",
+      "━━━━━━━━━━━━━━━━━━━",
+      `👥 Toplam Kullanici: ${humans.length}`,
+      `🟢 Cevrimici: ${humans.filter(u => getUserStatus(u) === "online").length}`,
+      `💬 Kullanici Mesaji: ${userMsgs}`,
+      `🤖 Bot Mesaji: ${botMsgs}`,
+      `🔔 Sistem: ${sysMsgs}`,
+      `📝 Toplam: ${db.messages.length}`
+    ].join("\n"));
     return send(res, 200, { ok: true });
   }
 
-  // /nick
   if (cmd === "/nick") {
     const newName = sanitize(args.slice(1).join(" ")).slice(0, CONFIG.NAME_MAX);
-
     if (!newName || newName.length < CONFIG.NAME_MIN) {
       createBotMessage("❌ Isim en az 2 karakter olmali!");
       return send(res, 400, { error: "invalid_name" });
     }
 
-    const reserved = [CONFIG.BOT_NAME.toLowerCase(), "system", "sistem", "bot"];
+    const reserved = [CONFIG.BOT_NAME.toLowerCase(), "system", "sistem", "bot", "nettalk"];
     if (reserved.includes(newName.toLowerCase())) {
       createBotMessage("❌ Bu isim rezerve edilmis!");
       return send(res, 400, { error: "name_reserved" });
@@ -525,129 +443,101 @@ async function executeCommand(text, user, req, res) {
     const old = user.name;
     user.name = newName;
     createSystemMessage(`${old} → ${newName} olarak isim degistirdi`);
-
-    setTimeout(() => {
-      createBotMessage(`✨ Yeni ismin: ${newName}! Guzel secim!`);
-    }, CONFIG.BOT_TYPING_DELAY);
-
+    setTimeout(() => createBotMessage(`✨ Yeni ismin: ${newName}! Guzel secim!`), CONFIG.BOT_TYPING_DELAY);
     return send(res, 200, { ok: true });
   }
 
-  // /clear
   if (cmd === "/clear") {
     if (!CONFIG.ALLOW_CLEAR) {
       createBotMessage("❌ Sohbet temizleme devre disi!");
       return send(res, 403, { error: "disabled" });
     }
-
     db.messages.length = 0;
     createSystemMessage(`${user.name} sohbeti temizledi`);
-
-    setTimeout(() => {
-      createBotMessage("🧹 Sohbet temizlendi! Yeni bir baslangic!");
-    }, CONFIG.BOT_TYPING_DELAY);
-
+    setTimeout(() => createBotMessage("🧹 Sohbet temizlendi! Yeni bir baslangic!"), CONFIG.BOT_TYPING_DELAY);
     return send(res, 200, { ok: true, cleared: true });
   }
 
-  // /mute
   if (cmd === "/mute") {
     const target = sanitize(args.slice(1).join(" "));
     if (!target) {
       createBotMessage("❌ Kullanici ismi belirt: /mute <isim>");
       return send(res, 400, { error: "missing_target" });
     }
-
     const targetUser = userExists(target);
     if (!targetUser) {
       createBotMessage(`❌ "${target}" adli kullanici bulunamadi.`);
       return send(res, 404, { error: "user_not_found" });
     }
-
     if (targetUser.id === CONFIG.BOT_ID) {
       createBotMessage("🤖 Beni susturamazsin! Botlar her zaman konusur! 😎");
       return send(res, 403, { error: "cannot_mute_bot" });
     }
-
     if (targetUser.muted) {
       createBotMessage(`⚠️ ${targetUser.name} zaten susturulmus.`);
       return send(res, 200, { ok: true });
     }
-
     targetUser.muted = true;
     createSystemMessage(`${targetUser.name} susturuldu`);
     createBotMessage(`🔇 ${targetUser.name} susturuldu.`);
     return send(res, 200, { ok: true });
   }
 
-  // /unmute
   if (cmd === "/unmute") {
     const target = sanitize(args.slice(1).join(" "));
     if (!target) {
       createBotMessage("❌ Kullanici ismi belirt: /unmute <isim>");
       return send(res, 400, { error: "missing_target" });
     }
-
     const targetUser = userExists(target);
     if (!targetUser) {
       createBotMessage(`❌ "${target}" adli kullanici bulunamadi.`);
       return send(res, 404, { error: "user_not_found" });
     }
-
     targetUser.muted = false;
     createSystemMessage(`${targetUser.name} susturmasi kaldirildi`);
     createBotMessage(`🔊 ${targetUser.name} artik konusabilir!`);
     return send(res, 200, { ok: true });
   }
 
-  // /bot
   if (cmd === "/bot") {
-    createBotMessage(
-      [
-        "🤖 NetTalk Bot Bilgisi",
-        "━━━━━━━━━━━━━━━━━━━",
-        "Adim: NetTalk Bot",
-        "Gorevim: Sohbeti yonlendirmek ve yardimci olmak",
-        "Ozelliklerim:",
-        "  • Yeni kullanicilari karsilama",
-        "  • Komutlara cevap verme",
-        "  • Anahtar kelime algilama",
-        "  • Istatistik sunma",
-        "  • 7/24 aktif olma 😎",
-        "",
-        "Bana selam verebilirsin!"
-      ].join("\n")
-    );
+    createBotMessage([
+      "🤖 NetTalk Bot Bilgisi",
+      "━━━━━━━━━━━━━━━━━━━",
+      "Adim: NetTalk Bot",
+      "Gorevim: Sohbeti yonlendirmek ve yardimci olmak",
+      "Ozelliklerim:",
+      "  • Yeni kullanicilari karsilama",
+      "  • Komutlara cevap verme",
+      "  • Anahtar kelime algilama",
+      "  • Istatistik sunma",
+      "  • 7/24 aktif olma 😎",
+      "",
+      "Bana selam verebilirsin!"
+    ].join("\n"));
     return send(res, 200, { ok: true });
   }
 
-  // /ping
   if (cmd === "/ping") {
     const start = now();
-    setTimeout(() => {
-      createBotMessage(`🏓 Pong! Gecikme: ${now() - start}ms`);
-    }, CONFIG.BOT_TYPING_DELAY);
+    setTimeout(() => createBotMessage(`🏓 Pong! Gecikme: ${now() - start}ms`), CONFIG.BOT_TYPING_DELAY);
     return send(res, 200, { ok: true });
   }
 
-  // /info
   if (cmd === "/info") {
     const uptime = Math.floor((now() - (db.botState.initTime || now())) / 1000);
-    const hours = Math.floor(uptime / 3600);
-    const mins = Math.floor((uptime % 3600) / 60);
-    const secs = uptime % 60;
-
-    createBotMessage(
-      [
-        "ℹ️ Sunucu Bilgisi",
-        "━━━━━━━━━━━━━━━━━━━",
-        `Versiyon: 2.0.0`,
-        `Max Mesaj: ${CONFIG.MAX_MESSAGES}`,
-        `Aktif Kullanici: ${db.users.filter(u => u.id !== CONFIG.BOT_ID).length}`,
-        `Calisma Suresi: ${hours}sa ${mins}dk ${secs}sn`,
-        `Bot Durumu: 🟢 Aktif`
-      ].join("\n")
-    );
+    const h = Math.floor(uptime / 3600);
+    const m = Math.floor((uptime % 3600) / 60);
+    const s = uptime % 60;
+    createBotMessage([
+      "ℹ️ Sunucu Bilgisi",
+      "━━━━━━━━━━━━━━━━━━━",
+      `Versiyon: 3.0.0`,
+      `Max Mesaj: ${CONFIG.MAX_MESSAGES}`,
+      `Aktif Kullanici: ${db.users.filter(u => u.id !== CONFIG.BOT_ID && getUserStatus(u) === "online").length}`,
+      `Calisma Suresi: ${h}sa ${m}dk ${s}sn`,
+      `Bot Durumu: 🟢 Aktif`
+    ].join("\n"));
     return send(res, 200, { ok: true });
   }
 
@@ -656,50 +546,61 @@ async function executeCommand(text, user, req, res) {
 }
 
 // ======================================================
-// MAIN API HANDLER
+// FORMAT USER FOR RESPONSE
+// ======================================================
+
+function formatUser(u) {
+  return {
+    id: u.id,
+    name: u.name,
+    isBot: !!u.isBot,
+    avatar: u.avatar || null,
+    status: getUserStatus(u),
+    muted: !!u.muted
+  };
+}
+
+// ======================================================
+// MAIN HANDLER
 // ======================================================
 
 export default async function handler(req, res) {
-  // CORS headers
+  // CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
+  if (req.method === "OPTIONS") return res.status(200).end();
 
-  // Initialize bot state timestamp
-  if (!db.botState.initTime) {
-    db.botState.initTime = now();
-  }
-
-  cleanup();
-  botWelcomeSequence();
+  const serverTime = now();
 
   // ====================================================
-  // GET - Fetch State
+  // GET — READ ONLY (NO STATE CHANGES, NO BOT MESSAGES)
   // ====================================================
 
   if (req.method === "GET") {
-    const activeTyping = Object.values(db.typing)
-      .filter(t => now() - t.time < CONFIG.TYPING_TIMEOUT)
-      .map(t => t.name);
+    cleanupReadonly();
 
-    const onlineUsers = db.users.map(u => ({
-      id: u.id,
-      name: u.name,
-      isBot: !!u.isBot,
-      avatar: u.avatar || null,
-      status: u.id === CONFIG.BOT_ID ? "online" : (now() - u.lastSeen < 60000 ? "online" : "away"),
-      muted: !!u.muted
-    }));
+    const since = parseInt(req.query.since) || 0;
+
+    let messages = db.messages;
+    if (since > 0) {
+      messages = messages.filter(m => m.createdAt > since);
+    }
+
+    const allUsers = db.users.map(formatUser);
+
+    const activeTyping = Object.values(db.typing)
+      .filter(t => serverTime - t.time < CONFIG.TYPING_TIMEOUT)
+      .map(t => t.name);
 
     return send(res, 200, {
       ok: true,
-      messages: db.messages,
-      users: onlineUsers,
+      serverTime,
+      messages,
+      users: allUsers,
       typing: activeTyping,
+      onlineCount: allUsers.filter(u => u.status === "online" && !u.isBot).length,
       botInfo: {
         name: CONFIG.BOT_NAME,
         id: CONFIG.BOT_ID,
@@ -710,10 +611,12 @@ export default async function handler(req, res) {
   }
 
   // ====================================================
-  // POST - Actions
+  // POST — WRITE OPERATIONS (BOT CAN RESPOND HERE)
   // ====================================================
 
   if (req.method === "POST") {
+    cleanupWrite();
+
     const body = req.body || {};
     const type = body.type;
 
@@ -725,7 +628,7 @@ export default async function handler(req, res) {
         return send(res, 400, { error: "invalid_name", message: "Isim en az 2 karakter olmali" });
       }
 
-      const reserved = [CONFIG.BOT_NAME.toLowerCase(), "system", "sistem", "bot"];
+      const reserved = [CONFIG.BOT_NAME.toLowerCase(), "system", "sistem", "bot", "nettalk"];
       if (reserved.includes(name.toLowerCase())) {
         return send(res, 400, { error: "name_reserved", message: "Bu isim rezerve edilmis" });
       }
@@ -735,24 +638,14 @@ export default async function handler(req, res) {
       if (existing) {
         updateUserActivity(existing);
 
-        setTimeout(() => {
-          const comebackMessages = [
-            `${name} geri dondu! 👋`,
-            `Tekrar hosgeldin ${name}! 🤗`,
-            `${name} tekrar aramizda! 🎉`
-          ];
-          createBotMessage(randomFrom(comebackMessages));
-        }, CONFIG.BOT_TYPING_DELAY);
+        setTimeout(() => botGreetUser(name, true), CONFIG.BOT_TYPING_DELAY + 300);
 
         return send(res, 200, {
           ok: true,
           restored: true,
           userId: existing.id,
           userName: existing.name,
-          botInfo: {
-            name: CONFIG.BOT_NAME,
-            avatar: CONFIG.BOT_AVATAR
-          }
+          botInfo: { name: CONFIG.BOT_NAME, avatar: CONFIG.BOT_AVATAR }
         });
       }
 
@@ -772,19 +665,13 @@ export default async function handler(req, res) {
 
       createSystemMessage(`${name} sohbete katildi`);
 
-      // Bot greeting
-      setTimeout(() => {
-        botGreetUser(name);
-      }, CONFIG.BOT_TYPING_DELAY + 300);
+      setTimeout(() => botGreetUser(name, false), CONFIG.BOT_TYPING_DELAY + 300);
 
       return send(res, 200, {
         ok: true,
         userId: user.id,
         userName: user.name,
-        botInfo: {
-          name: CONFIG.BOT_NAME,
-          avatar: CONFIG.BOT_AVATAR
-        }
+        botInfo: { name: CONFIG.BOT_NAME, avatar: CONFIG.BOT_AVATAR }
       });
     }
 
@@ -798,15 +685,14 @@ export default async function handler(req, res) {
 
       updateUserActivity(user);
 
-      // Periodic idle check
-      if (Math.random() > 0.95) {
+      if (Math.random() > 0.92) {
         botIdleCheck();
       }
 
       return send(res, 200, {
         ok: true,
         isMuted: !!user.muted,
-        onlineCount: db.users.filter(u => u.id !== CONFIG.BOT_ID).length
+        onlineCount: db.users.filter(u => u.id !== CONFIG.BOT_ID && getUserStatus(u) === "online").length
       });
     }
 
@@ -821,25 +707,17 @@ export default async function handler(req, res) {
       updateUserActivity(user);
 
       if (user.muted) {
-        return send(res, 403, { error: "muted", message: "Susturuldunuz, mesaj gonderemezsiniz" });
+        return send(res, 403, { error: "muted", message: "Susturuldunuz" });
       }
 
       const text = sanitize(body.text);
+      if (!text) return send(res, 400, { error: "empty_message" });
+      if (rateLimited(user.id)) return send(res, 429, { error: "rate_limit", message: "Cok hizli mesaj gonderiyorsunuz" });
 
-      if (!text) {
-        return send(res, 400, { error: "empty_message" });
-      }
-
-      if (rateLimited(user.id)) {
-        return send(res, 429, { error: "rate_limit", message: "Cok hizli mesaj gonderiyorsunuz" });
-      }
-
-      // Command
       if (text.startsWith("/")) {
         return executeCommand(text, user, req, res);
       }
 
-      // Normal message
       db.messages.push({
         id: uid(),
         type: "message",
@@ -852,8 +730,6 @@ export default async function handler(req, res) {
       });
 
       cleanMessages();
-
-      // Bot keyword response
       botCheckKeywords(text, user);
 
       return send(res, 200, { ok: true });
@@ -862,26 +738,17 @@ export default async function handler(req, res) {
     // REACTION
     if (type === "reaction") {
       const user = getUser(body.userId);
-
-      if (!validateUser(user)) {
-        return send(res, 200, { ok: false });
-      }
+      if (!validateUser(user)) return send(res, 200, { ok: false });
 
       updateUserActivity(user);
 
       const msg = db.messages.find(m => m.id === body.messageId);
-
-      if (!msg) {
-        return send(res, 404, { error: "message_not_found" });
-      }
-
-      if (!msg.reactions) msg.reactions = {};
+      if (!msg) return send(res, 404, { error: "message_not_found" });
 
       const emoji = body.emoji;
-      if (!emoji) {
-        return send(res, 400, { error: "missing_emoji" });
-      }
+      if (!emoji) return send(res, 400, { error: "missing_emoji" });
 
+      if (!msg.reactions) msg.reactions = {};
       if (!msg.reactions[emoji]) msg.reactions[emoji] = [];
 
       const users = msg.reactions[emoji];
@@ -891,14 +758,8 @@ export default async function handler(req, res) {
         if (msg.reactions[emoji].length === 0) delete msg.reactions[emoji];
       } else {
         users.push(user.id);
-
-        // Bot sometimes reacts back
-        if (
-          msg.userId !== CONFIG.BOT_ID &&
-          Math.random() > 0.7
-        ) {
-          const botReactions = ["👍", "❤️", "😊", "🔥", "😂"];
-          const botEmoji = randomFrom(botReactions);
+        if (msg.userId !== CONFIG.BOT_ID && Math.random() > 0.75) {
+          const botEmoji = randomFrom(["👍", "❤️", "😊", "🔥", "😂"]);
           if (!msg.reactions[botEmoji]) msg.reactions[botEmoji] = [];
           if (!msg.reactions[botEmoji].includes(CONFIG.BOT_ID)) {
             msg.reactions[botEmoji].push(CONFIG.BOT_ID);
@@ -912,36 +773,25 @@ export default async function handler(req, res) {
     // TYPING
     if (type === "typing") {
       const user = getUser(body.userId);
+      if (!validateUser(user)) return send(res, 200, { ok: false });
 
-      if (!validateUser(user)) {
-        return send(res, 200, { ok: false });
-      }
-
-      db.typing[user.id] = {
-        name: user.name,
-        time: now()
-      };
-
+      db.typing[user.id] = { name: user.name, time: now() };
       return send(res, 200, { ok: true });
     }
 
     // LEAVE
     if (type === "leave") {
       const user = getUser(body.userId);
-
       if (user) {
-        const leaveMessages = [
+        createSystemMessage(`${user.name} sohbetti ayrildi`);
+        const farewells = [
           `${user.name} sohbetten ayrildi. 👋`,
           `Gorusuruz ${user.name}! 👋`,
           `${user.name} cikti. Tekrar bekleriz! 🤗`
         ];
-
-        createSystemMessage(`${user.name} sohbetti ayrildi`);
-        createBotMessage(randomFrom(leaveMessages));
-
+        setTimeout(() => createBotMessage(randomFrom(farewells)), CONFIG.BOT_TYPING_DELAY);
         user.lastSeen = 0;
       }
-
       return send(res, 200, { ok: true });
     }
 
@@ -949,33 +799,24 @@ export default async function handler(req, res) {
   }
 
   // ====================================================
-  // PATCH - Edit Message
+  // PATCH
   // ====================================================
 
   if (req.method === "PATCH") {
+    cleanupWrite();
+
     const body = req.body || {};
     const user = getUser(body.userId);
-
-    if (!validateUser(user)) {
-      return send(res, 200, { ok: false });
-    }
+    if (!validateUser(user)) return send(res, 200, { ok: false });
 
     updateUserActivity(user);
 
     const msg = db.messages.find(m => m.id === body.id);
-
-    if (!msg) {
-      return send(res, 404, { error: "message_not_found" });
-    }
-
-    if (msg.userId !== user.id) {
-      return send(res, 403, { error: "forbidden" });
-    }
+    if (!msg) return send(res, 404, { error: "message_not_found" });
+    if (msg.userId !== user.id) return send(res, 403, { error: "forbidden" });
 
     const newText = sanitize(body.text);
-    if (!newText) {
-      return send(res, 400, { error: "empty_message" });
-    }
+    if (!newText) return send(res, 400, { error: "empty_message" });
 
     msg.text = newText;
     msg.editedAt = now();
@@ -984,31 +825,23 @@ export default async function handler(req, res) {
   }
 
   // ====================================================
-  // DELETE - Remove Message
+  // DELETE
   // ====================================================
 
   if (req.method === "DELETE") {
+    cleanupWrite();
+
     const body = req.body || {};
     const user = getUser(body.userId);
-
-    if (!validateUser(user)) {
-      return send(res, 200, { ok: false });
-    }
+    if (!validateUser(user)) return send(res, 200, { ok: false });
 
     updateUserActivity(user);
 
     const msg = db.messages.find(m => m.id === body.id);
-
-    if (!msg) {
-      return send(res, 404, { error: "message_not_found" });
-    }
-
-    if (msg.userId !== user.id) {
-      return send(res, 403, { error: "forbidden" });
-    }
+    if (!msg) return send(res, 404, { error: "message_not_found" });
+    if (msg.userId !== user.id) return send(res, 403, { error: "forbidden" });
 
     db.messages = db.messages.filter(m => m.id !== body.id);
-
     return send(res, 200, { ok: true });
   }
 
