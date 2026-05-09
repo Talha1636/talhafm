@@ -1,25 +1,60 @@
 // /api/messages.js
-// NetTalk Pro API
+// Tek dosya stabil NetTalk API
+// Auto rejoin sorununu minimize eder
+// Vercel/serverless uyumlu global cache kullanır
 
-let messages = [];
-let users = [];
-let typingUsers = {};
-let rateLimits = {};
+const globalStore = globalThis.__NETTALK_STORE__;
 
-const MAX_MESSAGES = 200;
-const TYPING_TIMEOUT = 3000;
+if (!globalStore) {
+  globalThis.__NETTALK_STORE__ = {
+    messages: [],
+    users: [],
+    typingUsers: {},
+    rateLimits: {}
+  };
+}
+
+const store = globalThis.__NETTALK_STORE__;
+
+const MAX_MESSAGES = 300;
 const RATE_LIMIT_MS = 1200;
+const USER_TIMEOUT = 1000 * 60 * 60 * 24; // 24 saat
+const TYPING_TIMEOUT = 3000;
+
+function uid() {
+  return (
+    Math.random().toString(36).slice(2) +
+    Date.now().toString(36)
+  );
+}
 
 function json(res, code, data) {
   res.status(code).json(data);
 }
 
-function uid() {
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+function cleanup() {
+  const now = Date.now();
+
+  // eski typing temizle
+  for (const id in store.typingUsers) {
+    if (now - store.typingUsers[id].time > TYPING_TIMEOUT) {
+      delete store.typingUsers[id];
+    }
+  }
+
+  // çok eski kullanıcı temizle
+  store.users = store.users.filter(
+    u => now - u.lastSeen < USER_TIMEOUT
+  );
+
+  // mesaj limiti
+  if (store.messages.length > MAX_MESSAGES) {
+    store.messages = store.messages.slice(-MAX_MESSAGES);
+  }
 }
 
 function systemMessage(text) {
-  messages.push({
+  store.messages.push({
     id: uid(),
     type: "system",
     userId: "__system__",
@@ -28,53 +63,63 @@ function systemMessage(text) {
     createdAt: Date.now()
   });
 
-  trimMessages();
-}
-
-function trimMessages() {
-  if (messages.length > MAX_MESSAGES) {
-    messages = messages.slice(-MAX_MESSAGES);
-  }
+  cleanup();
 }
 
 function findUser(id) {
-  return users.find(u => u.id === id);
+  return store.users.find(u => u.id === id);
 }
 
 export default async function handler(req, res) {
-  // CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET,POST,PATCH,DELETE,OPTIONS"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type"
+  );
 
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
-  // ================= GET =================
-  if (req.method === "GET") {
-    const now = Date.now();
+  cleanup();
 
-    const typing = Object.values(typingUsers)
-      .filter(t => now - t.time < TYPING_TIMEOUT)
+  // =========================================================
+  // GET
+  // =========================================================
+
+  if (req.method === "GET") {
+    const typing = Object.values(store.typingUsers)
+      .filter(t => Date.now() - t.time < TYPING_TIMEOUT)
       .map(t => t.name);
 
     return json(res, 200, {
       ok: true,
-      messages,
-      users,
+      messages: store.messages,
+      users: store.users,
       typing
     });
   }
 
-  // ================= POST =================
+  // =========================================================
+  // POST
+  // =========================================================
+
   if (req.method === "POST") {
     const body = req.body || {};
     const type = body.type;
 
-    // ===== JOIN =====
+    // =====================================================
+    // JOIN
+    // =====================================================
+
     if (type === "join") {
-      let name = String(body.name || "").trim();
+      let name = String(body.name || "")
+        .trim()
+        .slice(0, 20);
 
       if (!name || name.length < 2) {
         return json(res, 400, {
@@ -82,32 +127,35 @@ export default async function handler(req, res) {
         });
       }
 
-      name = name.slice(0, 20);
+      // AYNI KULLANICIYI TEKRAR KULLAN
+      // AUTO REJOIN SORUNUNU BÜYÜK ORANDA ÇÖZER
 
-      // Nick çakışırsa otomatik düzelt
-      let finalName = name;
-      let count = 1;
+      let existing = store.users.find(
+        u => u.name.toLowerCase() === name.toLowerCase()
+      );
 
-      while (
-        users.some(
-          u => u.name.toLowerCase() === finalName.toLowerCase()
-        )
-      ) {
-        count++;
-        finalName = `${name}${count}`;
+      if (existing) {
+        existing.lastSeen = Date.now();
+
+        return json(res, 200, {
+          ok: true,
+          userId: existing.id,
+          userName: existing.name,
+          restored: true
+        });
       }
 
       const user = {
         id: uid(),
-        name: finalName,
+        name,
         roomId: body.roomId || "genel",
-        lastSeen: Date.now(),
-        muted: false
+        muted: false,
+        lastSeen: Date.now()
       };
 
-      users.push(user);
+      store.users.push(user);
 
-      systemMessage(`${finalName} sohbete katildi`);
+      systemMessage(`${name} sohbete katildi`);
 
       return json(res, 200, {
         ok: true,
@@ -116,13 +164,20 @@ export default async function handler(req, res) {
       });
     }
 
-    // ===== HEARTBEAT =====
+    // =====================================================
+    // HEARTBEAT
+    // =====================================================
+
     if (type === "heartbeat") {
       const user = findUser(body.userId);
 
+      // invalid_user döndürme
+      // auto rejoin spamını engeller
+
       if (!user) {
-        return json(res, 404, {
-          error: "user_not_found"
+        return json(res, 200, {
+          ok: false,
+          missing: true
         });
       }
 
@@ -134,13 +189,18 @@ export default async function handler(req, res) {
       });
     }
 
-    // ===== MESSAGE =====
+    // =====================================================
+    // MESSAGE
+    // =====================================================
+
     if (type === "message") {
       const user = findUser(body.userId);
 
+      // HATA FIRLATMA
       if (!user) {
-        return json(res, 404, {
-          error: "invalid_user"
+        return json(res, 200, {
+          ok: false,
+          ignored: true
         });
       }
 
@@ -152,7 +212,9 @@ export default async function handler(req, res) {
         });
       }
 
-      const text = String(body.text || "").trim();
+      const text = String(body.text || "")
+        .trim()
+        .slice(0, 500);
 
       if (!text) {
         return json(res, 400, {
@@ -160,28 +222,29 @@ export default async function handler(req, res) {
         });
       }
 
-      // Rate limit
+      // rate limit
       const now = Date.now();
 
       if (
-        rateLimits[user.id] &&
-        now - rateLimits[user.id] < RATE_LIMIT_MS
+        store.rateLimits[user.id] &&
+        now - store.rateLimits[user.id] < RATE_LIMIT_MS
       ) {
         return json(res, 429, {
           error: "rate_limit"
         });
       }
 
-      rateLimits[user.id] = now;
+      store.rateLimits[user.id] = now;
 
-      // Commands
+      // ================= COMMANDS =================
+
       if (text.startsWith("/")) {
         const parts = text.split(" ");
         const cmd = parts[0].toLowerCase();
 
         // /help
         if (cmd === "/help") {
-          messages.push({
+          store.messages.push({
             id: uid(),
             type: "system",
             userId: "__bot__",
@@ -196,9 +259,11 @@ export default async function handler(req, res) {
 
         // /users
         if (cmd === "/users") {
-          const list = users.map(u => u.name).join(", ");
+          const list = store.users
+            .map(u => u.name)
+            .join(", ");
 
-          messages.push({
+          store.messages.push({
             id: uid(),
             type: "system",
             userId: "__bot__",
@@ -212,21 +277,25 @@ export default async function handler(req, res) {
 
         // /stats
         if (cmd === "/stats") {
-          messages.push({
+          store.messages.push({
             id: uid(),
             type: "system",
             userId: "__bot__",
             userName: "NetTalk Bot",
-            text: `Mesaj: ${messages.length} | Kullanici: ${users.length}`,
+            text: `Mesaj: ${store.messages.length} | Kullanici: ${store.users.length}`,
             createdAt: Date.now()
           });
 
           return json(res, 200, { ok: true });
         }
 
-        // /nick yeniisim
+        // /nick
         if (cmd === "/nick") {
-          const newNick = parts.slice(1).join(" ").trim();
+          const newNick = parts
+            .slice(1)
+            .join(" ")
+            .trim()
+            .slice(0, 20);
 
           if (!newNick || newNick.length < 2) {
             return json(res, 400, {
@@ -234,9 +303,13 @@ export default async function handler(req, res) {
             });
           }
 
-          user.name = newNick.slice(0, 20);
+          const old = user.name;
 
-          systemMessage(`${body.userId} nick degistirdi`);
+          user.name = newNick;
+
+          systemMessage(
+            `${old} nick degistirdi -> ${newNick}`
+          );
 
           return json(res, 200, {
             ok: true
@@ -245,7 +318,7 @@ export default async function handler(req, res) {
 
         // /clear
         if (cmd === "/clear") {
-          messages = [];
+          store.messages = [];
 
           systemMessage("Sohbet temizlendi");
 
@@ -254,12 +327,17 @@ export default async function handler(req, res) {
           });
         }
 
-        // /mute isim
+        // /mute
         if (cmd === "/mute") {
-          const target = parts.slice(1).join(" ").trim();
+          const target = parts
+            .slice(1)
+            .join(" ")
+            .trim();
 
-          const u = users.find(
-            x => x.name.toLowerCase() === target.toLowerCase()
+          const u = store.users.find(
+            x =>
+              x.name.toLowerCase() ===
+              target.toLowerCase()
           );
 
           if (u) {
@@ -273,18 +351,25 @@ export default async function handler(req, res) {
           });
         }
 
-        // /unmute isim
+        // /unmute
         if (cmd === "/unmute") {
-          const target = parts.slice(1).join(" ").trim();
+          const target = parts
+            .slice(1)
+            .join(" ")
+            .trim();
 
-          const u = users.find(
-            x => x.name.toLowerCase() === target.toLowerCase()
+          const u = store.users.find(
+            x =>
+              x.name.toLowerCase() ===
+              target.toLowerCase()
           );
 
           if (u) {
             u.muted = false;
 
-            systemMessage(`${u.name} susturmasi kaldirildi`);
+            systemMessage(
+              `${u.name} susturmasi kaldirildi`
+            );
           }
 
           return json(res, 200, {
@@ -293,35 +378,41 @@ export default async function handler(req, res) {
         }
       }
 
-      // Normal mesaj
-      messages.push({
+      // ================= NORMAL MESSAGE =================
+
+      store.messages.push({
         id: uid(),
         type: "message",
         userId: user.id,
         userName: user.name,
-        text: text.slice(0, 500),
+        text,
         createdAt: Date.now(),
         reactions: {}
       });
 
-      trimMessages();
+      cleanup();
 
       return json(res, 200, {
         ok: true
       });
     }
 
-    // ===== REACTION =====
+    // =====================================================
+    // REACTION
+    // =====================================================
+
     if (type === "reaction") {
       const user = findUser(body.userId);
 
       if (!user) {
-        return json(res, 404, {
-          error: "invalid_user"
+        return json(res, 200, {
+          ok: false
         });
       }
 
-      const msg = messages.find(m => m.id === body.messageId);
+      const msg = store.messages.find(
+        m => m.id === body.messageId
+      );
 
       if (!msg) {
         return json(res, 404, {
@@ -340,8 +431,9 @@ export default async function handler(req, res) {
       const arr = msg.reactions[body.emoji];
 
       if (arr.includes(user.id)) {
-        msg.reactions[body.emoji] =
-          arr.filter(x => x !== user.id);
+        msg.reactions[body.emoji] = arr.filter(
+          x => x !== user.id
+        );
 
         if (msg.reactions[body.emoji].length === 0) {
           delete msg.reactions[body.emoji];
@@ -355,17 +447,20 @@ export default async function handler(req, res) {
       });
     }
 
-    // ===== TYPING =====
+    // =====================================================
+    // TYPING
+    // =====================================================
+
     if (type === "typing") {
       const user = findUser(body.userId);
 
       if (!user) {
-        return json(res, 404, {
-          error: "invalid_user"
+        return json(res, 200, {
+          ok: false
         });
       }
 
-      typingUsers[user.id] = {
+      store.typingUsers[user.id] = {
         name: user.name,
         time: Date.now()
       };
@@ -375,14 +470,17 @@ export default async function handler(req, res) {
       });
     }
 
-    // ===== LEAVE =====
+    // =====================================================
+    // LEAVE
+    // =====================================================
+
     if (type === "leave") {
       const user = findUser(body.userId);
 
       if (user) {
-        users = users.filter(u => u.id !== user.id);
-
-        systemMessage(`${user.name} ayrildi`);
+        // tamamen silme
+        // sadece pasif yap
+        user.lastSeen = 0;
       }
 
       return json(res, 200, {
@@ -395,19 +493,24 @@ export default async function handler(req, res) {
     });
   }
 
-  // ================= PATCH =================
+  // =========================================================
+  // PATCH
+  // =========================================================
+
   if (req.method === "PATCH") {
     const body = req.body || {};
 
     const user = findUser(body.userId);
 
     if (!user) {
-      return json(res, 404, {
-        error: "invalid_user"
+      return json(res, 200, {
+        ok: false
       });
     }
 
-    const msg = messages.find(m => m.id === body.id);
+    const msg = store.messages.find(
+      m => m.id === body.id
+    );
 
     if (!msg) {
       return json(res, 404, {
@@ -421,7 +524,10 @@ export default async function handler(req, res) {
       });
     }
 
-    msg.text = String(body.text || "").slice(0, 500);
+    msg.text = String(body.text || "")
+      .trim()
+      .slice(0, 500);
+
     msg.editedAt = Date.now();
 
     return json(res, 200, {
@@ -429,19 +535,24 @@ export default async function handler(req, res) {
     });
   }
 
-  // ================= DELETE =================
+  // =========================================================
+  // DELETE
+  // =========================================================
+
   if (req.method === "DELETE") {
     const body = req.body || {};
 
     const user = findUser(body.userId);
 
     if (!user) {
-      return json(res, 404, {
-        error: "invalid_user"
+      return json(res, 200, {
+        ok: false
       });
     }
 
-    const msg = messages.find(m => m.id === body.id);
+    const msg = store.messages.find(
+      m => m.id === body.id
+    );
 
     if (!msg) {
       return json(res, 404, {
@@ -455,7 +566,9 @@ export default async function handler(req, res) {
       });
     }
 
-    messages = messages.filter(m => m.id !== body.id);
+    store.messages = store.messages.filter(
+      m => m.id !== body.id
+    );
 
     return json(res, 200, {
       ok: true
