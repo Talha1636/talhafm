@@ -3,406 +3,201 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>SesliChat Pro - Yönetim ve Sesli Sohbet Platformu</title>
+<title>SesliChat Pro - Yönetim Paneli</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <style>
-/* ========================================================================
-   GLOBAL RESET & VARIABLES
-   ======================================================================== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 :root {
     --bg-main: #050509; --bg-panel: #0a0a14; --bg-card: #0f0f1e; --bg-input: #12122a;
-    --border-subtle: rgba(89, 65, 160, 0.1); --border-normal: rgba(89, 65, 160, 0.2); --border-strong: rgba(89, 65, 160, 0.4);
+    --border-subtle: rgba(59, 130, 246, 0.1); --border-normal: rgba(59, 130, 246, 0.2); --border-strong: rgba(59, 130, 246, 0.4);
     --accent-purple: #8b5cf6; --accent-purple-glow: rgba(139, 92, 246, 0.4);
     --accent-blue: #3b82f6; --accent-blue-glow: rgba(59, 130, 246, 0.3);
     --accent-cyan: #06b6d4; --accent-cyan-glow: rgba(6, 182, 212, 0.4);
     --accent-gold: #f59e0b; --accent-gold-glow: rgba(245, 158, 11, 0.5);
-    --accent-pink: #ec4899; --accent-pink-glow: rgba(236, 72, 153, 0.3);
-    --danger: #ef4444; --success: #22c55e; --success-glow: rgba(34, 197, 94, 0.6); --warn: #eab308;
+    --accent-pink: #ec4899; --danger: #ef4444; --success: #22c55e; --success-glow: rgba(34, 197, 94, 0.6); --warn: #eab308;
     --text-bright: #f8fafc; --text-normal: #cbd5e1; --text-muted: #64748b;
     --font-main: 'Plus Jakarta Sans', sans-serif; --font-mono: 'JetBrains Mono', monospace;
-    --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px; --radius-xl: 24px;
+    --radius-md: 10px; --radius-lg: 16px; --radius-xl: 24px;
     --safe-bottom: env(safe-area-inset-bottom, 0px);
-    --transition-fast: 0.15s ease; --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+html, body { height: 100%; width: 100%; overflow: hidden; background-color: var(--bg-main); color: var(--text-normal); font-family: var(--font-main); font-size: 14px; }
+body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.06) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.04) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--accent-purple); border-radius: 4px; }
 
-html, body { 
-    height: 100%; width: 100%; overflow: hidden; 
-    background-color: var(--bg-main); color: var(--text-normal);
-    font-family: var(--font-main); font-size: 14px; line-height: 1.5;
-}
-body::before { 
-    content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 40%);
-    pointer-events: none; z-index: 0; animation: bgPulse 15s infinite alternate;
-}
-@keyframes bgPulse { 0% { opacity: 0.7; } 100% { opacity: 1; } }
-
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--accent-purple); border-radius: 3px; }
-::selection { background: var(--accent-purple); color: white; }
-
-/* ========================================================================
-   LAYOUT GRID
-   ======================================================================== */
-#app-container {
-    display: grid; grid-template-columns: 280px 1fr 260px;
-    width: 100%; height: 100vh; height: 100dvh;
-    position: relative; z-index: 1;
-}
-
-/* ========================================================================
-   PANEL BASE STYLES
-   ======================================================================== */
-.panel { background: var(--bg-panel); display: flex; flex-direction: column; border: 1px solid var(--border-subtle); position: relative; }
-.panel-header { padding: 20px 16px 12px; border-bottom: 1px solid var(--border-subtle); flex-shrink: 0; }
+#app-container { display: grid; grid-template-columns: 240px 1fr 240px; width: 100%; height: 100vh; height: 100dvh; position: relative; z-index: 1; }
+.panel { background: var(--bg-panel); display: flex; flex-direction: column; border: 1px solid var(--border-subtle); }
+.panel-header { padding: 16px 12px 12px; border-bottom: 1px solid var(--border-subtle); flex-shrink: 0; }
 .panel-content { flex: 1; overflow-y: auto; padding: 8px; }
-.panel-footer { padding: 12px; border-top: 1px solid var(--border-subtle); flex-shrink: 0; background: rgba(5, 5, 9, 0.5); }
+.panel-footer { padding: 10px; border-top: 1px solid var(--border-subtle); flex-shrink: 0; background: rgba(5,5,9,0.5); }
 
-/* ========================================================================
-   LEFT PANEL: ROOMS & NAVIGATION
-   ======================================================================== */
-#left-panel { border-right: 1px solid var(--border-subtle); }
-.brand-container { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-.brand-logo { 
-    width: 42px; height: 42px; border-radius: var(--radius-md); 
-    background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
-    display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;
-    box-shadow: 0 4px 15px var(--accent-purple-glow); position: relative;
-}
-.brand-logo::after { content: ''; position: absolute; inset: -2px; border-radius: var(--radius-lg); background: inherit; filter: blur(10px); opacity: 0.4; z-index: -1; }
-.brand-title { font-size: 16px; font-weight: 800; color: var(--text-bright); letter-spacing: -0.5px; }
-.brand-subtitle { font-size: 9px; color: var(--accent-purple); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
-
-.search-box { 
-    display: flex; align-items: center; gap: 8px; background: var(--bg-card); 
-    border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 8px 12px; 
-}
-.search-box i { color: var(--text-muted); font-size: 12px; }
-.search-box input { 
-    flex: 1; border: none; background: transparent; color: var(--text-bright); 
-    font-family: var(--font-main); font-size: 12px; outline: none; 
-}
+/* Left Panel */
+.brand-container { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.brand-logo { width: 36px; height: 36px; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; box-shadow: 0 0 12px var(--accent-purple-glow); }
+.brand-title { font-size: 15px; font-weight: 800; color: var(--text-bright); letter-spacing: -0.5px; }
+.brand-subtitle { font-size: 8px; color: var(--accent-blue); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+.search-box { display: flex; align-items: center; gap: 8px; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 6px 10px; }
+.search-box i { color: var(--text-muted); font-size: 11px; }
+.search-box input { flex: 1; border: none; background: transparent; color: var(--text-bright); font-family: var(--font-main); font-size: 11px; outline: none; }
 .search-box input::placeholder { color: var(--text-muted); }
-
-.section-label { 
-    font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; 
-    color: var(--text-muted); padding: 16px 12px 8px; display: flex; align-items: center; gap: 8px; 
-}
-.section-label i { font-size: 8px; color: var(--accent-purple); }
-
-/* Room Items */
-.room-item { 
-    display: flex; align-items: center; gap: 12px; padding: 10px 12px; 
-    border-radius: var(--radius-md); cursor: pointer; transition: all var(--transition-fast); 
-    margin-bottom: 2px; position: relative; border-left: 3px solid transparent; 
-}
+.section-label { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); padding: 12px 8px 6px; display: flex; align-items: center; gap: 6px; }
+.room-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; transition: all 0.15s; margin-bottom: 2px; border-left: 3px solid transparent; }
 .room-item:hover { background: rgba(139, 92, 246, 0.05); }
-.room-item.active { 
-    background: linear-gradient(90deg, rgba(139, 92, 246, 0.1), transparent); 
-    border-left-color: var(--accent-purple); 
-}
-.room-icon { 
-    width: 36px; height: 36px; border-radius: var(--radius-md); 
-    display: flex; align-items: center; justify-content: center; color: white; 
-    font-weight: 800; font-size: 14px; flex-shrink: 0; position: relative; 
-}
+.room-item.active { background: rgba(139, 92, 246, 0.1); border-left-color: var(--accent-purple); }
+.room-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 13px; flex-shrink: 0; }
 .room-info { flex: 1; min-width: 0; }
-.room-name { font-size: 13px; font-weight: 700; color: var(--text-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.room-meta { font-size: 10px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; margin-top: 2px; }
-.room-meta .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); box-shadow: 0 0 6px var(--success-glow); }
-.room-voice-indicator { color: var(--success); font-size: 12px; animation: pulse 2s infinite; }
-@keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+.room-name { font-size: 12px; font-weight: 700; color: var(--text-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.room-meta { font-size: 10px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); box-shadow: 0 0 4px var(--success-glow); }
 
-/* User Card Bottom */
-.user-card-mini { 
-    display: flex; align-items: center; gap: 10px; padding: 8px; background: var(--bg-card); 
-    border: 1px solid var(--border-subtle); border-radius: var(--radius-md); 
-}
-.avatar-wrapper { position: relative; width: 36px; height: 36px; flex-shrink: 0; }
-.avatar { width: 100%; height: 100%; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 13px; }
-.status-dot { position: absolute; bottom: -1px; right: -1px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--bg-card); }
-.status-dot.online { background: var(--success); box-shadow: 0 0 6px var(--success-glow); }
+/* User Card Mini */
+.user-card-mini { display: flex; align-items: center; gap: 8px; padding: 6px; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; }
+.avatar { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 12px; flex-shrink: 0; position: relative; }
+.status-dot { position: absolute; bottom: -1px; right: -1px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--bg-card); background: var(--success); box-shadow: 0 0 4px var(--success-glow); }
 .user-info-mini { flex: 1; min-width: 0; }
-.user-name-mini { font-size: 12px; font-weight: 700; color: var(--text-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.user-status-mini { font-size: 10px; color: var(--text-muted); }
-.mini-controls { display: flex; gap: 4px; }
-.btn-icon { 
-    width: 30px; height: 30px; border: none; background: transparent; color: var(--text-muted); 
-    border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; 
-    justify-content: center; font-size: 13px; transition: all var(--transition-fast); 
-}
+.user-name-mini { font-size: 11px; font-weight: 700; color: var(--text-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-controls { display: flex; gap: 2px; }
+.btn-icon { width: 28px; height: 28px; border: none; background: transparent; color: var(--text-muted); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.15s; }
 .btn-icon:hover { background: rgba(255,255,255,0.05); color: var(--text-bright); }
-.btn-icon.danger:hover { color: var(--danger); }
 .btn-icon.mic-on { color: var(--success); }
 
-/* ========================================================================
-   CENTER PANEL: LOBBY & CHAT
-   ======================================================================== */
+/* Center Panel */
 #center-panel { border: none; background: var(--bg-main); display: flex; flex-direction: column; }
-.chat-header { 
-    padding: 14px 20px; border-bottom: 1px solid var(--border-subtle); display: flex; 
-    align-items: center; gap: 12px; background: rgba(10, 10, 20, 0.8); backdrop-filter: blur(12px); z-index: 5; 
-}
-.header-room-info { display: flex; align-items: center; gap: 10px; flex: 1; }
-.hash-icon { width: 32px; height: 32px; background: var(--bg-card); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 900; font-size: 16px; font-family: var(--font-mono); }
-.header-title { font-size: 15px; font-weight: 800; color: var(--text-bright); font-family: var(--font-mono); }
-.header-desc { font-size: 11px; color: var(--text-muted); margin-left: 8px; border-left: 1px solid var(--border-subtle); padding-left: 8px; }
-.muted-badge { display: none; font-size: 11px; color: var(--danger); background: rgba(239,68,68,0.1); padding: 4px 10px; border-radius: var(--radius-sm); font-weight: 700; margin-left: auto; }
-.muted-badge.show { display: flex; align-items: center; gap: 6px; }
+.chat-header { padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; gap: 10px; background: rgba(10,10,20,0.8); backdrop-filter: blur(12px); z-index: 5; }
+.hash-icon { width: 28px; height: 28px; background: var(--bg-card); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-weight: 900; font-size: 14px; font-family: var(--font-mono); }
+.header-title { font-size: 14px; font-weight: 800; color: var(--text-bright); font-family: var(--font-mono); }
 
 /* Lobby View */
-.lobby-container { 
-    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; 
-    padding: 40px; overflow-y: auto; 
-}
-.lobby-hero { 
-    width: 100%; max-width: 900px; aspect-ratio: 2.2/1; border-radius: var(--radius-xl); 
-    overflow: hidden; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5); margin-bottom: 30px; 
-    border: 1px solid var(--border-normal); 
-}
-.lobby-hero img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8); }
-.lobby-overlay { 
-    position: absolute; inset: 0; 
-    background: linear-gradient(180deg, rgba(5,5,9,0.2) 0%, rgba(5,5,9,0.9) 100%); 
-    display: flex; flex-direction: column; justify-content: flex-end; padding: 30px; 
-}
-.lobby-title { font-size: 32px; font-weight: 900; color: var(--text-bright); margin-bottom: 8px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-.lobby-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; }
-.lobby-actions { display: flex; gap: 12px; align-items: center; }
-.btn-primary { 
-    padding: 12px 24px; background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); 
-    color: white; border: none; border-radius: var(--radius-md); font-family: var(--font-main); 
-    font-weight: 800; font-size: 14px; cursor: pointer; transition: all var(--transition-normal); 
-    box-shadow: 0 4px 15px var(--accent-purple-glow); display: flex; align-items: center; gap: 8px; 
-}
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--accent-purple-glow); filter: brightness(1.1); }
-.btn-secondary { 
-    padding: 12px 24px; background: rgba(255,255,255,0.05); color: var(--text-bright); 
-    border: 1px solid var(--border-normal); border-radius: var(--radius-md); font-family: var(--font-main); 
-    font-weight: 700; font-size: 14px; cursor: pointer; transition: all var(--transition-fast); 
-    display: flex; align-items: center; gap: 8px; 
-}
-.btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: var(--border-strong); }
+.lobby-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; overflow-y: auto; }
+.lobby-hero { width: 100%; max-width: 800px; aspect-ratio: 2.2/1; border-radius: var(--radius-xl); overflow: hidden; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.5); margin-bottom: 24px; border: 1px solid var(--border-normal); }
+.lobby-hero img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8) saturate(1.2); }
+.lobby-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,5,9,0.1) 0%, rgba(5,5,9,0.9) 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; }
+.lobby-title { font-size: 28px; font-weight: 900; color: var(--text-bright); margin-bottom: 8px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+.lobby-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+.lobby-actions { display: flex; gap: 10px; }
+.btn-primary { padding: 10px 20px; background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); color: white; border: none; border-radius: 8px; font-family: var(--font-main); font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px var(--accent-purple-glow); display: flex; align-items: center; gap: 8px; }
+.btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.btn-secondary { padding: 10px 20px; background: rgba(255,255,255,0.05); color: var(--text-bright); border: 1px solid var(--border-normal); border-radius: 8px; font-family: var(--font-main); font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
 
-/* Active Voice Channel UI in Lobby */
-.lobby-voice-bar { 
-    width: 100%; max-width: 900px; background: var(--bg-card); border: 1px solid var(--border-normal); 
-    border-radius: var(--radius-lg); padding: 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; 
-}
-.voice-status-icon { font-size: 24px; color: var(--success); animation: pulse 2s infinite; }
-.voice-participants { display: flex; flex: 1; gap: 15px; overflow-x: auto; padding: 5px 0; }
-.voice-participant { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 60px; }
-.voice-avatar-wrap { position: relative; }
-.voice-avatar { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 16px; }
-.voice-avatar.speaking { box-shadow: 0 0 0 3px var(--success), 0 0 15px var(--success-glow); animation: speakPulse 1s infinite alternate; }
-@keyframes speakPulse { from { box-shadow: 0 0 0 3px var(--success), 0 0 10px var(--success-glow); } to { box-shadow: 0 0 0 5px var(--success), 0 0 25px var(--success-glow); } }
-.v-name { font-size: 10px; color: var(--text-bright); font-weight: 600; text-align: center; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Voice & Admin Bar */
+.lobby-info-bar { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 8px; }
+.voice-status { display: flex; align-items: center; gap: 15px; background: var(--bg-card); border: 1px solid var(--border-normal); border-radius: var(--radius-lg); padding: 12px 16px; margin-bottom: 8px; }
+.voice-icon { color: var(--success); font-size: 18px; animation: pulse 2s infinite; }
+@keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+.voice-participants { display: flex; gap: 12px; flex: 1; overflow-x: auto; }
+.voice-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 14px; flex-shrink: 0; border: 2px solid transparent; }
+.voice-avatar.speaking { border-color: var(--success); box-shadow: 0 0 12px var(--success-glow); animation: speak 1s infinite alternate; }
+@keyframes speak { from { box-shadow: 0 0 6px var(--success-glow); } to { box-shadow: 0 0 16px var(--success-glow); } }
 
-/* Admin Hierarchy Preview */
-.lobby-admins { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 8px; }
-.admin-row { display: flex; align-items: center; gap: 12px; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px 16px; }
-.role-badge-large { padding: 4px 10px; border-radius: var(--radius-sm); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: white; }
-.role-sm { background: linear-gradient(135deg, #d97706, var(--accent-gold)); }
-.role-cm { background: linear-gradient(135deg, #7c3aed, var(--accent-purple)); }
-.role-ca { background: linear-gradient(135deg, #0891b2, var(--accent-cyan)); }
-.admin-names { font-size: 12px; font-weight: 600; color: var(--text-normal); }
-.lobby-footer-text { font-size: 10px; color: var(--text-muted); margin-top: 12px; text-align: center; font-style: italic; }
+.admin-row { display: flex; align-items: center; gap: 10px; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 10px 14px; }
+.role-badge-large { padding: 4px 8px; border-radius: 4px; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: white; min-width: 90px; text-align: center; }
+.role-hyper { background: linear-gradient(135deg, #d97706, var(--accent-gold)); }
+.role-chatm { background: linear-gradient(135deg, #7c3aed, var(--accent-purple)); }
+.role-coadm { background: linear-gradient(135deg, #0891b2, var(--accent-cyan)); }
+.admin-names { font-size: 11px; font-weight: 600; color: var(--text-normal); }
+.lobby-footer-text { font-size: 9px; color: var(--text-muted); margin-top: 12px; text-align: center; font-style: italic; opacity: 0.7; }
 
 /* Chat View */
 .chat-container { flex: 1; display: none; flex-direction: column; position: relative; }
 .chat-container.active { display: flex; }
-.messages-wrapper { flex: 1; overflow-y: auto; padding: 16px 20px; scroll-behavior: smooth; }
-.empty-state { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); gap: 12px; }
-.empty-state i { font-size: 48px; color: var(--accent-purple); opacity: 0.3; }
+.messages-wrapper { flex: 1; overflow-y: auto; padding: 16px; scroll-behavior: smooth; }
+.message { display: flex; gap: 10px; margin-bottom: 14px; }
+.msg-avatar { width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 12px; }
+.msg-content { flex: 1; min-width: 0; background: var(--bg-card); padding: 8px 12px; border-radius: 0 8px 8px 8px; border: 1px solid var(--border-subtle); }
+.msg-header { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.msg-author { font-size: 12px; font-weight: 800; color: var(--accent-purple); }
+.msg-author.hyper { color: var(--accent-gold); text-shadow: 0 0 8px var(--accent-gold-glow); }
+.msg-author.chatm { color: var(--accent-purple); }
+.msg-author.coadm { color: var(--accent-cyan); }
+.msg-badge { font-size: 7px; padding: 1px 4px; border-radius: 3px; color: white; font-weight: 800; text-transform: uppercase; vertical-align: middle; margin-right: 4px; }
+.msg-time { font-size: 9px; color: var(--text-muted); font-family: var(--font-mono); margin-left: auto; }
+.msg-text { font-size: 13px; color: var(--text-normal); line-height: 1.4; word-wrap: break-word; white-space: pre-wrap; }
 
-.message { display: flex; gap: 12px; margin-bottom: 16px; position: relative; padding: 4px 0; }
-.message:hover { background: rgba(255,255,255,0.01); }
-.msg-avatar { width: 40px; height: 40px; border-radius: var(--radius-md); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 14px; position: relative; }
-.msg-avatar.speaking::after { content: ''; position: absolute; inset: -3px; border-radius: calc(var(--radius-md) + 3px); border: 2px solid var(--success); animation: speakPulse 1s infinite alternate; }
-.msg-content { flex: 1; min-width: 0; }
-.msg-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
-.msg-author { font-size: 13px; font-weight: 800; color: var(--accent-purple); cursor: pointer; transition: color 0.2s; display: flex; align-items: center; gap: 6px; }
-.msg-author:hover { text-decoration: underline; }
-.msg-author.admin-sm { color: var(--accent-gold); text-shadow: 0 0 10px var(--accent-gold-glow); }
-.msg-author.admin-cm { color: var(--accent-purple); text-shadow: 0 0 10px var(--accent-purple-glow); }
-.msg-author.admin-ca { color: var(--accent-cyan); text-shadow: 0 0 10px var(--accent-cyan-glow); }
-.msg-timestamp { font-size: 10px; color: var(--text-muted); font-family: var(--font-mono); }
-.msg-badge { font-size: 8px; padding: 2px 4px; border-radius: 3px; color: white; font-weight: 800; text-transform: uppercase; vertical-align: middle; }
-.msg-text { font-size: 13.5px; color: var(--text-normal); line-height: 1.5; word-wrap: break-word; white-space: pre-wrap; }
-.msg-voice-player { display: flex; align-items: center; gap: 10px; background: var(--bg-card); padding: 8px 12px; border-radius: var(--radius-lg); margin-top: 4px; width: 300px; border: 1px solid var(--border-subtle); }
-.msg-voice-player i { color: var(--accent-purple); }
-.voice-wave { flex: 1; height: 20px; background: repeating-linear-gradient(90deg, var(--accent-purple) 0, var(--accent-purple) 2px, transparent 2px, transparent 4px); opacity: 0.5; border-radius: 4px; }
-.voice-dur { font-size: 10px; color: var(--text-muted); font-family: var(--font-mono); }
-
-/* Typing & Input */
-.typing-indicator { padding: 0 20px 8px; font-size: 11px; color: var(--text-muted); height: 20px; display: flex; align-items: center; gap: 6px; }
-.typing-dots span { width: 4px; height: 4px; background: var(--accent-purple); border-radius: 50%; display: inline-block; animation: bounce 1s infinite; }
-.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-
-.chat-input-area { 
-    padding: 12px 20px calc(12px + var(--safe-bottom)); background: var(--bg-panel); 
-    border-top: 1px solid var(--border-subtle); display: flex; align-items: center; gap: 10px; 
-}
-.input-container { 
-    flex: 1; display: flex; align-items: center; background: var(--bg-card); 
-    border: 1px solid var(--border-normal); border-radius: var(--radius-lg); padding: 4px 4px 4px 16px; 
-    transition: border-color var(--transition-fast); 
-}
-.input-container:focus-within { border-color: var(--accent-purple); box-shadow: 0 0 0 1px var(--accent-purple); }
+.chat-input-area { padding: 12px 16px calc(12px + var(--safe-bottom)); background: var(--bg-panel); border-top: 1px solid var(--border-subtle); display: flex; align-items: center; gap: 10px; }
+.input-container { flex: 1; display: flex; align-items: center; background: var(--bg-card); border: 1px solid var(--border-normal); border-radius: 12px; padding: 4px 4px 4px 12px; transition: border-color 0.2s; }
+.input-container:focus-within { border-color: var(--accent-purple); }
 .input-container input { flex: 1; border: none; background: transparent; color: var(--text-bright); font-family: var(--font-main); font-size: 13px; outline: none; }
 .input-container input::placeholder { color: var(--text-muted); }
-.input-container input:disabled { opacity: 0.5; }
-.btn-send { 
-    height: 36px; padding: 0 16px; background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); 
-    color: white; border: none; border-radius: var(--radius-md); font-family: var(--font-main); font-weight: 700; 
-    font-size: 12px; cursor: pointer; transition: all var(--transition-fast); display: flex; align-items: center; gap: 6px; 
-}
-.btn-send:hover { filter: brightness(1.2); }
-.btn-send:disabled { opacity: 0.4; filter: none; cursor: not-allowed; }
+.btn-send { height: 34px; padding: 0 16px; background: var(--accent-purple); color: white; border: none; border-radius: 8px; font-family: var(--font-main); font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+.btn-send:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-ptt { width: 44px; height: 44px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--border-normal); color: var(--text-muted); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }
+.btn-ptt.recording { background: var(--danger); border-color: var(--danger); color: white; box-shadow: 0 0 15px rgba(239,68,68,0.4); }
 
-.btn-ptt { 
-    width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--border-normal); 
-    color: var(--text-muted); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; 
-    transition: all var(--transition-fast); position: relative; flex-shrink: 0; 
-}
-.btn-ptt:hover { border-color: var(--accent-purple); color: var(--accent-purple); }
-.btn-ptt.recording { background: var(--danger); border-color: var(--danger); color: white; box-shadow: 0 0 20px rgba(239,68,68,0.5); animation: pulse 1s infinite; }
-
-/* ========================================================================
-   RIGHT PANEL: ADMINS & ONLINE
-   ======================================================================== */
-#right-panel { border-left: 1px solid var(--border-subtle); }
-.role-group { margin-bottom: 12px; }
-.role-group-header { display: flex; align-items: center; gap: 8px; padding: 8px 12px; margin-bottom: 4px; }
-.role-icon { width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: white; }
-.role-name { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-.role-name.sm { color: var(--accent-gold); }
-.role-name.cm { color: var(--accent-purple); }
-.role-name.ca { color: var(--accent-cyan); }
-
-.user-item { 
-    display: flex; align-items: center; gap: 10px; padding: 6px 12px; border-radius: var(--radius-sm); 
-    cursor: pointer; transition: background var(--transition-fast); 
-}
+/* Right Panel */
+.role-group { margin-bottom: 10px; }
+.role-group-header { display: flex; align-items: center; gap: 8px; padding: 8px 8px 4px; }
+.role-icon { width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 8px; color: white; }
+.role-name { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+.user-item { display: flex; align-items: center; gap: 8px; padding: 4px 8px; border-radius: 6px; cursor: pointer; transition: background 0.1s; }
 .user-item:hover { background: rgba(255,255,255,0.03); }
-.user-item-avatar { position: relative; width: 32px; height: 32px; }
-.user-item-avatar .avatar { width: 32px; height: 32px; font-size: 11px; }
-.user-item-avatar .mic-on-icon { position: absolute; bottom: -2px; right: -2px; background: var(--bg-panel); border-radius: 50%; padding: 1px; font-size: 9px; color: var(--success); }
-.user-item-info { flex: 1; min-width: 0; }
-.user-item-name { font-size: 12px; font-weight: 700; color: var(--text-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.user-item-name.sm { color: var(--accent-gold); }
-.user-item-name.cm { color: var(--accent-purple); }
-.user-item-name.ca { color: var(--accent-cyan); }
-.user-item-role { font-size: 9px; color: var(--text-muted); }
+.user-item-avatar { position: relative; width: 28px; height: 28px; }
+.user-item-avatar .avatar { width: 28px; height: 28px; font-size: 10px; border-radius: 6px; }
+.mic-on-icon { position: absolute; bottom: -2px; right: -2px; background: var(--bg-panel); border-radius: 50%; padding: 1px; font-size: 8px; color: var(--success); }
+.user-item-name { font-size: 11px; font-weight: 700; color: var(--text-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-item-name.hyper { color: var(--accent-gold); }
+.user-item-name.chatm { color: var(--accent-purple); }
+.user-item-name.coadm { color: var(--accent-cyan); }
 
-/* ========================================================================
-   MODALS & OVERLAYS
-   ======================================================================== */
+/* Modals */
 .modal-overlay { position: fixed; inset: 0; background: rgba(5,5,9,0.95); backdrop-filter: blur(8px); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.4s; }
 .modal-overlay.show { opacity: 1; visibility: visible; }
-.modal-box { background: var(--bg-panel); border: 1px solid var(--border-normal); border-radius: var(--radius-xl); padding: 32px; width: 420px; max-width: 95vw; transform: scale(0.95); transition: transform 0.4s; }
+.modal-box { background: var(--bg-panel); border: 1px solid var(--border-normal); border-radius: var(--radius-xl); padding: 32px; width: 400px; max-width: 95vw; transform: scale(0.95); transition: transform 0.4s; }
 .modal-overlay.show .modal-box { transform: scale(1); }
-.modal-header { text-align: center; margin-bottom: 24px; }
-.modal-title { font-size: 24px; font-weight: 900; color: var(--text-bright); margin-bottom: 8px; }
-.modal-title span { background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.form-group { margin-bottom: 16px; text-align: left; }
-.form-label { display: block; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-.form-input { width: 100%; padding: 12px 16px; background: var(--bg-card); border: 1px solid var(--border-normal); border-radius: var(--radius-md); color: var(--text-bright); font-family: var(--font-mono); font-size: 14px; outline: none; transition: border-color 0.2s; }
-.form-input:focus { border-color: var(--accent-purple); box-shadow: 0 0 0 3px var(--accent-purple-glow); }
-.form-error { font-size: 11px; color: var(--danger); margin-top: 4px; display: none; }
-.btn-block { width: 100%; padding: 14px; font-size: 15px; justify-content: center; }
+.form-input { width: 100%; padding: 12px; background: var(--bg-card); border: 1px solid var(--border-normal); border-radius: 8px; color: var(--text-bright); font-family: var(--font-mono); font-size: 14px; outline: none; margin-bottom: 12px; transition: border-color 0.2s; }
+.form-input:focus { border-color: var(--accent-purple); box-shadow: 0 0 0 2px var(--accent-purple-glow); }
+.form-error { font-size: 11px; color: var(--danger); margin-bottom: 8px; display: none; }
 
-/* Toast Notifications */
+/* Toast */
 .toast-container { position: fixed; top: 20px; right: 20px; z-index: 200; display: flex; flex-direction: column; gap: 8px; }
-.toast { padding: 12px 16px; background: var(--bg-card); border-left: 4px solid var(--accent-purple); border-radius: var(--radius-md); box-shadow: 0 8px 20px rgba(0,0,0,0.4); animation: slideInRight 0.3s ease; display: flex; align-items: center; gap: 10px; }
+.toast { padding: 10px 14px; background: var(--bg-card); border-left: 4px solid var(--accent-purple); border-radius: 8px; box-shadow: 0 8px 20px rgba(0,0,0,0.4); animation: slideIn 0.3s ease; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-bright); }
 .toast.error { border-left-color: var(--danger); }
 .toast.success { border-left-color: var(--success); }
-@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-/* Context Menu */
-.context-menu { position: fixed; background: var(--bg-card); border: 1px solid var(--border-normal); border-radius: var(--radius-md); padding: 6px; min-width: 180px; z-index: 150; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; }
-.context-menu.show { display: block; animation: fadeIn 0.1s; }
-.ctx-item { padding: 8px 12px; border-radius: var(--radius-sm); font-size: 12px; color: var(--text-normal); cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.1s; }
-.ctx-item:hover { background: rgba(139, 92, 246, 0.1); color: var(--text-bright); }
-.ctx-item i { width: 14px; text-align: center; font-size: 11px; color: var(--text-muted); }
-.ctx-item.danger { color: var(--danger); }
-.ctx-item.danger i { color: var(--danger); }
-.ctx-divider { height: 1px; background: var(--border-subtle); margin: 4px 0; }
-@keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-
-/* ========================================================================
-   MOBILE RESPONSIVE
-   ======================================================================== */
-.mob-btn { display: none; width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border-normal); border-radius: var(--radius-md); color: white; align-items: center; justify-content: center; cursor: pointer; position: fixed; z-index: 50; top: 10px; }
+/* Responsive */
+.mob-btn { display: none; width: 36px; height: 36px; background: var(--bg-card); border: 1px solid var(--border-normal); border-radius: 8px; color: white; align-items: center; justify-content: center; cursor: pointer; position: fixed; z-index: 50; top: 10px; }
 #mob-left { left: 10px; }
 #mob-right { right: 10px; }
+#overlay-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 39; }
 
 @media (max-width: 1024px) {
-    #right-panel { display: none; position: fixed; right: 0; top: 0; bottom: 0; z-index: 40; box-shadow: -5px 0 15px rgba(0,0,0,0.5); }
+    #right-panel { display: none; position: fixed; right: 0; top: 0; bottom: 0; z-index: 40; width: 240px; box-shadow: -5px 0 15px rgba(0,0,0,0.5); }
     #right-panel.show { display: flex; }
     #mob-right { display: flex; }
 }
 @media (max-width: 768px) {
     #app-container { grid-template-columns: 1fr; }
-    #left-panel { display: none; position: fixed; left: 0; top: 0; bottom: 0; z-index: 40; width: 280px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+    #left-panel { display: none; position: fixed; left: 0; top: 0; bottom: 0; z-index: 40; width: 240px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
     #left-panel.show { display: flex; }
-    #right-panel { display: none; }
-    #right-panel.show { display: flex; width: 260px; }
     #mob-left { display: flex; }
-    .chat-header { padding-left: 60px; }
-    .lobby-container { padding: 20px; }
-    .lobby-title { font-size: 22px; }
-    .lobby-hero { aspect-ratio: 16/9; }
+    .chat-header { padding-left: 56px; }
 }
 </style>
 </head>
 <body>
 
-<!-- UI Elements Overlay -->
 <button id="mob-left" class="mob-btn" onclick="togglePanel('left')"><i class="fas fa-bars"></i></button>
 <button id="mob-right" class="mob-btn" onclick="togglePanel('right')"><i class="fas fa-crown"></i></button>
-<div id="overlay-bg" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:39;" onclick="closeAllPanels()"></div>
-
+<div id="overlay-bg" onclick="closeAllPanels()"></div>
 <div class="toast-container" id="toast-container"></div>
-
-<!-- Context Menu -->
-<div id="context-menu" class="context-menu">
-    <div class="ctx-item" onclick="ctxAction('profile')"><i class="fas fa-user"></i> Profili Görüntüle</div>
-    <div class="ctx-item" onclick="ctxAction('message')"><i class="fas fa-envelope"></i> Mesaj Gönder</div>
-    <div class="ctx-divider"></div>
-    <div class="ctx-item" id="ctx-mute" onclick="ctxAction('mute')"><i class="fas fa-microphone-slash"></i> Sustur</div>
-    <div class="ctx-item" id="ctx-admin" onclick="ctxAction('admin')"><i class="fas fa-shield-halved"></i> Yetkili Paneli</div>
-    <div class="ctx-divider"></div>
-    <div class="ctx-item danger" onclick="ctxAction('kick')"><i class="fas fa-boot"></i> At</div>
-</div>
 
 <!-- Login Modal -->
 <div id="login-modal" class="modal-overlay show">
     <div class="modal-box">
-        <div class="modal-header">
-            <div class="brand-logo" style="margin: 0 auto 16px; width: 56px; height: 56px; font-size: 22px; border-radius: 16px;"><i class="fas fa-bolt"></i></div>
-            <div class="modal-title">Sesli<span>Chat</span> Pro</div>
-            <p style="color: var(--text-muted); font-size: 13px;">Yönetim ve Sesli Sohbet Platformu</p>
+        <div style="text-align:center; margin-bottom:20px;">
+            <div class="brand-logo" style="margin:0 auto 12px; width:48px; height:48px; font-size:20px;"><i class="fas fa-bolt"></i></div>
+            <h2 style="font-size:20px; font-weight:900; color:var(--text-bright); margin-bottom:4px;">Sesli<span style="color:var(--accent-blue)">Chat</span> Pro</h2>
+            <p style="font-size:11px; color:var(--text-muted);">Yönetim ve Sesli Sohbet Platformu</p>
         </div>
-        <div class="form-group">
-            <label class="form-label">Kullanıcı Adı</label>
-            <input type="text" id="input-nick" class="form-input" placeholder="Nick belirleyin..." maxlength="20" autofocus>
-            <div id="login-error" class="form-error">Lütfen geçerli bir rumuz girin.</div>
-        </div>
-        <button id="btn-login" class="btn-primary btn-block" onclick="handleLogin()"><i class="fas fa-right-to-bracket"></i> Bağlan</button>
+        <input type="text" id="input-nick" class="form-input" placeholder="Kullanıcı adınızı girin..." maxlength="20" autofocus>
+        <div id="login-error" class="form-error">Lütfen geçerli bir rumuz girin.</div>
+        <button class="btn-primary" style="width:100%; justify-content:center; padding:14px;" onclick="handleLogin()"><i class="fas fa-right-to-bracket"></i> Bağlan</button>
     </div>
 </div>
 
-<!-- Main App Layout -->
+<!-- Main Layout -->
 <div id="app-container">
-
-    <!-- LEFT PANEL -->
+    <!-- Left Panel -->
     <aside id="left-panel" class="panel">
         <div class="panel-header">
             <div class="brand-container">
@@ -414,591 +209,311 @@ body::before {
             </div>
             <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Oda veya kullanıcı ara..." id="search-input" oninput="handleSearch()">
+                <input type="text" placeholder="Ara..." id="search-input" oninput="renderRooms()">
             </div>
         </div>
-        
         <div class="panel-content">
-            <div class="section-label"><i class="fas fa-circle"></i> ODALAR</div>
+            <div class="section-label"><i class="fas fa-circle" style="font-size:5px; color:var(--accent-purple)"></i> ODALAR</div>
             <div id="room-list"></div>
-            
-            <div class="section-label" style="margin-top:20px;"><i class="fas fa-circle"></i> ÖZEL MESAJLAR</div>
-            <div id="dm-list"></div>
         </div>
-
         <div class="panel-footer">
             <div id="my-user-card" class="user-card-mini" style="display:none;">
-                <div class="avatar-wrapper">
+                <div style="position:relative">
                     <div id="my-avatar" class="avatar" style="background:var(--accent-purple)">?</div>
-                    <div class="status-dot online"></div>
+                    <div class="status-dot"></div>
                 </div>
                 <div class="user-info-mini">
                     <div id="my-username" class="user-name-mini">Kullanıcı</div>
-                    <div class="user-status-mini">Çevrimiçi</div>
+                    <div style="font-size:9px; color:var(--success)">Çevrimiçi</div>
                 </div>
                 <div class="mini-controls">
-                    <button class="btn-icon mic-on" title="Mikrofon"><i class="fas fa-microphone"></i></button>
-                    <button class="btn-icon" title="Kulaklık"><i class="fas fa-headphones"></i></button>
-                    <button class="btn-icon" title="Ayarlar"><i class="fas fa-cog"></i></button>
+                    <button class="btn-icon mic-on"><i class="fas fa-microphone"></i></button>
+                    <button class="btn-icon"><i class="fas fa-headphones"></i></button>
+                    <button class="btn-icon"><i class="fas fa-cog"></i></button>
                 </div>
             </div>
         </div>
     </aside>
 
-    <!-- CENTER PANEL -->
+    <!-- Center Panel -->
     <main id="center-panel" class="panel" style="border:none; background:var(--bg-main);">
         <div class="chat-header">
-            <div class="header-room-info">
-                <div class="hash-icon">#</div>
-                <div>
-                    <span id="current-room-name" class="header-title">gambu-lobi</span>
-                    <span class="header-desc" id="current-room-desc">Genel sesli ve yazılı sohbet kanalı</span>
-                </div>
-            </div>
-            <div id="muted-badge" class="muted-badge"><i class="fas fa-microphone-slash"></i> Susturuldunuz</div>
-            <button class="btn-icon" title="Arama" onclick="showToast('Arama henüz hazır değil', 'error')"><i class="fas fa-search"></i></button>
-            <button class="btn-icon" title="İğne" onclick="showToast('Sabitlendi', 'success')"><i class="fas fa-thumbtack"></i></button>
+            <div class="hash-icon"><i class="fas fa-hashtag" style="font-size:12px"></i></div>
+            <span id="current-room-name" class="header-title">gambu-lobi</span>
         </div>
 
-        <!-- LOBBY VIEW -->
         <div id="lobby-view" class="lobby-container">
             <div class="lobby-hero">
-                <img src="https://picsum.photos/seed/mysticalwalk/1200/500.jpg" alt="Lobi">
+                <img src="https://picsum.photos/seed/sufiwalk/1200/500.jpg" alt="Lobi">
                 <div class="lobby-overlay">
-                    <div class="lobby-title" id="lobby-title">Gambu Lobi</div>
-                    <div class="lobby-subtitle">Sesli sohbet için bağlanın veya mesaj bırakın</div>
+                    <div class="lobby-title" id="lobby-title">Gambu Lobı</div>
+                    <div class="lobby-subtitle">Sesli sohbete bağlan veya mesaj bırak</div>
                     <div class="lobby-actions">
-                        <button class="btn-primary" onclick="joinVoiceChannel()"><i class="fas fa-headset"></i> Sese Bağlan</button>
-                        <button class="btn-secondary" onclick="openChatView()"><i class="fas fa-comments"></i> Sohbete Katıl</button>
+                        <button class="btn-primary" onclick="joinVoice()"><i class="fas fa-headset"></i> Sese Bağlan</button>
+                        <button class="btn-secondary" onclick="openChat()"><i class="fas fa-comments"></i> Sohbete Katıl</button>
                     </div>
                 </div>
             </div>
 
-            <div class="lobby-voice-bar" id="voice-bar" style="display:none;">
-                <div class="voice-status-icon"><i class="fas fa-signal"></i></div>
-                <div class="voice-participants" id="voice-participants"></div>
-                <button class="btn-icon danger" onclick="leaveVoiceChannel()" title="Bağlantıyı Kes"><i class="fas fa-phone-slash"></i></button>
-            </div>
+            <div class="lobby-info-bar">
+                <div id="voice-bar" class="voice-status" style="display:none;">
+                    <div class="voice-icon"><i class="fas fa-signal"></i></div>
+                    <div class="voice-participants" id="voice-participants"></div>
+                    <button class="btn-icon" style="color:var(--danger)" onclick="leaveVoice()"><i class="fas fa-phone-slash"></i></button>
+                </div>
 
-            <div class="lobby-admins" id="lobby-admins"></div>
-            <div class="lobby-footer-text">LEVEL İLE KAZANILDI (Yönetici değiştirmeli)</div>
+                <div id="lobby-admins">
+                    <div class="admin-row"><div class="role-badge-large role-hyper">HYPERMASTER</div><div class="admin-names">Rockette, RaPpEr_MaN</div></div>
+                    <div class="admin-row" style="margin-top:4px"><div class="role-badge-large role-chatm">CHATMASTER</div><div class="admin-names">KADIR</div></div>
+                    <div class="admin-row" style="margin-top:4px"><div class="role-badge-large role-coadm">COADMİN</div><div class="admin-names">SeMPaTiK_HaTuN</div></div>
+                </div>
+                <div class="lobby-footer-text">LEVEL İLE KAZANILDI (yönetici değiştirmeli)</div>
+            </div>
         </div>
 
-        <!-- CHAT VIEW -->
         <div id="chat-view" class="chat-container">
-            <div id="messages-wrapper" class="messages-wrapper">
-                <!-- Messages Render Here -->
-            </div>
-            <div id="typing-indicator" class="typing-indicator" style="display:none;">
-                <div class="typing-dots"><span></span><span></span><span></span></div>
-                <span id="typing-text">Birisi yazıyor...</span>
-            </div>
+            <div id="messages-wrapper" class="messages-wrapper"></div>
             <div class="chat-input-area">
-                <button class="btn-icon" style="color:var(--accent-purple)" onclick="showToast('Emoji yakında!')"><i class="far fa-smile"></i></button>
+                <button class="btn-icon" style="color:var(--accent-purple)"><i class="far fa-smile"></i></button>
                 <div class="input-container">
-                    <input type="text" id="msg-input" placeholder="#gambu-lobi kanalına mesaj yaz..." disabled>
-                    <button id="btn-send" class="btn-send" onclick="handleSendMessage()" disabled><i class="fas fa-paper-plane"></i> Gönder</button>
+                    <input type="text" id="msg-input" placeholder="#gambu-lobi kanalına yaz..." disabled>
+                    <button id="btn-send" class="btn-send" onclick="handleSend()" disabled><i class="fas fa-paper-plane"></i> Gönder</button>
                 </div>
-                <button id="btn-ptt" class="btn-ptt" title="Bas Konuş (Push to Talk)" onmousedown="startPTT()" onmouseup="stopPTT()" ontouchstart="startPTT()" ontouchend="stopPTT()">
-                    <i class="fas fa-microphone"></i>
-                </button>
+                <button id="btn-ptt" class="btn-ptt" title="Bas Konuş" onmousedown="startPTT()" onmouseup="stopPTT()" ontouchstart="startPTT()" ontouchend="stopPTT()"><i class="fas fa-microphone"></i></button>
             </div>
         </div>
     </main>
 
-    <!-- RIGHT PANEL -->
+    <!-- Right Panel -->
     <aside id="right-panel" class="panel">
         <div class="panel-header">
-            <h3 style="font-size:14px; font-weight:800; color:var(--text-bright); display:flex; align-items:center; gap:8px;">
+            <h3 style="font-size:13px; font-weight:800; color:var(--text-bright); display:flex; align-items:center; gap:8px;">
                 <i class="fas fa-shield-halved" style="color:var(--accent-gold)"></i> YÖNETİM
             </h3>
         </div>
-        <div class="panel-content" id="right-content">
-            <!-- Rendered by JS -->
-        </div>
-        <div class="panel-footer" style="text-align:center; font-size:9px; color:var(--text-muted);">
-            Level ile kazanılan roller değiştirilebilir.
-        </div>
+        <div class="panel-content" id="right-content"></div>
+        <div class="panel-footer" style="text-align:center; font-size:8px; color:var(--text-muted);">Level ile kazanılan roller değiştirilebilir.</div>
     </aside>
-
 </div>
 
 <script>
-/* ========================================================================
-   APPLICATION STATE & DATA
-   ======================================================================== */
-const State = {
-    user: null,
-    currentRoom: 'gambu-lobi',
-    isMuted: false,
-    isInVoice: false,
-    isPTT: false,
-    messages: [],
-    users: [],
-    typingUsers: [],
-    admins: { sm: [], cm: [], ca: [] }
-};
-
-/* Sabit Oda Verisi (Resimdeki ile birebir) */
-const Rooms = [
-    { id: 'gambu-lobi', name: 'Gambu Lobi', desc: 'Ana lobi ve sesli sohbet', online: 35, color: '#8b5cf6', hasVoice: true, image: 'https://picsum.photos/seed/mysticalwalk/1200/500.jpg' },
-    { id: 'igdivac', name: 'İğdivaç', desc: 'Tartışma ve munazara', online: 19, color: '#3b82f6', hasVoice: true, image: 'https://picsum.photos/seed/igdivac/1200/500.jpg' },
-    { id: 'ozgurluk', name: 'Özgürlük', desc: 'Özgürce sohbet', online: 8, color: '#06b6d4', hasVoice: true, image: 'https://picsum.photos/seed/ozgurluk/1200/500.jpg' },
-    { id: 'sevgi-yolu', name: 'Sevgi Yolu', desc: 'Arkadaşlık ve muhabbet', online: 12, color: '#ec4899', hasVoice: false, image: 'https://picsum.photos/seed/sevgi/1200/500.jpg' },
-    { id: 'dostluk', name: 'Dostluk', desc: 'Samimi sohbetler', online: 5, color: '#10b981', hasVoice: false, image: 'https://picsum.photos/seed/dostluk/1200/500.jpg' },
-    { id: 'muzik', name: 'Müzik', desc: 'Müzik dinle ve paylaş', online: 15, color: '#f59e0b', hasVoice: true, image: 'https://picsum.photos/seed/muzik/1200/500.jpg' },
-    { id: 'oyun', name: 'Oyun', desc: 'Oyun sohbeti', online: 22, color: '#ef4444', hasVoice: true, image: 'https://picsum.photos/seed/oyun/1200/500.jpg' }
+const API = "/api/messages";
+const ROOMS = [
+    { id: 'gambu-lobi', name: 'Gambu Lobı', online: 35, color: '#8b5cf6', image: 'https://picsum.photos/seed/sufiwalk/1200/500.jpg' },
+    { id: 'izdivac', name: 'İzdivaç', online: 19, color: '#3b82f6', image: 'https://picsum.photos/seed/izdivac/1200/500.jpg' },
+    { id: 'ozgurluk', name: 'Özgürlük', online: 8, color: '#06b6d4', image: 'https://picsum.photos/seed/ozgurluk/1200/500.jpg' },
+    { id: 'sevgi-yolu', name: 'Sevgi Yolu', online: 12, color: '#ec4899', image: 'https://picsum.photos/seed/sevgiyolu/1200/500.jpg' },
+    { id: 'dostluk', name: 'Dostluk', online: 5, color: '#10b981', image: 'https://picsum.photos/seed/dostluk/1200/500.jpg' },
+    { id: 'muzik', name: 'Müzik', online: 15, color: '#f59e0b', image: 'https://picsum.photos/seed/muzik/1200/500.jpg' },
+    { id: 'oyun', name: 'Oyun', online: 22, color: '#ef4444', image: 'https://picsum.photos/seed/oyun/1200/500.jpg' }
 ];
 
-/* Sahte Kullanıcı ve Admin Şeması */
-const AdminSchema = {
-    sm: ['Nickiniz2001'],
-    cm: ['Cix_izmirLi_24', 'KADIR'],
-    ca: ['SeMPaTiK_HaTuN']
+// Resimdeki yönetici isimlerine göre sabit eşleşme
+const ADMIN_MAP = {
+    'rockette': 'hyper', 'rapper_man': 'hyper',
+    'kadir': 'chatm', 'cix_izmirli_24': 'chatm',
+    'sempatik_hatun': 'coadm'
 };
 
-/* ========================================================================
-   UTILITY FUNCTIONS
-   ======================================================================== */
-const $ = (sel) => document.querySelector(sel);
-const $$ = (sel) => document.querySelectorAll(sel);
-const esc = (str) => {
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
-};
-const genColor = (name) => {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    const h = Math.abs(hash) % 360;
-    return `hsl(${h}, 70%, 50%)`;
-};
-const genInitials = (name) => name.substring(0, 2).toUpperCase();
-const getRole = (name) => {
-    if (AdminSchema.sm.includes(name)) return 'sm';
-    if (AdminSchema.cm.includes(name)) return 'cm';
-    if (AdminSchema.ca.includes(name)) return 'ca';
-    return null;
-};
+let state = { user: null, currentRoom: 'gambu-lobi', isInVoice: false, isPTT: false, messages: [], users: [], pollTimer: null };
 
-/* ========================================================================
-   UI RENDERING FUNCTIONS
-   ======================================================================== */
+const $ = id => document.querySelector(id);
+const esc = str => { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; };
+const genColor = n => { let h=0; for(let i=0;i<n.length;i++) h=n.charCodeAt(i)+((h<<5)-h); return `hsl(${Math.abs(h)%360}, 70%, 50%)`; };
+const getRole = n => ADMIN_MAP[n.toLowerCase()] || null;
 
 function renderRooms() {
-    const list = $('#room-list');
-    const searchVal = $('#search-input').value.toLowerCase();
-    list.innerHTML = '';
-    
-    const fragment = document.createDocumentFragment();
-    
-    Rooms.filter(r => r.name.toLowerCase().includes(searchVal)).forEach(room => {
-        const isActive = room.id === State.currentRoom;
-        const el = document.createElement('div');
-        el.className = `room-item ${isActive ? 'active' : ''}`;
-        el.onclick = () => switchRoom(room.id);
-        
-        el.innerHTML = `
-            <div class="room-icon" style="background:${room.color}">${room.name.substring(0,1)}</div>
-            <div class="room-info">
-                <div class="room-name">${room.name}</div>
-                <div class="room-meta">
-                    <span class="dot"></span> ${room.online} Çevrimiçi
-                    ${room.hasVoice ? '<i class="fas fa-microphone room-voice-indicator"></i>' : ''}
-                </div>
-            </div>
-        `;
-        fragment.appendChild(el);
+    const list = $('#room-list'); const s = $('#search-input').value.toLowerCase(); list.innerHTML = '';
+    ROOMS.filter(r => r.name.toLowerCase().includes(s)).forEach(r => {
+        list.innerHTML += `<div class="room-item ${r.id===state.currentRoom?'active':''}" onclick="switchRoom('${r.id}')">
+            <div class="room-icon" style="background:${r.color}">${r.name[0]}</div>
+            <div class="room-info"><div class="room-name">${r.name}</div><div class="room-meta"><span class="dot"></span> ${r.online} Çevrimiçi</div></div></div>`;
     });
-    
-    list.appendChild(fragment);
 }
 
 function renderRightPanel() {
-    const content = $('#right-content');
-    let html = '';
-    
-    const renderGroup = (title, roleKey, iconClass, colorClass) => {
-        const users = State.users.filter(u => getRole(u.name) === roleKey);
-        if(users.length === 0) return '';
-        return `
-            <div class="role-group">
-                <div class="role-group-header">
-                    <div class="role-icon ${colorClass}"><i class="${iconClass}"></i></div>
-                    <div class="role-name ${colorClass}">${title}</div>
-                </div>
-                ${users.map(u => `
-                    <div class="user-item" oncontextmenu="showContextMenu(event, '${u.name}')">
-                        <div class="user-item-avatar">
-                            <div class="avatar" style="background:${u.color}">${u.initials}</div>
-                            ${u.isInVoice ? '<div class="mic-on-icon"><i class="fas fa-microphone"></i></div>' : ''}
-                        </div>
-                        <div class="user-item-info">
-                            <div class="user-item-name ${colorClass}">${u.name}</div>
-                            <div class="user-item-role">${title}</div>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
+    const c = $('#right-content'); let html = '';
+    const groups = { hyper: [], chatm: [], coadm: [], user: [] };
+    state.users.forEach(u => { const r = getRole(u.name); if(r) groups[r].push(u); else groups.user.push(u); });
+
+    const renderGroup = (title, role, icon, colorClass) => {
+        if(groups[role].length === 0) return '';
+        return `<div class="role-group"><div class="role-group-header"><div class="role-icon" style="background:var(--accent-${colorClass})"><i class="${icon}"></i></div><div class="role-name" style="color:var(--accent-${colorClass})">${title}</div></div>
+        ${groups[role].map(u => `<div class="user-item"><div class="user-item-avatar"><div class="avatar" style="background:${u.color}">${u.name.substring(0,2).toUpperCase()}</div>${u.isInVoice?'<div class="mic-on-icon"><i class="fas fa-microphone"></i></div>':''}</div><div class="user-item-name ${colorClass}">${u.name}</div></div>`).join('')}</div>`;
     };
 
-    html += renderGroup('SUPERMASTER', 'sm', 'fas fa-crown', 'sm');
-    html += renderGroup('CHATMASTER', 'cm', 'fas fa-shield-halved', 'cm');
-    html += renderGroup('COADMIN', 'ca', 'fas fa-user-shield', 'ca');
+    html += renderGroup('HYPERMASTER', 'hyper', 'fas fa-crown', 'gold');
+    html += renderGroup('CHATMASTER', 'chatm', 'fas fa-shield-halved', 'purple');
+    html += renderGroup('COADMİN', 'coadm', 'fas fa-user-shield', 'cyan');
     
-    // Normal Users
-    const normals = State.users.filter(u => !getRole(u.name));
-    if(normals.length > 0) {
-        html += `
-            <div class="role-group">
-                <div class="role-group-header">
-                    <div class="role-icon" style="background:var(--text-muted)"><i class="fas fa-users"></i></div>
-                    <div class="role-name" style="color:var(--text-muted)">ÇEVRİMİÇİ - ${normals.length}</div>
-                </div>
-                ${normals.map(u => `
-                    <div class="user-item" oncontextmenu="showContextMenu(event, '${u.name}')">
-                        <div class="user-item-avatar">
-                            <div class="avatar" style="background:${u.color}">${u.initials}</div>
-                            ${u.isInVoice ? '<div class="mic-on-icon"><i class="fas fa-microphone"></i></div>' : ''}
-                        </div>
-                        <div class="user-item-info">
-                            <div class="user-item-name">${u.name}</div>
-                            <div class="user-item-role">Kullanıcı</div>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
+    if(groups.user.length > 0) {
+        html += `<div class="role-group"><div class="role-group-header"><div class="role-icon" style="background:var(--text-muted)"><i class="fas fa-users"></i></div><div class="role-name" style="color:var(--text-muted)">ÇEVRİMİÇİ - ${groups.user.length}</div></div>
+        ${groups.user.map(u => `<div class="user-item"><div class="user-item-avatar"><div class="avatar" style="background:${u.color}">${u.name.substring(0,2).toUpperCase()}</div>${u.isInVoice?'<div class="mic-on-icon"><i class="fas fa-microphone"></i></div>':''}</div><div class="user-item-name">${u.name}</div></div>`).join('')}</div>`;
     }
-    
-    content.innerHTML = html;
+    c.innerHTML = html;
 }
 
-function renderLobbyAdmins() {
-    const container = $('#lobby-admins');
-    let html = '';
-    
-    const renderRow = (title, roleKey, badgeClass) => {
-        const users = State.users.filter(u => getRole(u.name) === roleKey);
-        if(users.length === 0) return '';
-        return `
-            <div class="admin-row">
-                <div class="role-badge-large ${badgeClass}">${title}</div>
-                <div class="admin-names">${users.map(u => u.name).join(', ')}</div>
-            </div>
-        `;
-    };
-
-    html += renderRow('SUPERMASTER', 'sm', 'role-sm');
-    html += renderRow('CHATMASTER', 'cm', 'role-cm');
-    html += renderRow('COADMIN', 'ca', 'role-ca');
-    
-    container.innerHTML = html;
-}
-
-function renderVoiceParticipants() {
-    const bar = $('#voice-bar');
-    const container = $('#voice-participants');
-    
-    if (!State.isInVoice) {
-        bar.style.display = 'none';
-        return;
-    }
-    
-    bar.style.display = 'flex';
-    const voiceUsers = State.users.filter(u => u.isInVoice);
-    container.innerHTML = '';
-    
-    voiceUsers.forEach(u => {
-        const div = document.createElement('div');
-        div.className = 'voice-participant';
-        div.innerHTML = `
-            <div class="voice-avatar-wrap">
-                <div class="voice-avatar ${u.isSpeaking ? 'speaking' : ''}" style="background:${u.color}">${u.initials}</div>
-            </div>
-            <div class="v-name">${u.name}</div>
-        `;
-        container.appendChild(div);
+function renderVoice() {
+    const bar = $('#voice-bar'); const p = $('#voice-participants');
+    if(!state.isInVoice) { bar.style.display = 'none'; return; }
+    bar.style.display = 'flex'; p.innerHTML = '';
+    state.users.filter(u => u.isInVoice).forEach(u => {
+        p.innerHTML += `<div style="text-align:center"><div class="voice-avatar ${u.isSpeaking?'speaking':''}" style="background:${u.color}">${u.name.substring(0,2).toUpperCase()}</div><div style="font-size:9px; color:var(--text-bright); margin-top:4px">${u.name}</div></div>`;
     });
 }
 
-/* ========================================================================
-   CORE ACTIONS & LOGIC
-   ======================================================================== */
-
-function switchRoom(roomId) {
-    State.currentRoom = roomId;
-    const room = Rooms.find(r => r.id === roomId);
-    
-    // Update UI states
+function switchRoom(id) {
+    state.currentRoom = id;
+    const room = ROOMS.find(r => r.id === id);
     $('#current-room-name').textContent = room.name.toLowerCase();
-    $('#current-room-desc').textContent = room.desc;
     $('#lobby-title').textContent = room.name;
     $('.lobby-hero img').src = room.image;
-    
-    // Reset views
     $('#lobby-view').style.display = 'flex';
     $('#chat-view').classList.remove('active');
-    $('#msg-input').disabled = true;
-    $('#btn-send').disabled = true;
-    
-    renderRooms();
-    closeAllPanels();
+    $('#msg-input').disabled = true; $('#btn-send').disabled = true;
+    renderRooms(); closeAllPanels();
 }
 
-function openChatView() {
+function openChat() {
     $('#lobby-view').style.display = 'none';
     $('#chat-view').classList.add('active');
-    $('#msg-input').disabled = false;
-    $('#btn-send').disabled = false;
+    $('#msg-input').disabled = false; $('#btn-send').disabled = false;
     $('#msg-input').focus();
-    
-    if(State.messages.length === 0) {
-        simulateInitialMessages();
-    }
 }
 
-function joinVoiceChannel() {
-    State.isInVoice = true;
-    if(State.user) State.user.isInVoice = true;
-    renderVoiceParticipants();
-    openChatView();
-    showToast('Sesli kanala bağlandınız', 'success');
-    
-    // Simulate others speaking
+function joinVoice() {
+    state.isInVoice = true; if(state.user) state.user.isInVoice = true;
+    renderVoice(); openChat(); showToast('Sesli kanala bağlandınız', 'success');
+    // Simulate speaking
     setInterval(() => {
-        const others = State.users.filter(u => u.isInVoice && u.name !== State.user.name);
+        const others = state.users.filter(u => u.isInVoice && u.id !== state.user.id);
         if(others.length > 0) {
             others.forEach(u => u.isSpeaking = false);
-            const randomUser = others[Math.floor(Math.random() * others.length)];
-            randomUser.isSpeaking = true;
-            renderVoiceParticipants();
-            setTimeout(() => { randomUser.isSpeaking = false; renderVoiceParticipants(); }, 2000);
+            const rnd = others[Math.floor(Math.random() * others.length)];
+            rnd.isSpeaking = true; renderVoice();
+            setTimeout(() => { rnd.isSpeaking = false; renderVoice(); }, 2000);
         }
     }, 3000);
 }
 
-function leaveVoiceChannel() {
-    State.isInVoice = false;
-    if(State.user) State.user.isInVoice = false;
-    State.users.forEach(u => u.isSpeaking = false);
-    renderVoiceParticipants();
-    showToast('Sesli kanaldan ayrıldınız');
+function leaveVoice() {
+    state.isInVoice = false; if(state.user) state.user.isInVoice = false;
+    state.users.forEach(u => u.isSpeaking = false);
+    renderVoice(); showToast('Sesli kanaldan ayrıldınız');
 }
 
-function startPTT() {
-    if(!State.isInVoice) return;
-    State.isPTT = true;
-    $('#btn-ptt').classList.add('recording');
-    if(State.user) {
-        State.user.isSpeaking = true;
-        renderVoiceParticipants();
-    }
-}
+function startPTT() { if(!state.isInVoice) return; state.isPTT = true; $('#btn-ptt').classList.add('recording'); if(state.user) { state.user.isSpeaking = true; renderVoice(); } }
+function stopPTT() { state.isPTT = false; $('#btn-ptt').classList.remove('recording'); if(state.user) { state.user.isSpeaking = false; renderVoice(); } }
 
-function stopPTT() {
-    State.isPTT = false;
-    $('#btn-ptt').classList.remove('recording');
-    if(State.user) {
-        State.user.isSpeaking = false;
-        renderVoiceParticipants();
-    }
-}
-
-function handleLogin() {
-    const nickInput = $('#input-nick');
-    const nick = nickInput.value.trim();
+// --- API & MESSAGING CORE ---
+async function handleLogin() {
+    const nick = $('#input-nick').value.trim();
+    if (!nick || nick.length < 2) { $('#login-error').style.display = 'block'; return; }
     
-    if (!nick || nick.length < 2) {
+    try {
+        const res = await fetch(API, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ type: 'join', name: nick, roomId: state.currentRoom }) });
+        const data = await res.json();
+        
+        if (!res.ok) { $('#login-error').textContent = data.error || 'Bağlantı hatası'; $('#login-error').style.display = 'block'; return; }
+
+        state.user = { id: data.userId, name: data.userName, color: genColor(data.userName), isInVoice: false, isSpeaking: false };
+        
+        $('#login-modal').classList.remove('show');
+        $('#my-user-card').style.display = 'flex';
+        $('#my-avatar').style.background = state.user.color;
+        $('#my-avatar').textContent = state.user.name.substring(0,2).toUpperCase();
+        $('#my-username').textContent = state.user.name;
+        
+        startPolling();
+        showToast('Hoş geldiniz, ' + state.user.name, 'success');
+    } catch(e) {
+        $('#login-error').textContent = 'Sunucuya bağlanılamıyor';
         $('#login-error').style.display = 'block';
-        nickInput.style.borderColor = 'var(--danger)';
-        return;
     }
-    
-    // Setup User State
-    State.user = { id: Date.now(), name: nick, color: genColor(nick), initials: genInitials(nick), isInVoice: false, isSpeaking: false };
-    State.users.push(State.user);
-    
-    // Add admins to user list simulation
-    Object.entries(AdminSchema).forEach(([role, names]) => {
-        names.forEach(n => {
-            if(n !== nick) {
-                State.users.push({ id: Date.now() + Math.random(), name: n, color: genColor(n), initials: genInitials(n), isInVoice: Math.random() > 0.5, isSpeaking: false });
-            }
-        });
-    });
-    
-    // Add dummy users
-    const dummyNames = ['MaviRüya', 'KaranlıkBey', 'YıldızTozu', 'RüzgarGülü', 'SessizFırtına', 'GeceKuşu'];
-    dummyNames.forEach(n => {
-        State.users.push({ id: Date.now() + Math.random(), name: n, color: genColor(n), initials: genInitials(n), isInVoice: Math.random() > 0.7, isSpeaking: false });
-    });
-
-    // Update UI
-    $('#login-modal').classList.remove('show');
-    $('#my-user-card').style.display = 'flex';
-    $('#my-avatar').style.background = State.user.color;
-    $('#my-avatar').textContent = State.user.initials;
-    $('#my-username').textContent = State.user.name;
-    
-    renderRooms();
-    renderRightPanel();
-    renderLobbyAdmins();
-    
-    showToast('Hoş geldiniz, ' + nick, 'success');
 }
 
-function handleSendMessage() {
+async function handleSend() {
     const input = $('#msg-input');
     const text = input.value.trim();
-    if (!text) return;
-    
-    addMessage(State.user.name, text, false);
-    input.value = '';
-    
-    // Simulate bot reply
-    setTimeout(() => {
-        addMessage('SesliChat Bot', 'Mesajınız alındı. Sistem aktif.', true);
-    }, 1500);
-}
+    if (!text || !state.user) return;
 
-function addMessage(author, text, isBot) {
-    const msg = {
-        id: Date.now(),
-        author: author,
-        text: text,
-        isBot: isBot,
-        timestamp: new Date()
-    };
-    State.messages.push(msg);
-    renderMessage(msg);
-}
+    input.value = ''; // Hemen temizle
 
-function renderMessage(msg) {
-    const wrapper = $('#messages-wrapper');
-    const emptyState = wrapper.querySelector('.empty-state');
-    if (emptyState) emptyState.remove();
-    
-    const div = document.createElement('div');
-    div.className = 'message';
-    
-    const role = getRole(msg.author);
-    const isSelf = msg.author === State.user?.name;
-    const color = isSelf ? State.user.color : genColor(msg.author);
-    const initials = genInitials(msg.author);
-    const roleClass = role ? `admin-${role}` : (isSelf ? '' : '');
-    const badgeHtml = role ? `<span class="msg-badge role-${role}">${role.toUpperCase()}</span>` : (msg.isBot ? '<span class="msg-badge" style="background:var(--accent-cyan)">BOT</span>' : '');
-    
-    div.innerHTML = `
-        <div class="msg-avatar" style="background:${color}">${initials}</div>
-        <div class="msg-content">
-            <div class="msg-header">
-                <span class="msg-author ${roleClass}">${badgeHtml} ${msg.author}</span>
-                <span class="msg-timestamp">${msg.timestamp.toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'})}</span>
-            </div>
-            <div class="msg-text">${esc(msg.text)}</div>
-        </div>
-    `;
-    
-    wrapper.appendChild(div);
-    wrapper.scrollTop = wrapper.scrollHeight;
-}
-
-function simulateInitialMessages() {
-    addMessage('SesliChat Bot', `SesliChat Pro'ya hoş geldiniz! Odalar sesli ve yazılı olarak aktiftir.`, true);
-    addMessage('Nickiniz2001', 'Herkes lobiye alındı mı? Yakında etkinlik başlıyor.');
-    addMessage('Cix_izmirLi_24', 'Etkinlik hazırlıkları tamamlandı, yöneticiler hazır.');
-}
-
-/* ========================================================================
-   UI FEEDBACK & MENUS
-   ======================================================================== */
-
-function showToast(message, type = 'default') {
-    const container = $('#toast-container');
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i> ${message}`;
-    container.appendChild(toast);
-    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
-}
-
-function showContextMenu(e, username) {
-    e.preventDefault();
-    const menu = $('#context-menu');
-    const isAdmin = getRole(State.user?.name) !== null;
-    
-    $('#ctx-admin').style.display = isAdmin ? 'flex' : 'none';
-    $('#ctx-mute').style.display = (isAdmin && username !== State.user?.name) ? 'flex' : 'none';
-    
-    menu.classList.add('show');
-    menu.style.left = e.clientX + 'px';
-    menu.style.top = e.clientY + 'px';
-    
-    // Adjust if out of screen
-    const rect = menu.getBoundingClientRect();
-    if(rect.right > window.innerWidth) menu.style.left = (e.clientX - rect.width) + 'px';
-    if(rect.bottom > window.innerHeight) menu.style.top = (e.clientY - rect.height) + 'px';
-    
-    window.addEventListener('click', () => menu.classList.remove('show'), { once: true });
-}
-
-function ctxAction(action) {
-    showToast(`İşlem gerçekleştirildi: ${action}`);
-    $('#context-menu').classList.remove('show');
-}
-
-function togglePanel(side) {
-    const panel = $(`#${side}-panel`);
-    const isShow = panel.classList.toggle('show');
-    $('#overlay-bg').style.display = isShow ? 'block' : 'none';
-}
-
-function closeAllPanels() {
-    $('#left-panel').classList.remove('show');
-    $('#right-panel').classList.remove('show');
-    $('#overlay-bg').style.display = 'none';
-}
-
-function handleSearch() {
-    renderRooms();
-}
-
-/* ========================================================================
-   EVENT LISTENERS & INIT
-   ======================================================================== */
-
- $('#input-nick').addEventListener('keyup', (e) => {
-    if (e.key === 'Enter') handleLogin();
-});
-
- $('#msg-input').addEventListener('keyup', (e) => {
-    if (e.key === 'Enter') handleSendMessage();
-});
-
-document.addEventListener('contextmenu', (e) => {
-    if(!e.target.closest('.user-item')) {
-        e.preventDefault();
-        // Show general context menu if right clicked on chat
-        if(e.target.closest('.message')) {
-            const menu = $('#context-menu');
-            menu.classList.add('show');
-            menu.style.left = e.clientX + 'px';
-            menu.style.top = e.clientY + 'px';
-            window.addEventListener('click', () => menu.classList.remove('show'), { once: true });
-        }
+    try {
+        await fetch(API, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ type: 'message', userId: state.user.id, userName: state.user.name, text: text, roomId: state.currentRoom }) });
+    } catch(e) {
+        showToast('Mesaj gönderilemedi', 'error');
     }
+}
+
+async function fetchMessages() {
+    if (!state.user) return;
+    try {
+        const res = await fetch(`${API}?roomId=${state.currentRoom}`);
+        const data = await res.json();
+        
+        // Kullanıcı listesini güncelle
+        if (data.users) {
+            state.users = data.users.map(u => {
+                const existing = state.users.find(eu => eu.id === u.id);
+                return { id: u.id, name: u.name, color: genColor(u.name), isInVoice: existing ? existing.isInVoice : false, isSpeaking: existing ? existing.isSpeaking : false };
+            });
+            // Kendimizi garantile
+            if(!state.users.find(u => u.id === state.user.id)) state.users.push(state.user);
+            renderRightPanel(); renderVoice();
+        }
+
+        // Mesajları güncelle
+        if (data.messages) {
+            const wrapper = $('#messages-wrapper');
+            // Sadece yeni mesajlar varsa DOM'u güncelle (Performans)
+            if (data.messages.length > state.messages.length) {
+                const newMsgs = data.messages.slice(state.messages.length);
+                newMsgs.forEach(msg => {
+                    const isSelf = msg.userId === state.user.id;
+                    const role = getRole(msg.userName || '');
+                    const color = isSelf ? state.user.color : genColor(msg.userName || 'Bot');
+                    const roleClass = role ? role : (msg.type === 'bot' ? 'coadm' : '');
+                    const badge = role ? `<span class="msg-badge role-${role}">${role.toUpperCase()}</span>` : (msg.type === 'bot' ? '<span class="msg-badge" style="background:var(--accent-cyan)">BOT</span>' : '');
+                    
+                    wrapper.innerHTML += `<div class="message">
+                        <div class="msg-avatar" style="background:${color}">${(msg.userName||'?').substring(0,2).toUpperCase()}</div>
+                        <div class="msg-content">
+                            <div class="msg-header"><span class="msg-author ${roleClass}">${badge} ${esc(msg.userName || 'Sistem')}</span><span class="msg-time">${new Date(msg.createdAt).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}</span></div>
+                            <div class="msg-text">${esc(msg.text)}</div>
+                        </div></div>`;
+                });
+                state.messages = data.messages;
+                wrapper.scrollTop = wrapper.scrollHeight;
+            }
+        }
+    } catch(e) {}
+}
+
+function startPolling() {
+    fetchMessages(); // İlk yükleme
+    state.pollTimer = setInterval(fetchMessages, 2000); // 2 saniyede bir çek (kasma yapmaz)
+}
+
+// UI Helpers
+function showToast(msg, type='default') {
+    const c = $('#toast-container'); const t = document.createElement('div');
+    t.className = `toast ${type}`; t.innerHTML = `<i class="fas ${type==='success'?'fa-check-circle':type==='error'?'fa-times-circle':'fa-info-circle'}"></i> ${msg}`;
+    c.appendChild(t); setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(), 300); }, 3000);
+}
+
+function togglePanel(side) { const p = $(`#${side}-panel`); const isShow = p.classList.toggle('show'); $('#overlay-bg').style.display = isShow ? 'block' : 'none'; }
+function closeAllPanels() { $('#left-panel').classList.remove('show'); $('#right-panel').classList.remove('show'); $('#overlay-bg').style.display = 'none'; }
+
+// Event Listeners
+ $('#input-nick').addEventListener('keyup', e => { if(e.key === 'Enter') handleLogin(); });
+ $('#msg-input').addEventListener('keyup', e => { if(e.key === 'Enter') handleSend(); });
+window.addEventListener('beforeunload', () => {
+    if(state.user) navigator.sendBeacon(API, new Blob([JSON.stringify({ type: 'leave', userId: state.user.id, roomId: state.currentRoom })], { type: 'application/json' }));
 });
 
-// Prevent zoom on mobile double tap
-document.addEventListener('touchstart', (e) => {
-    if (e.touches.length > 1) e.preventDefault();
-}, { passive: false });
-
-// Init render
+// Init
 renderRooms();
-
 </script>
 </body>
 </html>
