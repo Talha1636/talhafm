@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>SesliChat Pro</title>
+<title>SesliChat Pro - Vercel WebRTC</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <style>
@@ -12,17 +12,12 @@
 html,body{height:100%;overflow:hidden}
 body{font-family:'Inter',sans-serif;background:var(--bg-0);color:var(--txt);display:flex;flex-direction:column}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg-3);border-radius:3px}
-input,textarea,button,select{font-family:inherit}
+input,textarea,button{font-family:inherit}
 .app{display:flex;flex-direction:column;height:100vh}
 .hide{display:none!important}
 .hdr{height:48px;background:var(--bg-1);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;padding:0 12px;flex-shrink:0;z-index:20}
-.hdr-l{display:flex;align-items:center;gap:12px}
-.hdr-mob{display:none;width:34px;height:34px;align-items:center;justify-content:center;border-radius:var(--r);background:var(--bg-2);color:var(--txt2);border:none;font-size:15px;cursor:pointer}
 .logo{font-weight:800;font-size:15px;color:var(--primary);display:flex;align-items:center;gap:6px}
 .logo i{font-size:20px}
-.hdr-nav{display:flex;gap:2px}
-.hdr-nav button{padding:6px 12px;font-size:12px;font-weight:600;color:var(--txt2);background:none;border:none;border-radius:var(--r);cursor:pointer;transition:.2s}
-.hdr-nav button:hover,.hdr-nav button.act{background:var(--bg-2);color:var(--txt)}
 .hdr-r{display:flex;align-items:center;gap:8px}
 .h-icon{width:32px;height:32px;border-radius:50%;background:var(--bg-2);border:none;color:var(--txt2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:.2s}
 .h-icon:hover{background:var(--bg-3);color:var(--txt)}
@@ -53,11 +48,11 @@ input,textarea,button,select{font-family:inherit}
 .msg{display:flex;gap:8px;padding:3px 0;animation:fi .2s ease}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .msg.me{flex-direction:row-reverse}
-.m-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff;flex-shrink:0;cursor:pointer}
+.m-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff;flex-shrink:0}
 .m-body{max-width:75%}
 .m-head{display:flex;align-items:center;gap:6px;margin-bottom:1px}
 .msg.me .m-head{flex-direction:row-reverse}
-.m-name{font-size:12px;font-weight:700;cursor:pointer}
+.m-name{font-size:12px;font-weight:700}
 .m-time{font-size:9px;color:var(--txt3)}
 .m-txt{font-size:13px;line-height:1.4;color:#c8cbd0;white-space:pre-wrap;word-break:break-word}
 .msg.me .m-txt{background:var(--primary);color:#fff;padding:7px 11px;border-radius:10px 3px 10px 10px;display:inline-block}
@@ -110,51 +105,28 @@ input,textarea,button,select{font-family:inherit}
 .mi:focus{border-color:var(--primary)}
 .mb{width:100%;padding:11px;border:none;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer;color:#fff;transition:.2s}
 .mb-p{background:var(--primary)}.mb-p:hover{background:var(--primary-d)}
-.mb-d{background:var(--red)}.mb-d:hover{background:#c0392b}
-.set-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bdr)}
-.set-row label{font-size:13px}
-.tgl{width:38px;height:20px;background:var(--bg-4);border-radius:10px;position:relative;cursor:pointer;transition:.2s;flex-shrink:0}
-.tgl.on{background:var(--primary)}
-.tgl::after{content:'';position:absolute;width:16px;height:16px;background:#fff;border-radius:50%;top:2px;left:2px;transition:.2s}
-.tgl.on::after{left:20px}
 .t-box{position:fixed;top:56px;right:12px;z-index:200;display:flex;flex-direction:column;gap:6px}
 .t-it{background:var(--bg-3);border:1px solid var(--bdr);padding:10px 14px;border-radius:var(--r);box-shadow:var(--sh);font-size:12px;display:flex;align-items:center;gap:8px;animation:ts .3s forwards;border-left:3px solid var(--primary)}
 .t-it.ok{border-left-color:var(--green)}.t-it.err{border-left-color:var(--red)}
 @keyframes ts{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
-.mob-ov{display:none;position:fixed;inset:0;top:48px;background:rgba(0,0,0,.6);z-index:15}
-.mob-ov.on{display:block}
 @media(max-width:1024px){.sb-r{display:none;position:fixed;top:48px;bottom:0;right:0;width:240px;z-index:20;box-shadow:var(--sh)}.sb-r.on{display:flex}}
-@media(max-width:768px){.sb-l,.sb-r{display:none;position:fixed;top:48px;bottom:0;width:260px;z-index:20;box-shadow:var(--sh)}.sb-l.on{display:flex;left:0}.sb-r.on{display:flex;right:0}.hdr-mob{display:flex}.hdr-nav{display:none}.m-body{max-width:88%}}
+@media(max-width:768px){.sb-l,.sb-r{display:none;position:fixed;top:48px;bottom:0;width:260px;z-index:20;box-shadow:var(--sh)}.sb-l.on{display:flex;left:0}.sb-r.on{display:flex;right:0}.hdr-mob{display:flex!important}.m-body{max-width:88%}}
+.hdr-mob{display:none;width:34px;height:34px;align-items:center;justify-content:center;border-radius:var(--r);background:var(--bg-2);color:var(--txt2);border:none;font-size:15px;cursor:pointer}
 </style>
 </head>
 <body>
 
 <div class="t-box" id="tBox"></div>
-<div class="mob-ov" id="mobOv" onclick="closePn()"></div>
 
 <!-- GİRİŞ MODALI -->
 <div class="ov on" id="loginOv">
 <div class="mdl" style="width:340px">
 <div class="mdl-b" style="text-align:center;padding:30px">
 <div style="width:56px;height:56px;background:var(--primary);border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff"><i class="fas fa-headset"></i></div>
-<h2 style="margin-bottom:6px;font-size:18px">Sesli Sohbet</h2>
-<p style="color:var(--txt2);font-size:12px;margin-bottom:20px">Odalarına katılmak için ismini gir.</p>
+<h2 style="margin-bottom:6px;font-size:18px">Sesli Sohbet (WebRTC)</h2>
+<p style="color:var(--txt2);font-size:12px;margin-bottom:20px">Vercel Serverless + WebRTC Altyapısı</p>
 <input class="mi" id="nickInp" placeholder="Kullanıcı Adı" maxlength="15" style="text-align:center">
 <button class="mb mb-p" id="loginBtn"><i class="fas fa-right-to-bracket" style="margin-right:5px"></i>Bağlan</button>
-</div>
-</div>
-</div>
-
-<!-- AYARLAR MODALI -->
-<div class="ov" id="setOv">
-<div class="mdl">
-<div class="mdl-t"><h2>Ayarlar</h2><button class="mdl-x" id="setCloseBtn"><i class="fas fa-xmark"></i></button></div>
-<div class="mdl-b">
-<select class="mi"><option>Varsayılan Mikrofon</option></select>
-<select class="mi"><option>Varsayılan Hoparlör</option></select>
-<div class="set-row"><label>Bildirim Sesleri</label><div class="tgl on" onclick="this.classList.toggle('on')"></div></div>
-<div class="set-row"><label>Otomatik Mikrofon</label><div class="tgl" onclick="this.classList.toggle('on')"></div></div>
-<button class="mb mb-d" style="margin-top:16px" id="logoutBtn"><i class="fas fa-right-from-bracket" style="margin-right:5px"></i>Çıkış Yap</button>
 </div>
 </div>
 </div>
@@ -165,12 +137,11 @@ input,textarea,button,select{font-family:inherit}
 <div class="hdr-l">
 <button class="hdr-mob" id="mobMenuBtn"><i class="fas fa-bars"></i></button>
 <div class="logo"><i class="fas fa-headset"></i> SesliChat</div>
-<nav class="hdr-nav"><button class="act">Ana Sayfa</button><button>Odalar</button><button>Tüm Kişiler</button></nav>
 </div>
 <div class="hdr-r">
 <button class="hdr-mob" id="mobUsersBtn" style="margin:0"><i class="fas fa-users"></i></button>
 <button class="h-icon" id="settingsBtn"><i class="fas fa-gear"></i></button>
-<div class="h-pill" id="profilePill"><div class="h-pav" id="hAv">?</div><span id="hNm">Kullanıcı</span></div>
+<div class="h-pill"><div class="h-pav" id="hAv">?</div><span id="hNm">Kullanıcı</span></div>
 </div>
 </header>
 
@@ -187,14 +158,13 @@ input,textarea,button,select{font-family:inherit}
 <div class="ch-title"><i class="fas fa-volume-high"></i><span id="rmName">Genel Oda</span><div class="live-badge" id="liveB"><i class="fas fa-circle"></i> CANLI</div></div>
 <div class="ch-acts">
 <button id="voiceJoinBtn" title="Sesli Katıl"><i class="fas fa-microphone"></i></button>
-<button onclick="toast('Odadan ayrıldın','err')"><i class="fas fa-right-from-bracket"></i></button>
 </div>
 </div>
 <div class="msgs" id="msgBox"></div>
 <div class="ch-ft">
 <div class="in-row">
 <div class="in-wrap">
-<button onclick="toast('Yakında','ok')"><i class="far fa-face-smile"></i></button>
+<button><i class="far fa-face-smile"></i></button>
 <textarea class="m-inp" id="msgInp" placeholder="Mesajınızı yazın..." rows="1"></textarea>
 <button id="sendBtn"><i class="fas fa-paper-plane"></i></button>
 </div>
@@ -211,93 +181,262 @@ input,textarea,button,select{font-family:inherit}
 </div>
 
 <script>
-/* 1. MOCK API (index.js / messages.js yerine geçecek yer) */
-var API = {
-    getMessages: function(roomId) {
-        return new Promise(function(resolve) {
-            setTimeout(function() { resolve(DB.msgs.filter(function(m) { return m.room === roomId; })); }, 150);
-        });
-    },
-    sendMessage: function(roomId, text, user) {
-        var n = { id: Date.now(), room: roomId, user: user, text: text, time: getT() };
-        DB.msgs.push(n); 
-        return new Promise(function(resolve) { resolve(n); });
-    },
-    getUsers: function() {
-        return new Promise(function(resolve) {
-            setTimeout(function() { resolve(DB.users); }, 200);
-        });
-    },
-    joinRoom: function(userName) {
-        if(!DB.users.find(function(u){ return u.id === userName; })) {
-            DB.users.push({id: userName, name: userName, status: 'on', speaking: false});
-        }
-    }
-};
+/* =====================================================================
+   VERCEL API URL'SİNI BURAYA YAZIN (Deploy sonrası kendi urlnizi yazın)
+   ===================================================================== */
+var API_BASE = window.location.origin; 
 
-/* 2. VERİTABANI (messages.js verileri) */
+/* 1. VERİTABANI (Demo Veriler - Gerçekten Vercel KV ya da DB kullanılabilir) */
 var DB = {
     users: [
         {id:'u1',name:'Ahmet',status:'on',speaking:true},
         {id:'u2',name:'Mehmet',status:'on',speaking:false},
         {id:'u3',name:'Ali',status:'idle',speaking:false},
-        {id:'u4',name:'Ayşe',status:'on',speaking:true},
-        {id:'u5',name:'Fatma',status:'off',speaking:false},
-        {id:'u6',name:'Burak',status:'on',speaking:false}
+        {id:'u4',name:'Ayşe',status:'on',speaking:true}
     ],
     msgs: [
-        {id:1,room:'genel',user:'Sistem',text:'Odaya hoş geldiniz. Saygılı olun.',time:'12:00',sys:true},
-        {id:2,room:'genel',user:'Ahmet',text:'Selamlar millet',time:'12:01',voice:true},
-        {id:3,room:'genel',user:'Ayşe',text:'İyi akşamlar, sesim açık mı?',time:'12:02',voice:true},
-        {id:4,room:'genel',user:'Mehmet',text:'Evet açık duyuyoruz net bir şekilde',time:'12:03'},
-        {id:5,room:'genel',user:'Ali',text:'Ben biraz afk olacağım dönerim',time:'12:05'}
+        {id:1,room:'genel',user:'Sistem',text:'Odaya hoş geldiniz. WebRTC üzerinden sesli iletişim kurabilirsiniz.',time:'12:00',sys:true},
+        {id:2,room:'genel',user:'Ahmet',text:'Selamlar, mikrofonumu açıyorum.',time:'12:01'},
+        {id:3,room:'genel',user:'Ayşe',text:'Sesin net geliyor, WebRTC çalışıyor!',time:'12:02'}
     ],
     rooms: [
-        {id:'genel',name:'Genel Oda',type:'voice',c:12},
-        {id:'rastgele',name:'Rastgele Sohbet',type:'voice',c:8},
-        {id:'muzik',name:'Müzik Odası',type:'voice',c:4},
-        {id:'oyun',name:'Oyun Odaları',type:'voice',c:6},
-        {id:'y1',name:'Yazılı Sohbet',type:'text',c:15},
-        {id:'y2',name:'Hobi & İlgi Alanları',type:'text',c:9}
+        {id:'genel',name:'Genel Oda',type:'voice',c:4},
+        {id:'rastgele',name:'Rastgele Sohbet',type:'voice',c:2},
+        {id:'y1',name:'Yazılı Sohbet',type:'text',c:5}
     ]
 };
 
-/* 3. WEBRTC ISKELETİ */
+/* 2. WEBRTC VE SIGNALING DEĞİŞKENLERİ */
 var localStream = null;
+var peers = {}; // Bağlantı kurulan kişiler
 var isInVoice = false;
+var lastSignalId = 0;
+var signalingInterval = null;
 
-function initWebRTC() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        toast('Tarayıcın mikrofonu desteklemiyor', 'err');
-        return;
-    }
-    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-    .then(function(stream) {
-        localStream = stream;
-        toast('Mikrofon bağlandı', 'ok');
-    })
-    .catch(function(err) {
-        console.error('Mic error:', err);
-        toast('Mikrofon izni verilmedi!', 'err');
-    });
-}
+var rtcConfig = {
+    'iceServers': [
+        { 'urls': 'stun:stun.l.google.com:19302' },
+        { 'urls': 'stun:stun1.l.google.com:19302' }
+    ]
+};
 
-/* 4. UYGULAMA DURUMU */
+/* 3. UYGULAMA DURUMU */
 var S = { user: null, room: 'genel', connected: false };
 var COLS = ['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#1abc9c','#e67e22'];
-var pollTimer = null;
 
-function getCol(n) { 
-    var h = 0; 
-    for(var i = 0; i < n.length; i++) { h = n.charCodeAt(i) + ((h << 5) - h); } 
-    return COLS[Math.abs(h) % COLS.length]; 
-}
-function getT() { 
-    var d = new Date(); 
-    return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0'); 
+function getCol(n) { var h=0; for(var i=0;i<n.length;i++){h=n.charCodeAt(i)+((h<<5)-h);} return COLS[Math.abs(h)%COLS.length]; }
+function getT() { var d=new Date(); return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0'); }
+
+/* =====================================================================
+   4. WEBRTC CORE FONKSİYONLARI (GERÇEK SES İLETİMİ)
+   ===================================================================== */
+async function startMyAudio() {
+    try {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        toast('Mikrofon bağlandı', 'ok');
+        return true;
+    } catch(err) {
+        console.error(err);
+        toast('Mikrofon izni reddedildi!', 'err');
+        return false;
+    }
 }
 
-/* 5. CORE FONKSİYONLAR */
+async function joinVoice() {
+    if (isInVoice) { 
+        leaveVoice(); 
+        return; 
+    }
+
+    var success = await startMyAudio();
+    if (!success) return;
+
+    isInVoice = true;
+    document.getElementById('liveB').classList.add('on');
+    
+    // Kendi bilgimi sunucuya (Vercel API) gönderiyorum ki diğerleri bana bağlansın
+    sendSignal({
+        type: 'join',
+        user: S.user.name,
+        userId: S.user.id,
+        room: S.room
+    });
+
+    // Diğerlerinin sinyallerini dinlemeye başla (Polling ile)
+    signalingInterval = setInterval(pollSignals, 2000);
+    
+    // Sunucudaki herkesi simüle et ve onlara offer gönder
+    startPeerConnections();
+}
+
+function leaveVoice() {
+    isInVoice = false;
+    document.getElementById('liveB').classList.remove('on');
+    
+    if (localStream) {
+        localStream.getTracks().forEach(function(t) { t.stop(); });
+        localStream = null;
+    }
+    
+    // Tüm peer bağlantılarını kapat
+    for (var id in peers) {
+        peers[id].close();
+        delete peers[id];
+    }
+    
+    if (signalingInterval) clearInterval(signalingInterval);
+    toast('Sesli odadan ayrıldın', 'err');
+}
+
+async function startPeerConnections() {
+    // Odadaki diğer kullanıcılar için PeerConnection oluştur
+    var others = DB.users.filter(function(u) { return u.id !== S.user.id; });
+    
+    for (var i = 0; i < others.length; i++) {
+        createPeer(others[i].id);
+    }
+}
+
+function createPeer(targetUserId) {
+    if (peers[targetUserId]) return; // Zaten bağlanıyoruz
+
+    var pc = new RTCPeerConnection(rtcConfig);
+    peers[targetUserId] = pc;
+
+    // Kendi mikrofon sesimizi peer'a ekle
+    localStream.getTracks().forEach(function(track) {
+        pc.addTrack(track, localStream);
+    });
+
+    // ICE Candidate oluştukça bunları Vercel API'ye yolla (Diğer tarafa ulaşması için)
+    pc.onicecandidate = function(event) {
+        if (event.candidate) {
+            sendSignal({
+                type: 'ice-candidate',
+                target: targetUserId,
+                sender: S.user.id,
+                candidate: event.candidate
+            });
+        }
+    };
+
+    // Diğer taraftan ses gelince çal
+    pc.ontrack = function(event) {
+        playRemoteAudio(event.streams[0]);
+        var u = DB.users.find(function(x){ return x.id === targetUserId; });
+        if(u) { u.speaking = true; renderU(); }
+    };
+
+    // Offer oluştur ve yolla
+    pc.createOffer()
+        .then(function(offer) { return pc.setLocalDescription(offer); })
+        .then(function() {
+            sendSignal({
+                type: 'offer',
+                target: targetUserId,
+                sender: S.user.id,
+                offer: pc.localDescription
+            });
+        })
+        .catch(function(e) { console.error("Offer hatası:", e); });
+}
+
+// Gelen sesi çalmak için gizli audio elementi
+var remoteAudio = null;
+function playRemoteAudio(stream) {
+    if (!remoteAudio) {
+        remoteAudio = document.createElement('audio');
+        remoteAudio.autoplay = true;
+        document.body.appendChild(remoteAudio);
+    }
+    remoteAudio.srcObject = stream;
+}
+
+/* =====================================================================
+   5. VERCEL SIGNALING API İLETİŞİMİ
+   ===================================================================== */
+function sendSignal(data) {
+    data.id = Date.now() + Math.random(); // Benzersiz ID
+    data.room = S.room;
+    
+    fetch(API_BASE + '/api/signal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }).catch(function(err) { console.log("Signal gönderilemedi:", err); });
+}
+
+async function pollSignals() {
+    try {
+        var res = await fetch(API_BASE + '/api/signal?after=' + lastSignalId);
+        var signals = await res.json();
+        
+        if (signals.length > 0) {
+            lastSignalId = signals[signals.length - 1].id;
+            handleIncomingSignals(signals);
+        }
+    } catch(e) { /* Sunucu yanıt vermemiş olabilir, yoksay */ }
+}
+
+function handleIncomingSignals(signals) {
+    for (var i = 0; i < signals.length; i++) {
+        var sig = signals[i];
+        
+        // Kendimize gelen sinyalleri işle
+        if (sig.sender === S.user.id) continue;
+
+        if (sig.type === 'offer' && sig.target === S.user.id) {
+            handleOffer(sig);
+        } 
+        else if (sig.type === 'answer' && sig.target === S.user.id) {
+            handleAnswer(sig);
+        } 
+        else if (sig.type === 'ice-candidate' && sig.target === S.user.id) {
+            handleIceCandidate(sig);
+        }
+    }
+}
+
+async function handleOffer(sig) {
+    if (!localStream) return; // Sesliye girmemişsek игнорируем
+    
+    var pc = new RTCPeerConnection(rtcConfig);
+    peers[sig.sender] = pc;
+    
+    localStream.getTracks().forEach(function(track) { pc.addTrack(track, localStream); });
+    
+    pc.ontrack = function(event) { playRemoteAudio(event.streams[0]); };
+    
+    pc.onicecandidate = function(event) {
+        if (event.candidate) {
+            sendSignal({ type: 'ice-candidate', target: sig.sender, sender: S.user.id, candidate: event.candidate });
+        }
+    };
+
+    await pc.setRemoteDescription(new RTCSessionDescription(sig.offer));
+    var answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    
+    sendSignal({ type: 'answer', target: sig.sender, sender: S.user.id, answer: pc.localDescription });
+}
+
+async function handleAnswer(sig) {
+    var pc = peers[sig.sender];
+    if (pc) {
+        await pc.setRemoteDescription(new RTCSessionDescription(sig.answer));
+    }
+}
+
+async function handleIceCandidate(sig) {
+    var pc = peers[sig.sender];
+    if (pc) {
+        await pc.addIceCandidate(new RTCIceCandidate(sig.candidate));
+    }
+}
+
+/* =====================================================================
+   6. UYGULAMA CORE FONKSİYONLARI
+   ===================================================================== */
 function doLogin() {
     var n = document.getElementById('nickInp').value.trim();
     if (n.length < 2) { alert('Lütfen geçerli bir isim girin.'); return; }
@@ -308,239 +447,109 @@ function doLogin() {
     document.getElementById('hAv').textContent = n[0].toUpperCase();
     document.getElementById('hNm').textContent = n;
     
-    API.joinRoom(S.user.name);
-    load();
+    DB.users.push({id: S.user.id, name: S.user.name, status: 'on', speaking: false});
+    
+    renderR(); renderU(); renderM();
     
     document.getElementById('loginOv').classList.remove('on');
     document.getElementById('app').classList.remove('hide');
     
-    pollTimer = setInterval(function() { 
-        if (S.connected) { load(); simVoice(); } 
-    }, 3000);
-    
     toast('Odaya bağlandın', 'ok');
-}
-
-function load() {
-    API.getUsers().then(function(users) {
-        DB.users = users;
-        renderR();
-        renderU();
-    });
-    API.getMessages(S.room).then(function() {
-        renderM();
-    });
-}
-
-function joinVoice() {
-    if (isInVoice) { 
-        isInVoice = false; 
-        document.getElementById('liveB').classList.remove('on'); 
-        if (localStream) localStream.getTracks().forEach(function(t) { t.stop(); });
-        localStream = null;
-        toast('Sesli odadan ayrıldın', 'err'); 
-    } else { 
-        isInVoice = true; 
-        document.getElementById('liveB').classList.add('on'); 
-        initWebRTC(); 
-    }
-}
-
-function doLogout() { 
-    S.connected = false; 
-    if (localStream) localStream.getTracks().forEach(function(t) { t.stop(); });
-    if (pollTimer) clearInterval(pollTimer);
-    document.getElementById('setOv').classList.remove('on'); 
-    document.getElementById('app').classList.add('hide'); 
-    document.getElementById('loginOv').classList.add('on'); 
-    document.getElementById('nickInp').value = ''; 
-}
-
-/* 6. PTT VE MESAJ */
-function pttOn() {
-    if (!isInVoice || !localStream) { toast('Önce mikrofonu aç (üst bardaki mikrofon ikonuna tıkla)', 'err'); return; }
-    document.getElementById('pttBtn').classList.add('on');
-    var me = DB.users.find(function(u) { return u.id === S.user.name; }); 
-    if (me) me.speaking = true; 
-    renderU();
-}
-function pttOff() { 
-    document.getElementById('pttBtn').classList.remove('on'); 
-    var me = DB.users.find(function(u) { return u.id === S.user.name; }); 
-    if (me) me.speaking = false; 
-    renderU(); 
 }
 
 function sendMsg() {
     var inp = document.getElementById('msgInp');
     var t = inp.value.trim();
     if (!t || !S.user) return; 
-    inp.value = ''; 
-    inp.style.height = 'auto';
+    inp.value = ''; inp.style.height = 'auto';
     
-    API.sendMessage(S.room, t, S.user.name).then(function() {
-        renderM();
-        
-        if (Math.random() > 0.4) {
-            setTimeout(function() {
-                var nm = DB.users.map(function(u) { return u.name; }).filter(function(n) { return n !== S.user.name; });
-                var ru = nm[Math.floor(Math.random() * nm.length)];
-                var rp = ['Selam!', 'Nasılsın?', 'Akşama gelecek misin?', 'Tamam', 'Mic açık mı?', 'Duyulmuyor biraz', 'Evet buradayım'];
-                API.sendMessage(S.room, rp[Math.floor(Math.random() * rp.length)], ru).then(function() { renderM(); });
-            }, 1000 + Math.random() * 2000);
+    DB.msgs.push({id: Date.now(), room: S.room, user: S.user.name, text: t, time: getT()});
+    renderM();
+    
+    // Simüle cevap
+    setTimeout(function() {
+        var nm = DB.users.map(function(u){return u.name;}).filter(function(n){return n!==S.user.name;});
+        if(nm.length > 0) {
+            var ru = nm[Math.floor(Math.random() * nm.length)];
+            var rp = ['Selam!', 'Nasılsın?', 'Tamam', 'Sesin çok net'];
+            DB.msgs.push({id: Date.now(), room: S.room, user: ru, text: rp[Math.floor(Math.random()*rp.length)], time: getT()});
+            renderM();
         }
-    });
+    }, 1500);
 }
 
 /* 7. RENDER */
 function renderR() {
-    document.getElementById('vRooms').innerHTML = DB.rooms.filter(function(r) { return r.type === 'voice'; }).map(function(r) {
-        return '<button class="r-item ' + (S.room === r.id ? 'act' : '') + '" onclick="swRoom(\'' + r.id + '\')"><i class="fas fa-volume-high" style="color:var(--green)"></i>' + r.name + '<span class="rb">' + r.c + '</span></button>';
+    document.getElementById('vRooms').innerHTML = DB.rooms.filter(function(r){return r.type==='voice';}).map(function(r){
+        return '<button class="r-item '+(S.room===r.id?'act':'')+'" onclick="swRoom(\''+r.id+'\')"><i class="fas fa-volume-high" style="color:var(--green)"></i>'+r.name+'<span class="rb">'+r.c+'</span></button>';
     }).join('');
-    
-    document.getElementById('tRooms').innerHTML = DB.rooms.filter(function(r) { return r.type === 'text'; }).map(function(r) {
-        return '<button class="r-item ' + (S.room === r.id ? 'act' : '') + '" onclick="swRoom(\'' + r.id + '\')"><i class="fas fa-hashtag"></i>' + r.name + '<span class="rb">' + r.c + '</span></button>';
+    document.getElementById('tRooms').innerHTML = DB.rooms.filter(function(r){return r.type==='text';}).map(function(r){
+        return '<button class="r-item '+(S.room===r.id?'act':'')+'" onclick="swRoom(\''+r.id+'\')"><i class="fas fa-hashtag"></i>'+r.name+'</button>';
     }).join('');
 }
 
 function renderM() {
-    var box = document.getElementById('msgBox'); 
-    var h = '';
-    var filtered = DB.msgs.filter(function(m) { return m.room === S.room; });
-    
-    for (var i = 0; i < filtered.length; i++) {
-        var m = filtered[i];
-        if (m.sys) { h += '<div class="msg-sys"><span>' + m.text + '</span></div>'; continue; }
-        var me = m.user === (S.user ? S.user.name : '');
-        var c = getCol(m.user); 
-        var vc = m.voice ? '<span class="voice-tag"><i class="fas fa-microphone"></i> Sesli</span>' : '';
-        
-        h += '<div class="msg ' + (me ? 'me' : '') + '">' +
-            '<div class="m-av" style="background:' + c + '">' + m.user[0].toUpperCase() + '</div>' +
-            '<div class="m-body">' +
-                '<div class="m-head"><span class="m-name" style="color:' + c + '">' + m.user + '</span>' + vc + '<span class="m-time">' + m.time + '</span></div>' +
-                '<div class="m-txt">' + m.text + '</div>' +
-            '</div>' +
-        '</div>';
+    var box = document.getElementById('msgBox'); var h='';
+    var filtered = DB.msgs.filter(function(m){return m.room===S.room;});
+    for(var i=0; i<filtered.length; i++){
+        var m=filtered[i];
+        if(m.sys){h+='<div class="msg-sys"><span>'+m.text+'</span></div>';continue;}
+        var me=m.user===(S.user?S.user.name:'');
+        var c=getCol(m.user);
+        h+='<div class="msg '+(me?'me':'')+'"><div class="m-av" style="background:'+c+'">'+m.user[0].toUpperCase()+'</div><div class="m-body"><div class="m-head"><span class="m-name" style="color:'+c+'">'+m.user+'</span><span class="m-time">'+m.time+'</span></div><div class="m-txt">'+m.text+'</div></div></div>';
     }
-    box.innerHTML = h; 
-    box.scrollTop = box.scrollHeight;
+    box.innerHTML=h; box.scrollTop=box.scrollHeight;
 }
 
 function renderU() {
-    var on = DB.users.filter(function(u) { return u.status !== 'off'; });
+    var on = DB.users.filter(function(u){return u.status!=='off';});
     document.getElementById('onC').textContent = on.length;
-    
-    var h = '';
-    for (var i = 0; i < DB.users.length; i++) {
-        var u = DB.users[i];
-        var c = getCol(u.name); 
-        var mic = u.speaking ? '<i class="fas fa-microphone mic-on"></i> Konuşuyor' : (u.status === 'on' ? 'Çevrimiçi' : u.status === 'idle' ? 'AFK' : 'Çevrimdışı');
-        
-        h += '<div class="u-it">' +
-            '<div class="u-aw"><div class="u-av" style="background:' + c + '">' + u.name[0].toUpperCase() + '</div><div class="u-dot ' + u.status + '"></div></div>' +
-            '<div class="u-inf"><div class="u-nm">' + u.name + '</div><div class="u-st">' + mic + '</div></div>' +
-        '</div>';
+    var h='';
+    for(var i=0;i<DB.users.length;i++){
+        var u=DB.users[i]; var c=getCol(u.name);
+        var mic=u.speaking?'<i class="fas fa-microphone mic-on"></i> Konuşuyor':'Çevrimiçi';
+        h+='<div class="u-it"><div class="u-aw"><div class="u-av" style="background:'+c+'">'+u.name[0].toUpperCase()+'</div><div class="u-dot '+u.status+'"></div></div><div class="u-inf"><div class="u-nm">'+u.name+'</div><div class="u-st">'+mic+'</div></div></div>';
     }
-    document.getElementById('uList').innerHTML = h;
+    document.getElementById('uList').innerHTML=h;
 }
 
-/* 8. YARDIMCILAR */
-function swRoom(id) { 
-    S.room = id; 
-    var roomObj = DB.rooms.find(function(r) { return r.id === id; });
-    document.getElementById('rmName').textContent = roomObj ? roomObj.name : id; 
-    load(); 
-    closePn(); 
-}
+function swRoom(id) { S.room=id; document.getElementById('rmName').textContent=DB.rooms.find(function(r){return r.id===id;}).name; renderM(); }
 
-function simVoice() { 
-    for (var i = 0; i < DB.users.length; i++) {
-        var u = DB.users[i];
-        if (u.id !== (S.user ? S.user.name : '')) { 
-            u.speaking = Math.random() > 0.8; 
-        }
-    }
-    renderU(); 
+/* PTT */
+function pttOn() {
+    if(!isInVoice || !localStream){toast('Önce mikrofonu aç','err');return;}
+    document.getElementById('pttBtn').classList.add('on');
+    var me=DB.users.find(function(u){return u.id===S.user.id;});if(me)me.speaking=true;renderU();
 }
+function pttOff() { document.getElementById('pttBtn').classList.remove('on'); var me=DB.users.find(function(u){return u.id===S.user.id;});if(me)me.speaking=false;renderU(); }
 
-function togOv(id) { document.getElementById(id).classList.toggle('on'); }
-function togPn(s) { 
-    document.getElementById(s === 'l' ? 'sbL' : 'sbR').classList.toggle('on'); 
-    document.getElementById('mobOv').classList.toggle('on'); 
-}
-function closePn() { 
-    document.getElementById('sbL').classList.remove('on'); 
-    document.getElementById('sbR').classList.remove('on'); 
-    document.getElementById('mobOv').classList.remove('on'); 
-}
-
+/* YARDIMCILAR */
 function toast(m, t) {
-    t = t || 'info';
-    var b = document.getElementById('tBox');
-    var d = document.createElement('div');
-    d.className = 't-it ' + t;
-    var icon = t === 'ok' ? 'check-circle' : (t === 'err' ? 'times-circle' : 'info-circle');
-    var color = t === 'ok' ? 'green' : (t === 'err' ? 'red' : 'primary');
-    d.innerHTML = '<i class="fas fa-' + icon + '" style="color:var(--' + color + ')"></i>' + m;
-    b.appendChild(d);
-    setTimeout(function() {
-        d.style.opacity = '0';
-        d.style.transform = 'translateX(50px)';
-        d.style.transition = '.3s';
-        setTimeout(function() { d.remove(); }, 300);
-    }, 3000);
+    t=t||'info';var b=document.getElementById('tBox');var d=document.createElement('div');d.className='t-it '+t;
+    var icon=t==='ok'?'check-circle':(t==='err'?'times-circle':'info-circle');
+    var color=t==='ok'?'green':(t==='err'?'red':'primary');
+    d.innerHTML='<i class="fas fa-'+icon+'" style="color:var(--'+color+')"></i>'+m;b.appendChild(d);
+    setTimeout(function(){d.style.opacity='0';d.style.transition='.3s';setTimeout(function(){d.remove();},300);},3000);
 }
 
-/* 9. EVENT LISTENERS (HATA ALMAMAK İÇİN BURADA TANIMLIYORUZ) */
+/* EVENT LISTENERS */
 document.addEventListener('DOMContentLoaded', function() {
-    // Giriş butonu
     document.getElementById('loginBtn').addEventListener('click', doLogin);
     document.getElementById('nickInp').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
-    
-    // Ayarlar butonları
-    document.getElementById('settingsBtn').addEventListener('click', function() { togOv('setOv'); });
-    document.getElementById('profilePill').addEventListener('click', function() { togOv('setOv'); });
-    document.getElementById('setCloseBtn').addEventListener('click', function() { togOv('setOv'); });
-    document.getElementById('logoutBtn').addEventListener('click', doLogout);
-    
-    // Sesli buton
     document.getElementById('voiceJoinBtn').addEventListener('click', joinVoice);
-    
-    // Mesaj gönderme
     document.getElementById('sendBtn').addEventListener('click', sendMsg);
-    document.getElementById('msgInp').addEventListener('keydown', function(e) { 
-        if (e.key === 'Enter' && !e.shiftKey) { 
-            e.preventDefault(); 
-            sendMsg(); 
-        } 
-    });
-    document.getElementById('msgInp').addEventListener('input', function() { 
-        this.style.height = 'auto'; 
-        this.style.height = Math.min(this.scrollHeight, 60) + 'px'; 
-    });
+    document.getElementById('msgInp').addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } });
+    document.getElementById('msgInp').addEventListener('input', function() { this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,60)+'px'; });
     
-    // PTT Butonu (Mouse)
     var pttBtn = document.getElementById('pttBtn');
     pttBtn.addEventListener('mousedown', function(e) { e.preventDefault(); pttOn(); });
     pttBtn.addEventListener('mouseup', pttOff);
-    pttBtn.addEventListener('mouseleave', function() { if (pttBtn.classList.contains('on')) pttOff(); });
-    
-    // PTT Butonu (Touch - Mobil)
+    pttBtn.addEventListener('mouseleave', function() { if(pttBtn.classList.contains('on')) pttOff(); });
     pttBtn.addEventListener('touchstart', function(e) { e.preventDefault(); pttOn(); }, {passive: false});
     pttBtn.addEventListener('touchend', function(e) { e.preventDefault(); pttOff(); });
     
-    // Mobil menü butonları
-    document.getElementById('mobMenuBtn').addEventListener('click', function() { togPn('l'); });
-    document.getElementById('mobUsersBtn').addEventListener('click', function() { togPn('r'); });
-    
-    // Modal kapatma (arka plana tıklayınca)
-    var ovs = document.querySelectorAll('.ov');
-    for (var i = 0; i < ovs.length; i++) {
-        ovs[i].addEventListener('click', function(e) {
-            if (e.target === this) { this.classList.remove('on'); }
-        });
-    }
+    document.getElementById('mobMenuBtn').addEventListener('click', function() { document.getElementById('sbL').classList.toggle('on'); });
+    document.getElementById('mobUsersBtn').addEventListener('click', function() { document.getElementById('sbR').classList.toggle('on'); });
 });
 </script>
 </body>
