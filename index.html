@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>SesliChat Pro - Profesyonel Sesli Sohbet Platformu</title>
+<title>SesliChat Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <style>
@@ -13,12 +13,8 @@ html,body{height:100%;overflow:hidden}
 body{font-family:'Inter',sans-serif;background:var(--bg-0);color:var(--txt);display:flex;flex-direction:column}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg-3);border-radius:3px}
 input,textarea,button,select{font-family:inherit}
-
-/* GENEL YAPI */
 .app{display:flex;flex-direction:column;height:100vh}
 .hide{display:none!important}
-
-/* HEADER (Esohnet Tarzı Üst Bar) */
 .hdr{height:48px;background:var(--bg-1);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;padding:0 12px;flex-shrink:0;z-index:20}
 .hdr-l{display:flex;align-items:center;gap:12px}
 .hdr-mob{display:none;width:34px;height:34px;align-items:center;justify-content:center;border-radius:var(--r);background:var(--bg-2);color:var(--txt2);border:none;font-size:15px;cursor:pointer}
@@ -34,11 +30,7 @@ input,textarea,button,select{font-family:inherit}
 .h-pill:hover{background:var(--bg-3)}
 .h-pav{width:24px;height:24px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
 .h-pill span{font-size:12px;font-weight:600}
-
-/* ANA ALAN */
 .main{flex:1;display:flex;overflow:hidden;position:relative}
-
-/* SOL (ODALAR) */
 .sb-l{width:180px;background:var(--bg-1);border-right:1px solid var(--bdr);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
 .sb-cat{padding:14px 12px 4px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3)}
 .r-item{display:flex;align-items:center;gap:8px;padding:8px 10px;margin:1px 6px;border-radius:var(--r);font-size:12px;font-weight:500;color:var(--txt2);cursor:pointer;transition:.15s;border:none;background:none;width:calc(100% - 12px);text-align:left}
@@ -46,8 +38,6 @@ input,textarea,button,select{font-family:inherit}
 .r-item.act{background:var(--bg-3);color:#fff;font-weight:600}
 .r-item i{width:14px;text-align:center;font-size:11px}
 .r-item .rb{margin-left:auto;background:var(--red);color:#fff;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700}
-
-/* ORTA (SOHBET) */
 .chat{flex:1;display:flex;flex-direction:column;background:var(--bg-0);min-width:0}
 .ch-hdr{height:42px;background:var(--bg-1);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;padding:0 12px;flex-shrink:0}
 .ch-title{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
@@ -59,7 +49,6 @@ input,textarea,button,select{font-family:inherit}
 .ch-acts{display:flex;gap:2px}
 .ch-acts button{background:none;border:none;color:var(--txt3);padding:6px 8px;border-radius:var(--r);cursor:pointer;font-size:12px;transition:.2s}
 .ch-acts button:hover{background:var(--bg-2);color:var(--txt)}
-
 .msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:4px}
 .msg{display:flex;gap:8px;padding:3px 0;animation:fi .2s ease}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
@@ -75,8 +64,6 @@ input,textarea,button,select{font-family:inherit}
 .msg-sys{text-align:center;padding:6px 0}
 .msg-sys span{background:var(--bg-2);color:var(--txt2);font-size:11px;padding:3px 10px;border-radius:10px}
 .voice-tag{display:inline-flex;align-items:center;gap:3px;font-size:9px;color:var(--green);font-weight:600;margin-left:6px}
-
-/* ALT BAR */
 .ch-ft{padding:8px 12px;background:var(--bg-1);border-top:1px solid var(--bdr);flex-shrink:0}
 .in-row{display:flex;align-items:center;gap:6px}
 .in-wrap{flex:1;background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--r);display:flex;align-items:center;padding:0 6px;transition:.2s}
@@ -91,10 +78,10 @@ input,textarea,button,select{font-family:inherit}
 .ptt-w{display:none;align-items:center;gap:2px;height:16px}
 .ptt.on .ptt-w{display:flex}
 .ptt-w span{width:3px;background:#fff;border-radius:2px;animation:vw .4s infinite ease-in-out}
-.ptt-w span:nth-child(1){height:6px;animation-delay:0s}.ptt-w span:nth-child(2){height:12px;animation-delay:.1s}.ptt-w span:nth-child(3){height:8px;animation-delay:.2s}
+.ptt-w span:nth-child(1){height:6px;animation-delay:0s}
+.ptt-w span:nth-child(2){height:12px;animation-delay:.1s}
+.ptt-w span:nth-child(3){height:8px;animation-delay:.2s}
 @keyframes vw{0%,100%{transform:scaleY(1)}50%{transform:scaleY(2.5)}}
-
-/* SAĞ (KULLANICILAR) */
 .sb-r{width:210px;background:var(--bg-1);border-left:1px solid var(--bdr);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
 .sr-hdr{padding:10px 12px;font-size:11px;font-weight:700;color:var(--txt3);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;text-transform:uppercase}
 .sr-hdr span{background:var(--bg-3);padding:1px 7px;border-radius:8px;color:var(--txt2);font-size:9px}
@@ -104,13 +91,13 @@ input,textarea,button,select{font-family:inherit}
 .u-aw{position:relative;flex-shrink:0}
 .u-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
 .u-dot{position:absolute;bottom:-1px;right:-1px;width:9px;height:9px;border-radius:50%;border:2px solid var(--bg-1)}
-.u-dot.on{background:var(--green)}.u-dot.idle{background:var(--orange)}.u-dot.off{background:var(--txt3)}
+.u-dot.on{background:var(--green)}
+.u-dot.idle{background:var(--orange)}
+.u-dot.off{background:var(--txt3)}
 .u-inf{flex:1;min-width:0}
 .u-nm{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .u-st{font-size:10px;color:var(--txt3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:3px}
 .u-st .mic-on{color:var(--green);font-size:8px}
-
-/* MODALLAR */
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.25s;backdrop-filter:blur(3px)}
 .ov.on{opacity:1;pointer-events:auto}
 .mdl{background:var(--bg-1);border:1px solid var(--bdr);border-radius:8px;width:380px;max-width:92vw;box-shadow:var(--sh);transform:scale(.9);transition:.25s}
@@ -126,28 +113,18 @@ input,textarea,button,select{font-family:inherit}
 .mb-d{background:var(--red)}.mb-d:hover{background:#c0392b}
 .set-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bdr)}
 .set-row label{font-size:13px}
-.tgl{width:38px;height:20px;background:var(--bg-4);border-radius:10px;position:relative;cursor:pointer;transition:.2s}
+.tgl{width:38px;height:20px;background:var(--bg-4);border-radius:10px;position:relative;cursor:pointer;transition:.2s;flex-shrink:0}
 .tgl.on{background:var(--primary)}
 .tgl::after{content:'';position:absolute;width:16px;height:16px;background:#fff;border-radius:50%;top:2px;left:2px;transition:.2s}
 .tgl.on::after{left:20px}
-
-/* TOAST */
 .t-box{position:fixed;top:56px;right:12px;z-index:200;display:flex;flex-direction:column;gap:6px}
 .t-it{background:var(--bg-3);border:1px solid var(--bdr);padding:10px 14px;border-radius:var(--r);box-shadow:var(--sh);font-size:12px;display:flex;align-items:center;gap:8px;animation:ts .3s forwards;border-left:3px solid var(--primary)}
 .t-it.ok{border-left-color:var(--green)}.t-it.err{border-left-color:var(--red)}
 @keyframes ts{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
-
-/* MOBİL */
 .mob-ov{display:none;position:fixed;inset:0;top:48px;background:rgba(0,0,0,.6);z-index:15}
 .mob-ov.on{display:block}
-
 @media(max-width:1024px){.sb-r{display:none;position:fixed;top:48px;bottom:0;right:0;width:240px;z-index:20;box-shadow:var(--sh)}.sb-r.on{display:flex}}
-@media(max-width:768px){
-.sb-l,.sb-r{display:none;position:fixed;top:48px;bottom:0;width:260px;z-index:20;box-shadow:var(--sh)}
-.sb-l.on{display:flex;left:0}.sb-r.on{display:flex;right:0}
-.hdr-mob{display:flex}.hdr-nav{display:none}
-.m-body{max-width:88%}
-}
+@media(max-width:768px){.sb-l,.sb-r{display:none;position:fixed;top:48px;bottom:0;width:260px;z-index:20;box-shadow:var(--sh)}.sb-l.on{display:flex;left:0}.sb-r.on{display:flex;right:0}.hdr-mob{display:flex}.hdr-nav{display:none}.m-body{max-width:88%}}
 </style>
 </head>
 <body>
@@ -163,7 +140,7 @@ input,textarea,button,select{font-family:inherit}
 <h2 style="margin-bottom:6px;font-size:18px">Sesli Sohbet</h2>
 <p style="color:var(--txt2);font-size:12px;margin-bottom:20px">Odalarına katılmak için ismini gir.</p>
 <input class="mi" id="nickInp" placeholder="Kullanıcı Adı" maxlength="15" style="text-align:center">
-<button class="mb mb-p" onclick="doLogin()"><i class="fas fa-right-to-bracket" style="margin-right:5px"></i>Bağlan</button>
+<button class="mb mb-p" id="loginBtn"><i class="fas fa-right-to-bracket" style="margin-right:5px"></i>Bağlan</button>
 </div>
 </div>
 </div>
@@ -171,13 +148,13 @@ input,textarea,button,select{font-family:inherit}
 <!-- AYARLAR MODALI -->
 <div class="ov" id="setOv">
 <div class="mdl">
-<div class="mdl-t"><h2>Ayarlar</h2><button class="mdl-x" onclick="togOv('setOv')"><i class="fas fa-xmark"></i></button></div>
+<div class="mdl-t"><h2>Ayarlar</h2><button class="mdl-x" id="setCloseBtn"><i class="fas fa-xmark"></i></button></div>
 <div class="mdl-b">
 <select class="mi"><option>Varsayılan Mikrofon</option></select>
 <select class="mi"><option>Varsayılan Hoparlör</option></select>
 <div class="set-row"><label>Bildirim Sesleri</label><div class="tgl on" onclick="this.classList.toggle('on')"></div></div>
-<div class="set-row"><label>Otomatik Mikrofon Aç</label><div class="tgl" onclick="this.classList.toggle('on')"></div></div>
-<button class="mb mb-d" style="margin-top:16px" onclick="doLogout()"><i class="fas fa-right-from-bracket" style="margin-right:5px"></i>Çıkış Yap</button>
+<div class="set-row"><label>Otomatik Mikrofon</label><div class="tgl" onclick="this.classList.toggle('on')"></div></div>
+<button class="mb mb-d" style="margin-top:16px" id="logoutBtn"><i class="fas fa-right-from-bracket" style="margin-right:5px"></i>Çıkış Yap</button>
 </div>
 </div>
 </div>
@@ -186,19 +163,18 @@ input,textarea,button,select{font-family:inherit}
 <div class="app hide" id="app">
 <header class="hdr">
 <div class="hdr-l">
-<button class="hdr-mob" onclick="togPn('l')"><i class="fas fa-bars"></i></button>
+<button class="hdr-mob" id="mobMenuBtn"><i class="fas fa-bars"></i></button>
 <div class="logo"><i class="fas fa-headset"></i> SesliChat</div>
 <nav class="hdr-nav"><button class="act">Ana Sayfa</button><button>Odalar</button><button>Tüm Kişiler</button></nav>
 </div>
 <div class="hdr-r">
-<button class="hdr-mob" onclick="togPn('r')" style="margin:0"><i class="fas fa-users"></i></button>
-<button class="h-icon" onclick="togOv('setOv')"><i class="fas fa-gear"></i></button>
-<div class="h-pill" onclick="togOv('setOv')"><div class="h-pav" id="hAv">?</div><span id="hNm">Kullanıcı</span></div>
+<button class="hdr-mob" id="mobUsersBtn" style="margin:0"><i class="fas fa-users"></i></button>
+<button class="h-icon" id="settingsBtn"><i class="fas fa-gear"></i></button>
+<div class="h-pill" id="profilePill"><div class="h-pav" id="hAv">?</div><span id="hNm">Kullanıcı</span></div>
 </div>
 </header>
 
 <div class="main">
-<!-- SOL -->
 <aside class="sb-l" id="sbL">
 <div class="sb-cat">Sesli Odalar</div>
 <div id="vRooms"></div>
@@ -206,12 +182,11 @@ input,textarea,button,select{font-family:inherit}
 <div id="tRooms"></div>
 </aside>
 
-<!-- ORTA -->
 <main class="chat">
 <div class="ch-hdr">
 <div class="ch-title"><i class="fas fa-volume-high"></i><span id="rmName">Genel Oda</span><div class="live-badge" id="liveB"><i class="fas fa-circle"></i> CANLI</div></div>
 <div class="ch-acts">
-<button onclick="joinVoice()" title="Sesli Katıl"><i class="fas fa-microphone"></i></button>
+<button id="voiceJoinBtn" title="Sesli Katıl"><i class="fas fa-microphone"></i></button>
 <button onclick="toast('Odadan ayrıldın','err')"><i class="fas fa-right-from-bracket"></i></button>
 </div>
 </div>
@@ -221,17 +196,13 @@ input,textarea,button,select{font-family:inherit}
 <div class="in-wrap">
 <button onclick="toast('Yakında','ok')"><i class="far fa-face-smile"></i></button>
 <textarea class="m-inp" id="msgInp" placeholder="Mesajınızı yazın..." rows="1"></textarea>
-<button onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
+<button id="sendBtn"><i class="fas fa-paper-plane"></i></button>
 </div>
-<button class="ptt" id="pttBtn" onmousedown="pttOn()" onmouseup="pttOff()" onmouseleave="pttOff()" ontouchstart="pttOn()" ontouchend="pttOff()">
-<i class="fas fa-microphone"></i><span class="ptt-t">Bas Konuş</span>
-<div class="ptt-w"><span></span><span></span><span></span></div>
-</button>
+<button class="ptt" id="pttBtn"><i class="fas fa-microphone"></i><span class="ptt-t">Bas Konuş</span><div class="ptt-w"><span></span><span></span><span></span></div></button>
 </div>
 </div>
 </main>
 
-<!-- SAĞ -->
 <aside class="sb-r" id="sbR">
 <div class="sr-hdr">Odadaki Kişiler <span id="onC">0</span></div>
 <div class="u-list" id="uList"></div>
@@ -240,41 +211,39 @@ input,textarea,button,select{font-family:inherit}
 </div>
 
 <script>
-/* =====================================================================
-   1. MOCK API KATMANI (Vercel/Glitch'de index.js / messages.js ile değiştirilecek)
-   ===================================================================== */
-const API = {
-    async getMessages(roomId) {
-        // GERÇEK: return fetch(`/api/messages?room=${roomId}`).then(r=>r.json());
-        return new Promise(r => setTimeout(() => r(DB.msgs.filter(m => m.room === roomId)), 150));
+/* 1. MOCK API (index.js / messages.js yerine geçecek yer) */
+var API = {
+    getMessages: function(roomId) {
+        return new Promise(function(resolve) {
+            setTimeout(function() { resolve(DB.msgs.filter(function(m) { return m.room === roomId; })); }, 150);
+        });
     },
-    async sendMessage(roomId, text, user) {
-        // GERÇEK: return fetch('/api/messages', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({room:roomId, text, user})}).then(r=>r.json());
-        const n = { id: Date.now(), room: roomId, user, text, time: getT() };
-        DB.msgs.push(n); return n;
+    sendMessage: function(roomId, text, user) {
+        var n = { id: Date.now(), room: roomId, user: user, text: text, time: getT() };
+        DB.msgs.push(n); 
+        return new Promise(function(resolve) { resolve(n); });
     },
-    async getUsers(roomId) {
-        // GERÇEK: return fetch(`/api/users?room=${roomId}`).then(r=>r.json());
-        return new Promise(r => setTimeout(() => r(DB.users), 200));
+    getUsers: function() {
+        return new Promise(function(resolve) {
+            setTimeout(function() { resolve(DB.users); }, 200);
+        });
     },
-    async joinRoom(roomId, userName) {
-        // GERÇEK: return fetch('/api/join', {method:'POST', body:JSON.stringify({room:roomId, user:userName})});
-        if(!DB.users.find(u=>u.id===userName)) DB.users.push({id:userName, name:userName, status:'on', speaking:false, room:roomId});
-        return {ok:true};
+    joinRoom: function(userName) {
+        if(!DB.users.find(function(u){ return u.id === userName; })) {
+            DB.users.push({id: userName, name: userName, status: 'on', speaking: false});
+        }
     }
 };
 
-/* =====================================================================
-   2. VERİTABANI SIMÜLASYONU (messages.js verileri)
-   ===================================================================== */
-const DB = {
+/* 2. VERİTABANI (messages.js verileri) */
+var DB = {
     users: [
-        {id:'u1',name:'Ahmet',status:'on',speaking:true,room:'genel'},
-        {id:'u2',name:'Mehmet',status:'on',speaking:false,room:'genel'},
-        {id:'u3',name:'Ali',status:'idle',speaking:false,room:'genel'},
-        {id:'u4',name:'Ayşe',status:'on',speaking:true,room:'genel'},
-        {id:'u5',name:'Fatma',status:'off',speaking:false,room:'genel'},
-        {id:'u6',name:'Burak',status:'on',speaking:false,room:'genel'}
+        {id:'u1',name:'Ahmet',status:'on',speaking:true},
+        {id:'u2',name:'Mehmet',status:'on',speaking:false},
+        {id:'u3',name:'Ali',status:'idle',speaking:false},
+        {id:'u4',name:'Ayşe',status:'on',speaking:true},
+        {id:'u5',name:'Fatma',status:'off',speaking:false},
+        {id:'u6',name:'Burak',status:'on',speaking:false}
     ],
     msgs: [
         {id:1,room:'genel',user:'Sistem',text:'Odaya hoş geldiniz. Saygılı olun.',time:'12:00',sys:true},
@@ -293,142 +262,286 @@ const DB = {
     ]
 };
 
-/* =====================================================================
-   3. WEBRTC ISKELETİ (Gerçek Sunucu - index.js ile çalışır)
-   ===================================================================== */
-let localStream = null, peers = {}, isInVoice = false;
-const rtcConf = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+/* 3. WEBRTC ISKELETİ */
+var localStream = null;
+var isInVoice = false;
 
-async function initWebRTC() {
-    try {
-        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+function initWebRTC() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        toast('Tarayıcın mikrofonu desteklemiyor', 'err');
+        return;
+    }
+    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+    .then(function(stream) {
+        localStream = stream;
         toast('Mikrofon bağlandı', 'ok');
-        // Gerçek senaryoda Socket.io ile odadaki herkese signaling başlar:
-        // socket.emit('join-voice', { room: S.room });
-        // socket.on('offer', (data) => handleOffer(data));
-        // socket.on('answer', (data) => handleAnswer(data));
-        // socket.on('ice-candidate', (data) => handleIce(data));
-    } catch(e) { toast('Mikrofon hatası!', 'err'); console.error(e); }
+    })
+    .catch(function(err) {
+        console.error('Mic error:', err);
+        toast('Mikrofon izni verilmedi!', 'err');
+    });
 }
 
-function createPC(targetId) {
-    const pc = new RTCPeerConnection(rtcConf);
-    localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
-    pc.onicecandidate = e => { if(e.candidate) /* socket.emit('ice', {target: targetId, candidate: e.candidate}) */ };
-    pc.ontrack = e => { const u = DB.users.find(x=>x.id===targetId); if(u) u.speaking = true; renderU(); };
-    peers[targetId] = pc; return pc;
+/* 4. UYGULAMA DURUMU */
+var S = { user: null, room: 'genel', connected: false };
+var COLS = ['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#1abc9c','#e67e22'];
+var pollTimer = null;
+
+function getCol(n) { 
+    var h = 0; 
+    for(var i = 0; i < n.length; i++) { h = n.charCodeAt(i) + ((h << 5) - h); } 
+    return COLS[Math.abs(h) % COLS.length]; 
+}
+function getT() { 
+    var d = new Date(); 
+    return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0'); 
 }
 
-/* =====================================================================
-   4. UYGULAMA STATE VE CORE
-   ===================================================================== */
-const S = { user: null, room: 'genel', connected: false };
-const COLS = ['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#1abc9c','#e67e22'];
-function getCol(n){ let h=0; for(let i=0;i<n.length;i++) h=n.charCodeAt(i)+((h<<5)-h); return COLS[Math.abs(h)%COLS.length]; }
-function getT(){ const d=new Date(); return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0'); }
-
-async function doLogin() {
-    const n = document.getElementById('nickInp').value.trim();
-    if(n.length < 2) return;
-    S.user = { id: 'u_'+Date.now(), name: n };
+/* 5. CORE FONKSİYONLAR */
+function doLogin() {
+    var n = document.getElementById('nickInp').value.trim();
+    if (n.length < 2) { alert('Lütfen geçerli bir isim girin.'); return; }
+    
+    S.user = { id: 'u_' + Date.now(), name: n };
     S.connected = true;
+    
     document.getElementById('hAv').textContent = n[0].toUpperCase();
     document.getElementById('hNm').textContent = n;
-    await API.joinRoom(S.room, S.user.name);
-    await load();
-    togOv('loginOv'); document.getElementById('app').classList.remove('hide');
-    poll(); toast('Odaya bağlandın', 'ok');
+    
+    API.joinRoom(S.user.name);
+    load();
+    
+    document.getElementById('loginOv').classList.remove('on');
+    document.getElementById('app').classList.remove('hide');
+    
+    pollTimer = setInterval(function() { 
+        if (S.connected) { load(); simVoice(); } 
+    }, 3000);
+    
+    toast('Odaya bağlandın', 'ok');
 }
 
-async function load() {
-    DB.users = await API.getUsers(S.room);
-    renderR(); renderU(); renderM();
+function load() {
+    API.getUsers().then(function(users) {
+        DB.users = users;
+        renderR();
+        renderU();
+    });
+    API.getMessages(S.room).then(function() {
+        renderM();
+    });
 }
-
-function poll() { setInterval(async () => { if(!S.connected) return; await load(); simVoice(); }, 3000); }
 
 function joinVoice() {
-    if(isInVoice) { isInVoice=false; document.getElementById('liveB').classList.remove('on'); if(localStream) localStream.getTracks().forEach(t=>t.stop()); toast('Sesli odadan ayrıldın','err'); }
-    else { isInVoice=true; document.getElementById('liveB').classList.add('on'); initWebRTC(); }
-}
-
-function doLogout() { S.connected=false; if(localStream) localStream.getTracks().forEach(t=>t.stop()); togOv('setOv'); document.getElementById('app').classList.add('hide'); document.getElementById('loginOv').classList.add('on'); document.getElementById('nickInp').value=''; }
-
-/* =====================================================================
-   5. PTT VE MESAJ
-   ===================================================================== */
-function pttOn() {
-    if(!isInVoice || !localStream) { toast('Önce mikrofonu aç (üst bardaki mikrofon ikonuna tıkla)','err'); return; }
-    document.getElementById('pttBtn').classList.add('on');
-    const me = DB.users.find(u=>u.id===S.user.name); if(me) me.speaking=true; renderU();
-}
-function pttOff() { document.getElementById('pttBtn').classList.remove('on'); const me = DB.users.find(u=>u.id===S.user.name); if(me) me.speaking=false; renderU(); }
-document.addEventListener('mouseup', ()=>{ if(document.getElementById('pttBtn').classList.contains('on')) pttOff(); });
-document.addEventListener('touchend', ()=>{ if(document.getElementById('pttBtn').classList.contains('on')) pttOff(); });
-
-async function sendMsg() {
-    const inp = document.getElementById('msgInp'), t = inp.value.trim();
-    if(!t || !S.user) return; inp.value=''; inp.style.height='auto';
-    await API.sendMessage(S.room, t, S.user.name); renderM();
-    if(Math.random()>.4) {
-        setTimeout(async()=>{
-            const nm=DB.users.map(u=>u.name).filter(n=>n!==S.user.name);
-            const ru=nm[Math.floor(Math.random()*nm.length)];
-            const rp=['Selam!','Nasılsın?','Akşama gelecek misin?','Tamam','Mic açık mı?','Duyulmuyor biraz','Evet buradayım'];
-            await API.sendMessage(S.room, rp[Math.floor(Math.random()*rp.length)], ru); renderM();
-        }, 1000+Math.random()*2000);
+    if (isInVoice) { 
+        isInVoice = false; 
+        document.getElementById('liveB').classList.remove('on'); 
+        if (localStream) localStream.getTracks().forEach(function(t) { t.stop(); });
+        localStream = null;
+        toast('Sesli odadan ayrıldın', 'err'); 
+    } else { 
+        isInVoice = true; 
+        document.getElementById('liveB').classList.add('on'); 
+        initWebRTC(); 
     }
 }
 
-document.addEventListener('DOMContentLoaded', ()=>{
-    document.getElementById('msgInp').addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg()} });
-    document.getElementById('msgInp').addEventListener('input', function(){ this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,60)+'px'; });
-    document.getElementById('nickInp').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
-});
-
-/* =====================================================================
-   6. RENDER
-   ===================================================================== */
-function renderR() {
-    document.getElementById('vRooms').innerHTML = DB.rooms.filter(r=>r.type==='voice').map(r=>`<button class="r-item ${S.room===r.id?'act':''}" onclick="swRoom('${r.id}')"><i class="fas fa-volume-high" style="color:var(--green)"></i>${r.name}<span class="rb">${r.c}</span></button>`).join('');
-    document.getElementById('tRooms').innerHTML = DB.rooms.filter(r=>r.type==='text').map(r=>`<button class="r-item ${S.room===r.id?'act':''}" onclick="swRoom('${r.id}')"><i class="fas fa-hashtag"></i>${r.name}<span class="rb">${r.c}</span></button>`).join('');
+function doLogout() { 
+    S.connected = false; 
+    if (localStream) localStream.getTracks().forEach(function(t) { t.stop(); });
+    if (pollTimer) clearInterval(pollTimer);
+    document.getElementById('setOv').classList.remove('on'); 
+    document.getElementById('app').classList.add('hide'); 
+    document.getElementById('loginOv').classList.add('on'); 
+    document.getElementById('nickInp').value = ''; 
 }
 
-function renderM() {
-    const box = document.getElementById('msgBox'); let h='';
-    DB.msgs.filter(m=>m.room===S.room).forEach(m => {
-        if(m.sys) { h+=`<div class="msg-sys"><span>${m.text}</span></div>`; return; }
-        const me = m.user===(S.user?S.user.name:'');
-        const c = getCol(m.user); const vc = m.voice ? `<span class="voice-tag"><i class="fas fa-microphone"></i> Sesli</span>` : '';
-        h+=`<div class="msg ${me?'me':''}">
-            <div class="m-av" style="background:${c}">${m.user[0].toUpperCase()}</div>
-            <div class="m-body">
-                <div class="m-head"><span class="m-name" style="color:${c}">${m.user}</span>${vc}<span class="m-time">${m.time}</span></div>
-                <div class="m-txt">${m.text}</div>
-            </div>
-        </div>`;
+/* 6. PTT VE MESAJ */
+function pttOn() {
+    if (!isInVoice || !localStream) { toast('Önce mikrofonu aç (üst bardaki mikrofon ikonuna tıkla)', 'err'); return; }
+    document.getElementById('pttBtn').classList.add('on');
+    var me = DB.users.find(function(u) { return u.id === S.user.name; }); 
+    if (me) me.speaking = true; 
+    renderU();
+}
+function pttOff() { 
+    document.getElementById('pttBtn').classList.remove('on'); 
+    var me = DB.users.find(function(u) { return u.id === S.user.name; }); 
+    if (me) me.speaking = false; 
+    renderU(); 
+}
+
+function sendMsg() {
+    var inp = document.getElementById('msgInp');
+    var t = inp.value.trim();
+    if (!t || !S.user) return; 
+    inp.value = ''; 
+    inp.style.height = 'auto';
+    
+    API.sendMessage(S.room, t, S.user.name).then(function() {
+        renderM();
+        
+        if (Math.random() > 0.4) {
+            setTimeout(function() {
+                var nm = DB.users.map(function(u) { return u.name; }).filter(function(n) { return n !== S.user.name; });
+                var ru = nm[Math.floor(Math.random() * nm.length)];
+                var rp = ['Selam!', 'Nasılsın?', 'Akşama gelecek misin?', 'Tamam', 'Mic açık mı?', 'Duyulmuyor biraz', 'Evet buradayım'];
+                API.sendMessage(S.room, rp[Math.floor(Math.random() * rp.length)], ru).then(function() { renderM(); });
+            }, 1000 + Math.random() * 2000);
+        }
     });
-    box.innerHTML=h; box.scrollTop=box.scrollHeight;
 }
 
-function renderU() {
-    const on = DB.users.filter(u=>u.status!=='off');
-    document.getElementById('onC').textContent = on.length;
-    document.getElementById('uList').innerHTML = DB.users.map(u => {
-        const c=getCol(u.name); const mic = u.speaking ? `<i class="fas fa-microphone mic-on"></i> Konuşuyor` : (u.status==='on'?'Çevrimiçi':u.status==='idle'?'AFK':'Çevrimdışı');
-        return `<div class="u-it"><div class="u-aw"><div class="u-av" style="background:${c}">${u.name[0].toUpperCase()}</div><div class="u-dot ${u.status}"></div></div><div class="u-inf"><div class="u-nm">${u.name}</div><div class="u-st">${mic}</div></div></div>`;
+/* 7. RENDER */
+function renderR() {
+    document.getElementById('vRooms').innerHTML = DB.rooms.filter(function(r) { return r.type === 'voice'; }).map(function(r) {
+        return '<button class="r-item ' + (S.room === r.id ? 'act' : '') + '" onclick="swRoom(\'' + r.id + '\')"><i class="fas fa-volume-high" style="color:var(--green)"></i>' + r.name + '<span class="rb">' + r.c + '</span></button>';
+    }).join('');
+    
+    document.getElementById('tRooms').innerHTML = DB.rooms.filter(function(r) { return r.type === 'text'; }).map(function(r) {
+        return '<button class="r-item ' + (S.room === r.id ? 'act' : '') + '" onclick="swRoom(\'' + r.id + '\')"><i class="fas fa-hashtag"></i>' + r.name + '<span class="rb">' + r.c + '</span></button>';
     }).join('');
 }
 
-/* =====================================================================
-   7. YARDIMCILAR
-   ===================================================================== */
-async function swRoom(id) { S.room=id; document.getElementById('rmName').textContent = DB.rooms.find(r=>r.id===id).name; await load(); closePn(); }
-function simVoice() { DB.users.forEach(u=>{ if(u.id!==S.user?.name) u.speaking = Math.random()>.8; }); renderU(); }
+function renderM() {
+    var box = document.getElementById('msgBox'); 
+    var h = '';
+    var filtered = DB.msgs.filter(function(m) { return m.room === S.room; });
+    
+    for (var i = 0; i < filtered.length; i++) {
+        var m = filtered[i];
+        if (m.sys) { h += '<div class="msg-sys"><span>' + m.text + '</span></div>'; continue; }
+        var me = m.user === (S.user ? S.user.name : '');
+        var c = getCol(m.user); 
+        var vc = m.voice ? '<span class="voice-tag"><i class="fas fa-microphone"></i> Sesli</span>' : '';
+        
+        h += '<div class="msg ' + (me ? 'me' : '') + '">' +
+            '<div class="m-av" style="background:' + c + '">' + m.user[0].toUpperCase() + '</div>' +
+            '<div class="m-body">' +
+                '<div class="m-head"><span class="m-name" style="color:' + c + '">' + m.user + '</span>' + vc + '<span class="m-time">' + m.time + '</span></div>' +
+                '<div class="m-txt">' + m.text + '</div>' +
+            '</div>' +
+        '</div>';
+    }
+    box.innerHTML = h; 
+    box.scrollTop = box.scrollHeight;
+}
+
+function renderU() {
+    var on = DB.users.filter(function(u) { return u.status !== 'off'; });
+    document.getElementById('onC').textContent = on.length;
+    
+    var h = '';
+    for (var i = 0; i < DB.users.length; i++) {
+        var u = DB.users[i];
+        var c = getCol(u.name); 
+        var mic = u.speaking ? '<i class="fas fa-microphone mic-on"></i> Konuşuyor' : (u.status === 'on' ? 'Çevrimiçi' : u.status === 'idle' ? 'AFK' : 'Çevrimdışı');
+        
+        h += '<div class="u-it">' +
+            '<div class="u-aw"><div class="u-av" style="background:' + c + '">' + u.name[0].toUpperCase() + '</div><div class="u-dot ' + u.status + '"></div></div>' +
+            '<div class="u-inf"><div class="u-nm">' + u.name + '</div><div class="u-st">' + mic + '</div></div>' +
+        '</div>';
+    }
+    document.getElementById('uList').innerHTML = h;
+}
+
+/* 8. YARDIMCILAR */
+function swRoom(id) { 
+    S.room = id; 
+    var roomObj = DB.rooms.find(function(r) { return r.id === id; });
+    document.getElementById('rmName').textContent = roomObj ? roomObj.name : id; 
+    load(); 
+    closePn(); 
+}
+
+function simVoice() { 
+    for (var i = 0; i < DB.users.length; i++) {
+        var u = DB.users[i];
+        if (u.id !== (S.user ? S.user.name : '')) { 
+            u.speaking = Math.random() > 0.8; 
+        }
+    }
+    renderU(); 
+}
+
 function togOv(id) { document.getElementById(id).classList.toggle('on'); }
-function togPn(s) { document.getElementById(s==='l'?'sbL':'sbR').classList.toggle('on'); document.getElementById('mobOv').classList.toggle('on'); }
-function closePn() { document.getElementById('sbL').classList.remove('on'); document.getElementById('sbR').classList.remove('on'); document.getElementById('mobOv').classList.remove('on'); }
-function toast(m,t='info') { const b=document.getElementById('tBox'), d=document.createElement('div'); d.className='t-it '+t; d.innerHTML=`<i class="fas fa-${t==='ok'?'check-circle':t==='err'?'times-circle':'info-circle'}" style="color:var(--${t==='ok'?'green':t==='err'?'red':'primary'})"></i>${m}`; b.appendChild(d); setTimeout(()=>{d.style.opacity='0';d.style.transform='translateX(50px)';d.style.transition='.3s';setTimeout(()=>d.remove(),300)},3000); }
+function togPn(s) { 
+    document.getElementById(s === 'l' ? 'sbL' : 'sbR').classList.toggle('on'); 
+    document.getElementById('mobOv').classList.toggle('on'); 
+}
+function closePn() { 
+    document.getElementById('sbL').classList.remove('on'); 
+    document.getElementById('sbR').classList.remove('on'); 
+    document.getElementById('mobOv').classList.remove('on'); 
+}
+
+function toast(m, t) {
+    t = t || 'info';
+    var b = document.getElementById('tBox');
+    var d = document.createElement('div');
+    d.className = 't-it ' + t;
+    var icon = t === 'ok' ? 'check-circle' : (t === 'err' ? 'times-circle' : 'info-circle');
+    var color = t === 'ok' ? 'green' : (t === 'err' ? 'red' : 'primary');
+    d.innerHTML = '<i class="fas fa-' + icon + '" style="color:var(--' + color + ')"></i>' + m;
+    b.appendChild(d);
+    setTimeout(function() {
+        d.style.opacity = '0';
+        d.style.transform = 'translateX(50px)';
+        d.style.transition = '.3s';
+        setTimeout(function() { d.remove(); }, 300);
+    }, 3000);
+}
+
+/* 9. EVENT LISTENERS (HATA ALMAMAK İÇİN BURADA TANIMLIYORUZ) */
+document.addEventListener('DOMContentLoaded', function() {
+    // Giriş butonu
+    document.getElementById('loginBtn').addEventListener('click', doLogin);
+    document.getElementById('nickInp').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+    
+    // Ayarlar butonları
+    document.getElementById('settingsBtn').addEventListener('click', function() { togOv('setOv'); });
+    document.getElementById('profilePill').addEventListener('click', function() { togOv('setOv'); });
+    document.getElementById('setCloseBtn').addEventListener('click', function() { togOv('setOv'); });
+    document.getElementById('logoutBtn').addEventListener('click', doLogout);
+    
+    // Sesli buton
+    document.getElementById('voiceJoinBtn').addEventListener('click', joinVoice);
+    
+    // Mesaj gönderme
+    document.getElementById('sendBtn').addEventListener('click', sendMsg);
+    document.getElementById('msgInp').addEventListener('keydown', function(e) { 
+        if (e.key === 'Enter' && !e.shiftKey) { 
+            e.preventDefault(); 
+            sendMsg(); 
+        } 
+    });
+    document.getElementById('msgInp').addEventListener('input', function() { 
+        this.style.height = 'auto'; 
+        this.style.height = Math.min(this.scrollHeight, 60) + 'px'; 
+    });
+    
+    // PTT Butonu (Mouse)
+    var pttBtn = document.getElementById('pttBtn');
+    pttBtn.addEventListener('mousedown', function(e) { e.preventDefault(); pttOn(); });
+    pttBtn.addEventListener('mouseup', pttOff);
+    pttBtn.addEventListener('mouseleave', function() { if (pttBtn.classList.contains('on')) pttOff(); });
+    
+    // PTT Butonu (Touch - Mobil)
+    pttBtn.addEventListener('touchstart', function(e) { e.preventDefault(); pttOn(); }, {passive: false});
+    pttBtn.addEventListener('touchend', function(e) { e.preventDefault(); pttOff(); });
+    
+    // Mobil menü butonları
+    document.getElementById('mobMenuBtn').addEventListener('click', function() { togPn('l'); });
+    document.getElementById('mobUsersBtn').addEventListener('click', function() { togPn('r'); });
+    
+    // Modal kapatma (arka plana tıklayınca)
+    var ovs = document.querySelectorAll('.ov');
+    for (var i = 0; i < ovs.length; i++) {
+        ovs[i].addEventListener('click', function(e) {
+            if (e.target === this) { this.classList.remove('on'); }
+        });
+    }
+});
 </script>
 </body>
 </html>
