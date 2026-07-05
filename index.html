@@ -3,9 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>SesliChat Pro - Vercel WebRTC</title>
+<title>SesliChat Pro - Global WebRTC</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<!-- SOCKET.IO İSTEMCİSİ (Sunucu ile anlık iletişim için) -->
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <style>
 :root{--bg-0:#0e1013;--bg-1:#161920;--bg-2:#1e222b;--bg-3:#272c37;--bg-4:#323844;--primary:#0088ff;--primary-d:#006acc;--green:#2ecc71;--red:#e74c3c;--orange:#f39c12;--txt:#e2e4e8;--txt2:#8b919a;--txt3:#555d68;--bdr:#252a33;--r:6px;--sh:0 4px 20px rgba(0,0,0,.5)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -32,7 +34,6 @@ input,textarea,button{font-family:inherit}
 .r-item:hover{background:var(--bg-2);color:var(--txt)}
 .r-item.act{background:var(--bg-3);color:#fff;font-weight:600}
 .r-item i{width:14px;text-align:center;font-size:11px}
-.r-item .rb{margin-left:auto;background:var(--red);color:#fff;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:700}
 .chat{flex:1;display:flex;flex-direction:column;background:var(--bg-0);min-width:0}
 .ch-hdr{height:42px;background:var(--bg-1);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;padding:0 12px;flex-shrink:0}
 .ch-title{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
@@ -44,6 +45,7 @@ input,textarea,button{font-family:inherit}
 .ch-acts{display:flex;gap:2px}
 .ch-acts button{background:none;border:none;color:var(--txt3);padding:6px 8px;border-radius:var(--r);cursor:pointer;font-size:12px;transition:.2s}
 .ch-acts button:hover{background:var(--bg-2);color:var(--txt)}
+.ch-acts button.active-voice{color:var(--green)}
 .msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:4px}
 .msg{display:flex;gap:8px;padding:3px 0;animation:fi .2s ease}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
@@ -58,7 +60,6 @@ input,textarea,button{font-family:inherit}
 .msg.me .m-txt{background:var(--primary);color:#fff;padding:7px 11px;border-radius:10px 3px 10px 10px;display:inline-block}
 .msg-sys{text-align:center;padding:6px 0}
 .msg-sys span{background:var(--bg-2);color:var(--txt2);font-size:11px;padding:3px 10px;border-radius:10px}
-.voice-tag{display:inline-flex;align-items:center;gap:3px;font-size:9px;color:var(--green);font-weight:600;margin-left:6px}
 .ch-ft{padding:8px 12px;background:var(--bg-1);border-top:1px solid var(--bdr);flex-shrink:0}
 .in-row{display:flex;align-items:center;gap:6px}
 .in-wrap{flex:1;background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--r);display:flex;align-items:center;padding:0 6px;transition:.2s}
@@ -86,22 +87,17 @@ input,textarea,button{font-family:inherit}
 .u-aw{position:relative;flex-shrink:0}
 .u-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
 .u-dot{position:absolute;bottom:-1px;right:-1px;width:9px;height:9px;border-radius:50%;border:2px solid var(--bg-1)}
-.u-dot.on{background:var(--green)}
-.u-dot.idle{background:var(--orange)}
-.u-dot.off{background:var(--txt3)}
+.u-dot.on{background:var(--green)} .u-dot.off{background:var(--txt3)}
 .u-inf{flex:1;min-width:0}
 .u-nm{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.u-st{font-size:10px;color:var(--txt3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:3px}
+.u-st{font-size:10px;color:var(--txt3);display:flex;align-items:center;gap:3px}
 .u-st .mic-on{color:var(--green);font-size:8px}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:.25s;backdrop-filter:blur(3px)}
 .ov.on{opacity:1;pointer-events:auto}
 .mdl{background:var(--bg-1);border:1px solid var(--bdr);border-radius:8px;width:380px;max-width:92vw;box-shadow:var(--sh);transform:scale(.9);transition:.25s}
 .ov.on .mdl{transform:scale(1)}
-.mdl-t{padding:18px 18px 0;display:flex;justify-content:space-between;align-items:center}
-.mdl-t h2{font-size:16px;font-weight:800}
-.mdl-x{background:none;border:none;color:var(--txt3);font-size:18px;cursor:pointer}
-.mdl-b{padding:18px}
-.mi{width:100%;padding:10px;background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--r);color:var(--txt);font-size:14px;outline:none;margin-bottom:10px;transition:.2s}
+.mdl-b{padding:24px;text-align:center}
+.mi{width:100%;padding:10px;background:var(--bg-2);border:1px solid var(--bdr);border-radius:var(--r);color:var(--txt);font-size:14px;outline:none;margin-bottom:12px;transition:.2s}
 .mi:focus{border-color:var(--primary)}
 .mb{width:100%;padding:11px;border:none;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer;color:#fff;transition:.2s}
 .mb-p{background:var(--primary)}.mb-p:hover{background:var(--primary-d)}
@@ -109,8 +105,7 @@ input,textarea,button{font-family:inherit}
 .t-it{background:var(--bg-3);border:1px solid var(--bdr);padding:10px 14px;border-radius:var(--r);box-shadow:var(--sh);font-size:12px;display:flex;align-items:center;gap:8px;animation:ts .3s forwards;border-left:3px solid var(--primary)}
 .t-it.ok{border-left-color:var(--green)}.t-it.err{border-left-color:var(--red)}
 @keyframes ts{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
-@media(max-width:1024px){.sb-r{display:none;position:fixed;top:48px;bottom:0;right:0;width:240px;z-index:20;box-shadow:var(--sh)}.sb-r.on{display:flex}}
-@media(max-width:768px){.sb-l,.sb-r{display:none;position:fixed;top:48px;bottom:0;width:260px;z-index:20;box-shadow:var(--sh)}.sb-l.on{display:flex;left:0}.sb-r.on{display:flex;right:0}.hdr-mob{display:flex!important}.m-body{max-width:88%}}
+@media(max-width:768px){.sb-l,.sb-r{display:none;position:fixed;top:48px;bottom:0;width:260px;z-index:20;box-shadow:var(--sh);background:var(--bg-1)}.sb-l{left:0}.sb-r{right:0}.m-body{max-width:88%}.hdr-mob{display:flex!important}}
 .hdr-mob{display:none;width:34px;height:34px;align-items:center;justify-content:center;border-radius:var(--r);background:var(--bg-2);color:var(--txt2);border:none;font-size:15px;cursor:pointer}
 </style>
 </head>
@@ -120,11 +115,11 @@ input,textarea,button{font-family:inherit}
 
 <!-- GİRİŞ MODALI -->
 <div class="ov on" id="loginOv">
-<div class="mdl" style="width:340px">
-<div class="mdl-b" style="text-align:center;padding:30px">
-<div style="width:56px;height:56px;background:var(--primary);border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff"><i class="fas fa-headset"></i></div>
-<h2 style="margin-bottom:6px;font-size:18px">Sesli Sohbet (WebRTC)</h2>
-<p style="color:var(--txt2);font-size:12px;margin-bottom:20px">Vercel Serverless + WebRTC Altyapısı</p>
+<div class="mdl">
+<div class="mdl-b">
+<div style="width:56px;height:56px;background:var(--primary);border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff"><i class="fas fa-globe"></i></div>
+<h2 style="margin-bottom:6px;font-size:18px">Global Sesli Sohbet</h2>
+<p style="color:var(--txt2);font-size:12px;margin-bottom:20px">Dünyanın her yerinden anlık sesli iletişim</p>
 <input class="mi" id="nickInp" placeholder="Kullanıcı Adı" maxlength="15" style="text-align:center">
 <button class="mb mb-p" id="loginBtn"><i class="fas fa-right-to-bracket" style="margin-right:5px"></i>Bağlan</button>
 </div>
@@ -134,13 +129,13 @@ input,textarea,button{font-family:inherit}
 <!-- ANA UYGULAMA -->
 <div class="app hide" id="app">
 <header class="hdr">
-<div class="hdr-l">
+<div class="hdr-l" style="gap:12px; align-items:center;">
 <button class="hdr-mob" id="mobMenuBtn"><i class="fas fa-bars"></i></button>
 <div class="logo"><i class="fas fa-headset"></i> SesliChat</div>
 </div>
 <div class="hdr-r">
 <button class="hdr-mob" id="mobUsersBtn" style="margin:0"><i class="fas fa-users"></i></button>
-<button class="h-icon" id="settingsBtn"><i class="fas fa-gear"></i></button>
+<button class="h-icon" id="logoutBtn" title="Çıkış"><i class="fas fa-right-from-bracket"></i></button>
 <div class="h-pill"><div class="h-pav" id="hAv">?</div><span id="hNm">Kullanıcı</span></div>
 </div>
 </header>
@@ -148,16 +143,15 @@ input,textarea,button{font-family:inherit}
 <div class="main">
 <aside class="sb-l" id="sbL">
 <div class="sb-cat">Sesli Odalar</div>
-<div id="vRooms"></div>
-<div class="sb-cat" style="margin-top:8px">Yazılı Sohbet</div>
-<div id="tRooms"></div>
+<button class="r-item act" onclick="switchRoom('genel')"><i class="fas fa-volume-high" style="color:var(--green)"></i>Genel Oda</button>
+<button class="r-item" onclick="switchRoom('sohbet')"><i class="fas fa-volume-high" style="color:var(--green)"></i>Rastgele Sohbet</button>
 </aside>
 
 <main class="chat">
 <div class="ch-hdr">
 <div class="ch-title"><i class="fas fa-volume-high"></i><span id="rmName">Genel Oda</span><div class="live-badge" id="liveB"><i class="fas fa-circle"></i> CANLI</div></div>
 <div class="ch-acts">
-<button id="voiceJoinBtn" title="Sesli Katıl"><i class="fas fa-microphone"></i></button>
+<button id="voiceJoinBtn" title="Sesli Katıl / Ayrıl"><i class="fas fa-microphone"></i></button>
 </div>
 </div>
 <div class="msgs" id="msgBox"></div>
@@ -182,348 +176,217 @@ input,textarea,button{font-family:inherit}
 
 <script>
 /* =====================================================================
-   VERCEL API URL'SİNI BURAYA YAZIN (Deploy sonrası kendi urlnizi yazın)
+   RENDE.COM URL'Nİ BURAYA YAZ (SONUNDA SLASH OLMAMALI)
    ===================================================================== */
-var API_BASE = window.location.origin; 
+const SERVER_URL = "https://talhafm.onrender.com"; 
 
-/* 1. VERİTABANI (Demo Veriler - Gerçekten Vercel KV ya da DB kullanılabilir) */
-var DB = {
-    users: [
-        {id:'u1',name:'Ahmet',status:'on',speaking:true},
-        {id:'u2',name:'Mehmet',status:'on',speaking:false},
-        {id:'u3',name:'Ali',status:'idle',speaking:false},
-        {id:'u4',name:'Ayşe',status:'on',speaking:true}
-    ],
-    msgs: [
-        {id:1,room:'genel',user:'Sistem',text:'Odaya hoş geldiniz. WebRTC üzerinden sesli iletişim kurabilirsiniz.',time:'12:00',sys:true},
-        {id:2,room:'genel',user:'Ahmet',text:'Selamlar, mikrofonumu açıyorum.',time:'12:01'},
-        {id:3,room:'genel',user:'Ayşe',text:'Sesin net geliyor, WebRTC çalışıyor!',time:'12:02'}
-    ],
-    rooms: [
-        {id:'genel',name:'Genel Oda',type:'voice',c:4},
-        {id:'rastgele',name:'Rastgele Sohbet',type:'voice',c:2},
-        {id:'y1',name:'Yazılı Sohbet',type:'text',c:5}
-    ]
-};
-
-/* 2. WEBRTC VE SIGNALING DEĞİŞKENLERİ */
+/* DEĞİŞKENLER */
+var socket = null;
 var localStream = null;
-var peers = {}; // Bağlantı kurulan kişiler
+var peers = {}; // Socket ID -> RTCPeerConnection
 var isInVoice = false;
-var lastSignalId = 0;
-var signalingInterval = null;
+var mySocketId = null;
+var currentRoom = 'genel';
+var myName = '';
 
-var rtcConfig = {
-    'iceServers': [
-        { 'urls': 'stun:stun.l.google.com:19302' },
-        { 'urls': 'stun:stun1.l.google.com:19302' }
-    ]
-};
-
-/* 3. UYGULAMA DURUMU */
-var S = { user: null, room: 'genel', connected: false };
 var COLS = ['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#1abc9c','#e67e22'];
-
 function getCol(n) { var h=0; for(var i=0;i<n.length;i++){h=n.charCodeAt(i)+((h<<5)-h);} return COLS[Math.abs(h)%COLS.length]; }
-function getT() { var d=new Date(); return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0'); }
 
 /* =====================================================================
-   4. WEBRTC CORE FONKSİYONLARI (GERÇEK SES İLETİMİ)
-   ===================================================================== */
-async function startMyAudio() {
-    try {
-        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-        toast('Mikrofon bağlandı', 'ok');
-        return true;
-    } catch(err) {
-        console.error(err);
-        toast('Mikrofon izni reddedildi!', 'err');
-        return false;
-    }
-}
-
-async function joinVoice() {
-    if (isInVoice) { 
-        leaveVoice(); 
-        return; 
-    }
-
-    var success = await startMyAudio();
-    if (!success) return;
-
-    isInVoice = true;
-    document.getElementById('liveB').classList.add('on');
-    
-    // Kendi bilgimi sunucuya (Vercel API) gönderiyorum ki diğerleri bana bağlansın
-    sendSignal({
-        type: 'join',
-        user: S.user.name,
-        userId: S.user.id,
-        room: S.room
-    });
-
-    // Diğerlerinin sinyallerini dinlemeye başla (Polling ile)
-    signalingInterval = setInterval(pollSignals, 2000);
-    
-    // Sunucudaki herkesi simüle et ve onlara offer gönder
-    startPeerConnections();
-}
-
-function leaveVoice() {
-    isInVoice = false;
-    document.getElementById('liveB').classList.remove('on');
-    
-    if (localStream) {
-        localStream.getTracks().forEach(function(t) { t.stop(); });
-        localStream = null;
-    }
-    
-    // Tüm peer bağlantılarını kapat
-    for (var id in peers) {
-        peers[id].close();
-        delete peers[id];
-    }
-    
-    if (signalingInterval) clearInterval(signalingInterval);
-    toast('Sesli odadan ayrıldın', 'err');
-}
-
-async function startPeerConnections() {
-    // Odadaki diğer kullanıcılar için PeerConnection oluştur
-    var others = DB.users.filter(function(u) { return u.id !== S.user.id; });
-    
-    for (var i = 0; i < others.length; i++) {
-        createPeer(others[i].id);
-    }
-}
-
-function createPeer(targetUserId) {
-    if (peers[targetUserId]) return; // Zaten bağlanıyoruz
-
-    var pc = new RTCPeerConnection(rtcConfig);
-    peers[targetUserId] = pc;
-
-    // Kendi mikrofon sesimizi peer'a ekle
-    localStream.getTracks().forEach(function(track) {
-        pc.addTrack(track, localStream);
-    });
-
-    // ICE Candidate oluştukça bunları Vercel API'ye yolla (Diğer tarafa ulaşması için)
-    pc.onicecandidate = function(event) {
-        if (event.candidate) {
-            sendSignal({
-                type: 'ice-candidate',
-                target: targetUserId,
-                sender: S.user.id,
-                candidate: event.candidate
-            });
-        }
-    };
-
-    // Diğer taraftan ses gelince çal
-    pc.ontrack = function(event) {
-        playRemoteAudio(event.streams[0]);
-        var u = DB.users.find(function(x){ return x.id === targetUserId; });
-        if(u) { u.speaking = true; renderU(); }
-    };
-
-    // Offer oluştur ve yolla
-    pc.createOffer()
-        .then(function(offer) { return pc.setLocalDescription(offer); })
-        .then(function() {
-            sendSignal({
-                type: 'offer',
-                target: targetUserId,
-                sender: S.user.id,
-                offer: pc.localDescription
-            });
-        })
-        .catch(function(e) { console.error("Offer hatası:", e); });
-}
-
-// Gelen sesi çalmak için gizli audio elementi
-var remoteAudio = null;
-function playRemoteAudio(stream) {
-    if (!remoteAudio) {
-        remoteAudio = document.createElement('audio');
-        remoteAudio.autoplay = true;
-        document.body.appendChild(remoteAudio);
-    }
-    remoteAudio.srcObject = stream;
-}
-
-/* =====================================================================
-   5. VERCEL SIGNALING API İLETİŞİMİ
-   ===================================================================== */
-function sendSignal(data) {
-    data.id = Date.now() + Math.random(); // Benzersiz ID
-    data.room = S.room;
-    
-    fetch(API_BASE + '/api/signal', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    }).catch(function(err) { console.log("Signal gönderilemedi:", err); });
-}
-
-async function pollSignals() {
-    try {
-        var res = await fetch(API_BASE + '/api/signal?after=' + lastSignalId);
-        var signals = await res.json();
-        
-        if (signals.length > 0) {
-            lastSignalId = signals[signals.length - 1].id;
-            handleIncomingSignals(signals);
-        }
-    } catch(e) { /* Sunucu yanıt vermemiş olabilir, yoksay */ }
-}
-
-function handleIncomingSignals(signals) {
-    for (var i = 0; i < signals.length; i++) {
-        var sig = signals[i];
-        
-        // Kendimize gelen sinyalleri işle
-        if (sig.sender === S.user.id) continue;
-
-        if (sig.type === 'offer' && sig.target === S.user.id) {
-            handleOffer(sig);
-        } 
-        else if (sig.type === 'answer' && sig.target === S.user.id) {
-            handleAnswer(sig);
-        } 
-        else if (sig.type === 'ice-candidate' && sig.target === S.user.id) {
-            handleIceCandidate(sig);
-        }
-    }
-}
-
-async function handleOffer(sig) {
-    if (!localStream) return; // Sesliye girmemişsek игнорируем
-    
-    var pc = new RTCPeerConnection(rtcConfig);
-    peers[sig.sender] = pc;
-    
-    localStream.getTracks().forEach(function(track) { pc.addTrack(track, localStream); });
-    
-    pc.ontrack = function(event) { playRemoteAudio(event.streams[0]); };
-    
-    pc.onicecandidate = function(event) {
-        if (event.candidate) {
-            sendSignal({ type: 'ice-candidate', target: sig.sender, sender: S.user.id, candidate: event.candidate });
-        }
-    };
-
-    await pc.setRemoteDescription(new RTCSessionDescription(sig.offer));
-    var answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-    
-    sendSignal({ type: 'answer', target: sig.sender, sender: S.user.id, answer: pc.localDescription });
-}
-
-async function handleAnswer(sig) {
-    var pc = peers[sig.sender];
-    if (pc) {
-        await pc.setRemoteDescription(new RTCSessionDescription(sig.answer));
-    }
-}
-
-async function handleIceCandidate(sig) {
-    var pc = peers[sig.sender];
-    if (pc) {
-        await pc.addIceCandidate(new RTCIceCandidate(sig.candidate));
-    }
-}
-
-/* =====================================================================
-   6. UYGULAMA CORE FONKSİYONLARI
+   1. SUNUCUYA BAĞLANMA VE TEXT CHAT
    ===================================================================== */
 function doLogin() {
-    var n = document.getElementById('nickInp').value.trim();
-    if (n.length < 2) { alert('Lütfen geçerli bir isim girin.'); return; }
+    myName = document.getElementById('nickInp').value.trim();
+    if (myName.length < 2) return alert('Geçerli bir isim girin.');
     
-    S.user = { id: 'u_' + Date.now(), name: n };
-    S.connected = true;
-    
-    document.getElementById('hAv').textContent = n[0].toUpperCase();
-    document.getElementById('hNm').textContent = n;
-    
-    DB.users.push({id: S.user.id, name: S.user.name, status: 'on', speaking: false});
-    
-    renderR(); renderU(); renderM();
-    
-    document.getElementById('loginOv').classList.remove('on');
-    document.getElementById('app').classList.remove('hide');
-    
-    toast('Odaya bağlandın', 'ok');
+    document.getElementById('hAv').textContent = myName[0].toUpperCase();
+    document.getElementById('hNm').textContent = myName;
+
+    socket = io(SERVER_URL, { transports: ['websocket'] });
+
+    socket.on('connect', () => {
+        mySocketId = socket.id;
+        socket.emit('join_room', { name: myName, room: currentRoom });
+        
+        document.getElementById('loginOv').classList.remove('on');
+        document.getElementById('app').classList.remove('hide');
+        toast('Sunucuya bağlandın', 'ok');
+    });
+
+    socket.on('load_messages', (msgs) => {
+        document.getElementById('msgBox').innerHTML = '';
+        msgs.forEach(m => appendMessage(m));
+    });
+
+    socket.on('new_message', (m) => appendMessage(m));
+
+    socket.on('system_msg', (data) => appendMessage({ user: 'Sistem', text: data.text, sys: true }));
+
+    socket.on('user_list', (users) => renderUsers(users));
 }
 
 function sendMsg() {
     var inp = document.getElementById('msgInp');
     var t = inp.value.trim();
-    if (!t || !S.user) return; 
+    if (!t) return;
     inp.value = ''; inp.style.height = 'auto';
+    socket.emit('send_message', { name: myName, text: t, room: currentRoom });
+}
+
+function appendMessage(m) {
+    var box = document.getElementById('msgBox');
+    var isMe = m.user === myName;
+    if (m.sys) {
+        box.innerHTML += '<div class="msg-sys"><span>' + m.text + '</span></div>';
+    } else {
+        var c = getCol(m.user);
+        box.innerHTML += '<div class="msg ' + (isMe ? 'me' : '') + '">' +
+            '<div class="m-av" style="background:' + c + '">' + m.user[0].toUpperCase() + '</div>' +
+            '<div class="m-body">' +
+                '<div class="m-head"><span class="m-name" style="color:' + c + '">' + m.user + '</span><span class="m-time">' + (m.time || '') + '</span></div>' +
+                '<div class="m-txt">' + m.text + '</div>' +
+            '</div></div>';
+    }
+    box.scrollTop = box.scrollHeight;
+}
+
+function renderUsers(users) {
+    document.getElementById('onC').textContent = users.length;
+    var h = '';
+    users.forEach(u => {
+        var c = getCol(u.name);
+        var isSpeaking = peers[u.id] && peers[u.id].connectionState === 'connected';
+        var status = isSpeaking ? '<i class="fas fa-microphone mic-on"></i> Konuşuyor' : 'Dinliyor';
+        h += '<div class="u-it"><div class="u-aw"><div class="u-av" style="background:' + c + '">' + u.name[0].toUpperCase() + '</div><div class="u-dot on"></div></div><div class="u-inf"><div class="u-nm">' + u.name + '</div><div class="u-st">' + status + '</div></div></div>';
+    });
+    document.getElementById('uList').innerHTML = h;
+}
+
+function switchRoom(room) {
+    currentRoom = room;
+    document.getElementById('rmName').textContent = room === 'genel' ? 'Genel Oda' : 'Rastgele Sohbet';
+    if (isInVoice) leaveVoice(); // Oda değiştirirken sesi kapat
+    socket.emit('join_room', { name: myName, room: room });
+    document.querySelectorAll('.r-item').forEach(el => el.classList.remove('act'));
+    event.currentTarget.classList.add('act');
+}
+
+/* =====================================================================
+   2. GERÇEK WEBRTC SESLİ İLETİŞİM (RUSYA'DAN DA GELİR)
+   ===================================================================== */
+var rtcConfig = { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }, { 'urls': 'stun:stun1.l.google.com:19302' }] };
+
+async function joinVoice() {
+    if (isInVoice) { leaveVoice(); return; }
+
+    try {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    } catch (e) {
+        toast('Mikrofon izni verilmeli!', 'err');
+        return;
+    }
+
+    isInVoice = true;
+    document.getElementById('liveB').classList.add('on');
+    document.getElementById('voiceJoinBtn').classList.add('active-voice');
+    toast('Sesli odaya girildi', 'ok');
+
+    // Sunucuya "Ben sesli odadayım, bana bağlanmak isteyen varsa haber ver" diyorum
+    socket.emit('join_voice', { room: currentRoom, name: myName });
+}
+
+function leaveVoice() {
+    isInVoice = false;
+    document.getElementById('liveB').classList.remove('on');
+    document.getElementById('voiceJoinBtn').classList.remove('active-voice');
     
-    DB.msgs.push({id: Date.now(), room: S.room, user: S.user.name, text: t, time: getT()});
-    renderM();
+    if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+    for (var id in peers) { peers[id].close(); delete peers[id]; }
     
-    // Simüle cevap
-    setTimeout(function() {
-        var nm = DB.users.map(function(u){return u.name;}).filter(function(n){return n!==S.user.name;});
-        if(nm.length > 0) {
-            var ru = nm[Math.floor(Math.random() * nm.length)];
-            var rp = ['Selam!', 'Nasılsın?', 'Tamam', 'Sesin çok net'];
-            DB.msgs.push({id: Date.now(), room: S.room, user: ru, text: rp[Math.floor(Math.random()*rp.length)], time: getT()});
-            renderM();
+    socket.emit('leave_voice');
+    toast('Sesli odadan çıkıldı', 'err');
+}
+
+function createPeerConnection(targetSocketId, isInitiator) {
+    var pc = new RTCPeerConnection(rtcConfig);
+    peers[targetSocketId] = pc;
+
+    // Kendi mikrofonumu karşıya ekle
+    localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+    // Karşıdan gelen sesi çal
+    var remoteAudio = document.createElement('audio');
+    remoteAudio.autoplay = true;
+    pc.ontrack = (event) => { remoteAudio.srcObject = event.streams[0]; };
+
+    // Sunucu üzerinden IP adreslerini (ICE Candidate) değiş tokuş et
+    pc.onicecandidate = (event) => {
+        if (event.candidate) {
+            socket.emit('ice_candidate', { targetId: targetSocketId, candidate: event.candidate });
         }
-    }, 1500);
-}
+    };
 
-/* 7. RENDER */
-function renderR() {
-    document.getElementById('vRooms').innerHTML = DB.rooms.filter(function(r){return r.type==='voice';}).map(function(r){
-        return '<button class="r-item '+(S.room===r.id?'act':'')+'" onclick="swRoom(\''+r.id+'\')"><i class="fas fa-volume-high" style="color:var(--green)"></i>'+r.name+'<span class="rb">'+r.c+'</span></button>';
-    }).join('');
-    document.getElementById('tRooms').innerHTML = DB.rooms.filter(function(r){return r.type==='text';}).map(function(r){
-        return '<button class="r-item '+(S.room===r.id?'act':'')+'" onclick="swRoom(\''+r.id+'\')"><i class="fas fa-hashtag"></i>'+r.name+'</button>';
-    }).join('');
-}
-
-function renderM() {
-    var box = document.getElementById('msgBox'); var h='';
-    var filtered = DB.msgs.filter(function(m){return m.room===S.room;});
-    for(var i=0; i<filtered.length; i++){
-        var m=filtered[i];
-        if(m.sys){h+='<div class="msg-sys"><span>'+m.text+'</span></div>';continue;}
-        var me=m.user===(S.user?S.user.name:'');
-        var c=getCol(m.user);
-        h+='<div class="msg '+(me?'me':'')+'"><div class="m-av" style="background:'+c+'">'+m.user[0].toUpperCase()+'</div><div class="m-body"><div class="m-head"><span class="m-name" style="color:'+c+'">'+m.user+'</span><span class="m-time">'+m.time+'</span></div><div class="m-txt">'+m.text+'</div></div></div>';
+    // Eğer ben odaya son giren kişiysem, herkese teklif (Offer) gönderiyorum
+    if (isInitiator) {
+        pc.createOffer()
+            .then(offer => pc.setLocalDescription(offer))
+            .then(() => {
+                socket.emit('offer', { targetId: targetSocketId, offer: pc.localDescription });
+            });
     }
-    box.innerHTML=h; box.scrollTop=box.scrollHeight;
+
+    return pc;
 }
 
-function renderU() {
-    var on = DB.users.filter(function(u){return u.status!=='off';});
-    document.getElementById('onC').textContent = on.length;
-    var h='';
-    for(var i=0;i<DB.users.length;i++){
-        var u=DB.users[i]; var c=getCol(u.name);
-        var mic=u.speaking?'<i class="fas fa-microphone mic-on"></i> Konuşuyor':'Çevrimiçi';
-        h+='<div class="u-it"><div class="u-aw"><div class="u-av" style="background:'+c+'">'+u.name[0].toUpperCase()+'</div><div class="u-dot '+u.status+'"></div></div><div class="u-inf"><div class="u-nm">'+u.name+'</div><div class="u-st">'+mic+'</div></div></div>';
+/* --- SOCKET.IO ÜZERİNDEN GELEN WEBRTC SİNYALLERİNİ YAKALAMA --- */
+
+// 1. Odaya yeni biri girdiğinde, ben onaylayıcı (Initiator) oluyorum
+socket.on('new_peer', (data) => {
+    if (isInVoice && localStream) {
+        createPeerConnection(data.senderId, true);
     }
-    document.getElementById('uList').innerHTML=h;
-}
+});
 
-function swRoom(id) { S.room=id; document.getElementById('rmName').textContent=DB.rooms.find(function(r){return r.id===id;}).name; renderM(); }
+// 2. Bana Offer geldiğinde
+socket.on('offer', (data) => {
+    if (!isInVoice || !localStream) return;
+    var pc = createPeerConnection(data.senderId, false);
+    pc.setRemoteDescription(new RTCSessionDescription(data.offer))
+        .then(() => pc.createAnswer())
+        .then(answer => pc.setLocalDescription(answer))
+        .then(() => {
+            socket.emit('answer', { targetId: data.senderId, answer: pc.localDescription });
+        });
+});
 
-/* PTT */
+// 3. Bana Answer geldiğinde
+socket.on('answer', (data) => {
+    var pc = peers[data.senderId];
+    if (pc) pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+});
+
+// 4. Bana ICE (IP Adresi) geldiğinde
+socket.on('ice_candidate', (data) => {
+    var pc = peers[data.senderId];
+    if (pc) pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+});
+
+/* =====================================================================
+   3. PTT (PUSH TO TALK) - SESİ AÇMA KAPAMA
+   ===================================================================== */
 function pttOn() {
-    if(!isInVoice || !localStream){toast('Önce mikrofonu aç','err');return;}
+    if (!isInVoice) { toast('Önce sesli odaya girin (Mikrofon ikonuna tıklayın)', 'err'); return; }
     document.getElementById('pttBtn').classList.add('on');
-    var me=DB.users.find(function(u){return u.id===S.user.id;});if(me)me.speaking=true;renderU();
+    if (localStream) localStream.getAudioTracks()[0].enabled = true; // Sesi aç
 }
-function pttOff() { document.getElementById('pttBtn').classList.remove('on'); var me=DB.users.find(function(u){return u.id===S.user.id;});if(me)me.speaking=false;renderU(); }
+function pttOff() {
+    document.getElementById('pttBtn').classList.remove('on');
+    if (localStream) localStream.getAudioTracks()[0].enabled = false; // Sesi kapat (Sustur)
+}
 
-/* YARDIMCILAR */
+/* =====================================================================
+   4. YARDIMCILAR
+   ===================================================================== */
 function toast(m, t) {
     t=t||'info';var b=document.getElementById('tBox');var d=document.createElement('div');d.className='t-it '+t;
     var icon=t==='ok'?'check-circle':(t==='err'?'times-circle':'info-circle');
@@ -536,7 +399,10 @@ function toast(m, t) {
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('loginBtn').addEventListener('click', doLogin);
     document.getElementById('nickInp').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+    
     document.getElementById('voiceJoinBtn').addEventListener('click', joinVoice);
+    document.getElementById('logoutBtn').addEventListener('click', () => location.reload());
+    
     document.getElementById('sendBtn').addEventListener('click', sendMsg);
     document.getElementById('msgInp').addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } });
     document.getElementById('msgInp').addEventListener('input', function() { this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,60)+'px'; });
@@ -547,7 +413,7 @@ document.addEventListener('DOMContentLoaded', function() {
     pttBtn.addEventListener('mouseleave', function() { if(pttBtn.classList.contains('on')) pttOff(); });
     pttBtn.addEventListener('touchstart', function(e) { e.preventDefault(); pttOn(); }, {passive: false});
     pttBtn.addEventListener('touchend', function(e) { e.preventDefault(); pttOff(); });
-    
+
     document.getElementById('mobMenuBtn').addEventListener('click', function() { document.getElementById('sbL').classList.toggle('on'); });
     document.getElementById('mobUsersBtn').addEventListener('click', function() { document.getElementById('sbR').classList.toggle('on'); });
 });
